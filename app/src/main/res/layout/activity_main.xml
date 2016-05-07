@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="com.jonas.schart.MainActivity">
+
+    <com.jonas.schart.NChart
+            android:id="@+id/sug_recode_schar"
+            android:layout_width="wrap_content"
+            android:layout_height="250dp"/>
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_below="@+id/sug_recode_schar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/linearLayout">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+        <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="change style"
+                android:textAllCaps="false"
+                android:onClick="stylechange"/>
+
+        <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="animate"
+                android:textAllCaps="false"
+                android:onClick="animate"/>
+
+        <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="selecterChange"
+                android:textAllCaps="false"
+                android:onClick="selecterChange"/>
+
+
+            </LinearLayout>
+        <SeekBar
+                android:id="@+id/sb_barwidth"
+                android:layout_width="match_parent"
+                android:max="100"
+                android:layout_height="wrap_content"/>
+
+        <SeekBar
+                android:id="@+id/sb_barinterval"
+                android:max="100"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        <SeekBar
+                android:id="@+id/sb_hcoordinate"
+                android:max="100"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        <SeekBar
+                android:id="@+id/sb_mabove"
+                android:max="100"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
+</RelativeLayout>
