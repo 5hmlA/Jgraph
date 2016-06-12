@@ -1,6 +1,6 @@
 package com.jonas.schart.superi;
 
-import com.jonas.schart.chartbean.SugExcel;
+import com.jonas.schart.chartbean.JExcel;
 
 import java.util.List;
 
@@ -15,12 +15,12 @@ public interface IChart {
     /**
      * 传入 数据
      */
-    public void cmdFill(SugExcel... sugExcels);
+    public void cmdFill(JExcel... jExcels);
 
 
     /**
      * 传入 数据
      */
-    public void cmdFill(List<SugExcel> sugExcelList);
+    public void cmdFill(List<JExcel> jExcelList);
 
 }

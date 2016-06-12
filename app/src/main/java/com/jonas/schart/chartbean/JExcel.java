@@ -13,11 +13,11 @@ import java.text.DecimalFormat;
  * @des [添加 虚线]
  * @since [产品/模版版本]
  */
-public class SugExcel implements Cloneable {
+public class JExcel implements Cloneable {
     private String mShowMsg;
     private int index;
     private float mWidth;//柱状 的 宽
-    private float mHeight;//折线的y
+    private float mHeight;//折线的y 画图的时候会被缩放
     private PointF mStart = new PointF();//矩形左下角起点
     private float mMidX;//中点 折线的x
     private int mColor;
@@ -32,35 +32,35 @@ public class SugExcel implements Cloneable {
      */
     private String unit;
 
-    public SugExcel(float num, String mXmsg, int index) {
+    public JExcel(float num, String mXmsg, int index) {
         this(0, num, mXmsg);
         this.index = index;
     }
 
-    public SugExcel(float num, String mXmsg) {
+    public JExcel(float num, String mXmsg) {
         this(0, num, mXmsg);
     }
 
-    public SugExcel(float num, int color) {
+    public JExcel(float num, int color) {
         this(0, num, "", "", color);
     }
 
-    public SugExcel(float lower, float upper, String mXmsg) {
+    public JExcel(float lower, float upper, String mXmsg) {
         this(lower, upper, mXmsg, Color.GRAY);
     }
 
 
-    public SugExcel(float lower, float upper, String mXmsg, int color) {
+    public JExcel(float lower, float upper, String mXmsg, int color) {
         this(lower, upper, "", mXmsg, Color.GRAY);
     }
 
 
-    public SugExcel(float num, String unit, String mXmsg) {
+    public JExcel(float num, String unit, String mXmsg) {
         this(0, num, unit, mXmsg, Color.GRAY);
     }
 
 
-    public SugExcel(float lower, float upper, String unit, String mXmsg, int color) {
+    public JExcel(float lower, float upper, String unit, String mXmsg, int color) {
         mUpper = upper;
         mLower = lower;
         mHeight = mNum = upper - lower;

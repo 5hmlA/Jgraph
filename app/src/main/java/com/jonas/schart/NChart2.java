@@ -24,7 +24,7 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 
-import com.jonas.schart.chart.SugChart;
+import com.jonas.schart.chart.JChart;
 import com.jonas.schart.chartbean.NExcel;
 
 import java.text.DecimalFormat;
@@ -516,7 +516,7 @@ public class NChart2 extends View implements ValueAnimator.AnimatorUpdateListene
 //        textBg.lineTo(midPointF.x + bgWidth/2, midPointF.y - mTextMarging - bgHeight);
 //        textBg.close();
 
-        if (mChartStyle == SugChart.ChartStyle.LINE) {
+        if (mChartStyle == JChart.ChartStyle.LINE) {
             mTextMarging = tempTextMargin + mLinePointRadio;
         } else {
             mTextMarging = tempTextMargin;
@@ -561,7 +561,7 @@ public class NChart2 extends View implements ValueAnimator.AnimatorUpdateListene
         }
 
         float textMarging = mTextMarging;
-        if (mChartStyle == SugChart.ChartStyle.LINE) {
+        if (mChartStyle == JChart.ChartStyle.LINE) {
             textMarging = mTextMarging + mLinePointRadio;
         }
 

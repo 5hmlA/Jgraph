@@ -10,7 +10,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewConfiguration;
 
-import com.jonas.schart.chartbean.SugExcel;
+import com.jonas.schart.chartbean.JExcel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -76,7 +76,7 @@ public class SuperChart extends View {
     /**
      * 图表 数据集合
      */
-    protected List<SugExcel> mExcels = new ArrayList<>();
+    protected List<JExcel> mExcels = new ArrayList<>();
 
     /**
      * 柱状图 选中的颜色
@@ -196,15 +196,15 @@ public class SuperChart extends View {
     /**
      * 传入 数据
      */
-    public void cmdFill(@NonNull SugExcel... sugExcels) {
-        cmdFill(new ArrayList<SugExcel>(Arrays.asList(sugExcels)));
+    public void cmdFill(@NonNull JExcel... jExcels) {
+        cmdFill(new ArrayList<JExcel>(Arrays.asList(jExcels)));
     }
 
 
     /**
      * 传入 数据
      */
-    public void cmdFill(@NonNull List<SugExcel> sugExcelList) {
+    public void cmdFill(@NonNull List<JExcel> jExcelList) {
     }
 
 

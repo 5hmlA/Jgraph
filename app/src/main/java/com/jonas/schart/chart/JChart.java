@@ -18,7 +18,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 
-import com.jonas.schart.chartbean.SugExcel;
+import com.jonas.schart.chartbean.JExcel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,7 +32,7 @@ import java.util.List;
  * @Others: {https://github.com/mychoices}
  *
  */
-public class SugChart extends View {
+public class JChart extends View {
 
     private int mWidth;
     private int mHeight;
@@ -65,7 +65,7 @@ public class SugChart extends View {
     private float mTextMarging;
     private float mTextSize = 15;
     //    private float mSugHeightest;
-    private SugExcel mHeightestExcel;
+    private JExcel mHeightestExcel;
     private float mHeightRatio;
     /**
      * 横坐标 信息颜色
@@ -108,7 +108,7 @@ public class SugChart extends View {
         int BAR_LINE = 3;
     }
 
-//    public static class SugExcel {
+//    public static class JExcel {
 //        private String mShowMsg;
 //        private int index;
 //        private float mWidth;//柱状 的 宽
@@ -127,31 +127,31 @@ public class SugChart extends View {
 //         */
 //        private String unit;
 //
-//        public SugExcel(float num, String mXmsg, int index) {
+//        public JExcel(float num, String mXmsg, int index) {
 //            this(0, num, mXmsg);
 //            this.index = index;
 //        }
 //
-//        public SugExcel(float num, String mXmsg) {
+//        public JExcel(float num, String mXmsg) {
 //            this(0, num, mXmsg);
 //        }
 //
-//        public SugExcel(float lower, float upper, String mXmsg) {
+//        public JExcel(float lower, float upper, String mXmsg) {
 //            this(lower, upper, mXmsg, Color.GRAY);
 //        }
 //
 //
-//        public SugExcel(float lower, float upper, String mXmsg, int color) {
+//        public JExcel(float lower, float upper, String mXmsg, int color) {
 //            this(lower, upper, "", mXmsg, Color.GRAY);
 //        }
 //
 //
-//        public SugExcel(float num, String unit, String mXmsg) {
+//        public JExcel(float num, String unit, String mXmsg) {
 //            this(0, num, unit, mXmsg, Color.GRAY);
 //        }
 //
 //
-//        public SugExcel(float lower, float upper, String unit, String mXmsg, int color) {
+//        public JExcel(float lower, float upper, String unit, String mXmsg, int color) {
 //            mUpper = upper;
 //            mLower = lower;
 //            mHeight = mNum = upper - lower;
@@ -328,7 +328,7 @@ public class SugChart extends View {
     /**
      * 图表 数据集合
      */
-    private List<SugExcel> mExcels = new ArrayList<>();
+    private List<JExcel> mExcels = new ArrayList<>();
 
     /**
      * 柱状图 选中的颜色
@@ -357,19 +357,19 @@ public class SugChart extends View {
     private Path pathLine = new Path();
 
 
-    public SugChart(Context context) {
+    public JChart(Context context) {
         super(context);
         init(context);
     }
 
 
-    public SugChart(Context context, AttributeSet attrs) {
+    public JChart(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context);
     }
 
 
-    public SugChart(Context context, AttributeSet attrs, int defStyleAttr) {
+    public JChart(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context);
     }
@@ -454,17 +454,17 @@ public class SugChart extends View {
         if (mHCoordinate > 0) {
             mHeightRatio = (mHCoordinate - 2 * mTextSize - mAbove - mTextMarging - mLinePointRadio * 2) / mHeightestExcel.getHeight();
             for (int i = 0; i < mExcels.size(); i++) {
-                SugExcel sugExcel = mExcels.get(i);
-                sugExcel.setHeight(sugExcel.getHeight() * mHeightRatio);
-                sugExcel.setWidth(mBarWidth);
-                PointF start = sugExcel.getStart();
+                JExcel jExcel = mExcels.get(i);
+                jExcel.setHeight(jExcel.getHeight() * mHeightRatio);
+                jExcel.setWidth(mBarWidth);
+                PointF start = jExcel.getStart();
                 if (mFixedNums > 0 && mChartStyle == ChartStyle.BAR) {
                     start.x = mPading + mInterval * (i + 1) + mBarWidth * i;
                 } else {
                     start.x = mPading + mInterval * i + mBarWidth * i;
                 }
-                start.y = mHCoordinate - mAbove - sugExcel.getLower();
-                sugExcel.setColor(mNormalColor);
+                start.y = mHCoordinate - mAbove - jExcel.getLower();
+                jExcel.setColor(mNormalColor);
             }
         }
     }
@@ -487,7 +487,7 @@ public class SugChart extends View {
 
     private void drawSugExcel_BAR(Canvas canvas) {
         for (int i = 0; i < mExcels.size(); i++) {
-            SugExcel excel = mExcels.get(i);
+            JExcel excel = mExcels.get(i);
             PointF start = excel.getStart();
             start.x += mSliding;
             if (null != mShaderColors) {
@@ -518,7 +518,7 @@ public class SugChart extends View {
         }
     }
 
-    private void drawAbscissaMsg(Canvas canvas, SugExcel excel) {
+    private void drawAbscissaMsg(Canvas canvas, JExcel excel) {
         if (null != excel) {
             mAbscissaPaint.setColor(mAbscissaMsgColor);
             PointF midPointF = excel.getMidPointF();
@@ -536,7 +536,7 @@ public class SugChart extends View {
         }
     }
 
-    private void drawSelectedText(Canvas canvas, SugExcel excel) {
+    private void drawSelectedText(Canvas canvas, JExcel excel) {
 
         mTextPaint.setColor(mTextColor);
         PointF midPointF = excel.getMidPointF();
@@ -601,7 +601,7 @@ public class SugChart extends View {
             canvas.drawPath(path, mDashLinePaint);
         }
         if (mLinePointRadio > 0) {
-            for (SugExcel excel : mExcels) {
+            for (JExcel excel : mExcels) {
                 if (excel.getHeight() > 0) {
                     PointF midPointF = excel.getMidPointF();
                     canvas.drawCircle(midPointF.x, midPointF.y, mLinePointRadio, mPointPaint);
@@ -666,7 +666,7 @@ public class SugChart extends View {
             if (!lineFirstMoved) {
                 pathline = new Path();
             }
-            SugExcel excel = null;
+            JExcel excel = null;
             if (pathline != null) {
                 excel = mExcels.get(i);
                 if (null == excel) {
@@ -768,7 +768,7 @@ public class SugChart extends View {
      */
     private int clickWhere(PointF tup) {
         for (int i = 0; i < mExcels.size(); i++) {
-            SugExcel excel = mExcels.get(i);
+            JExcel excel = mExcels.get(i);
             PointF start = excel.getStart();
             if (start.x > tup.x) {
                 return -1;
@@ -785,30 +785,30 @@ public class SugChart extends View {
     /**
      * 传入 数据
      */
-    public void cmdFill(SugExcel... sugExcels) {
-        cmdFill(Arrays.asList(sugExcels));
+    public void cmdFill(JExcel... jExcels) {
+        cmdFill(Arrays.asList(jExcels));
     }
 
 
     /**
      * 传入 数据
      */
-    public void cmdFill(List<SugExcel> sugExcelList) {
+    public void cmdFill(List<JExcel> jExcelList) {
         lineFirstMoved = false;
         mSelected = -1;
         mExcels.clear();
-        if (sugExcelList != null && sugExcelList.size() > 0) {
-            mHeightestExcel = sugExcelList.get(0);
-            for (SugExcel sugExcel : sugExcelList) {
-                mHeightestExcel = mHeightestExcel.getHeight() > sugExcel.getHeight() ? mHeightestExcel : sugExcel;
+        if (jExcelList != null && jExcelList.size() > 0) {
+            mHeightestExcel = jExcelList.get(0);
+            for (JExcel jExcel : jExcelList) {
+                mHeightestExcel = mHeightestExcel.getHeight() > jExcel.getHeight() ? mHeightestExcel : jExcel;
             }
-            for (int i = 0; i < sugExcelList.size(); i++) {
-                SugExcel sugExcel = sugExcelList.get(i);
-                sugExcel.setWidth(mBarWidth);
-                PointF start = sugExcel.getStart();
+            for (int i = 0; i < jExcelList.size(); i++) {
+                JExcel jExcel = jExcelList.get(i);
+                jExcel.setWidth(mBarWidth);
+                PointF start = jExcel.getStart();
                 start.x = mInterval * (i + 1) + mBarWidth * i;
-                sugExcel.setColor(mNormalColor);
-                mExcels.add(sugExcel);
+                jExcel.setColor(mNormalColor);
+                mExcels.add(jExcel);
             }
             if (mWidth > 0) {
                 //已经显示在界面上了 重新设置数据

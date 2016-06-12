@@ -9,7 +9,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 
-import com.jonas.schart.chartbean.SugExcel;
+import com.jonas.schart.chartbean.JExcel;
 import com.jonas.schart.superi.SuperChart;
 
 import java.util.List;
@@ -101,7 +101,7 @@ public class PieChart extends SuperChart {
     protected void drawSugExcel_PIE(Canvas canvas) {
 
         mStartAnger = 0;
-        for (SugExcel excel : mExcels) {
+        for (JExcel excel : mExcels) {
             mPiePaint.setColor(excel.getColor());
             canvas.drawArc(mAecRect, mStartAnger, excel.getHeight(), false, mPiePaint);
             mStartAnger += excel.getHeight();
@@ -110,7 +110,7 @@ public class PieChart extends SuperChart {
         mIntervalPaint.setStrokeWidth(mIntervalWidth);
         mIntervalPaint.setColor(mIntervalColor);
         canvas.save();
-        for (SugExcel excel : mExcels) {
+        for (JExcel excel : mExcels) {
             canvas.drawLine(mCenterPoint.x + mArcRadio - pieWidth / 2 - 1f, mCenterPoint.y, mWidth, mHeight / 2, mIntervalPaint);
             canvas.rotate(excel.getHeight(), mCenterPoint.x, mCenterPoint.y);
         }
@@ -118,15 +118,15 @@ public class PieChart extends SuperChart {
     }
 
     @Override
-    public void cmdFill(List<SugExcel> sugExcelList) {
+    public void cmdFill(List<JExcel> jExcelList) {
         mExcels.clear();
         //sugexcel的lower为0 upper就是数据 height可以用来填充角度信息
-        for (SugExcel sugExcel : sugExcelList) {
-            dataFloatTotal += sugExcel.getUpper();
+        for (JExcel jExcel : jExcelList) {
+            dataFloatTotal += jExcel.getUpper();
         }
-        mExcels.addAll(sugExcelList);
+        mExcels.addAll(jExcelList);
         // 平分的角度
-        for (SugExcel excel : mExcels) {
+        for (JExcel excel : mExcels) {
             excel.setHeight(excel.getUpper() / dataFloatTotal * 360);
         }
         refreshPieSet();

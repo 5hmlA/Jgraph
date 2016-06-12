@@ -7,7 +7,7 @@ import android.view.View;
 
 import com.jonas.schart.chart.AniLineChar;
 import com.jonas.schart.chart.PieChart;
-import com.jonas.schart.chartbean.SugExcel;
+import com.jonas.schart.chartbean.JExcel;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -22,12 +22,11 @@ public class ChartActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chart);
         PieChart pieChart = (PieChart) findViewById(R.id.sug_record_pie);
-//        SugExcel hotbody = new SugExcel(new SecureRandom().nextInt(50), 0x73c0fd);
-        SugExcel hotbody = new SugExcel(50, Color.parseColor("#73c0fd"));
-        SugExcel burn = new SugExcel(50, Color.parseColor("#b8e986"));
-        SugExcel anaerobic = new SugExcel(50, Color.parseColor("#f7eb57"));
-        SugExcel aerobic = new SugExcel(50, Color.parseColor("#ffbf55"));
-        SugExcel limit = new SugExcel(50, Color.RED);
+        JExcel hotbody = new JExcel(50, Color.parseColor("#73c0fd"));
+        JExcel burn = new JExcel(50, Color.parseColor("#b8e986"));
+        JExcel anaerobic = new JExcel(50, Color.parseColor("#f7eb57"));
+        JExcel aerobic = new JExcel(50, Color.parseColor("#ffbf55"));
+        JExcel limit = new JExcel(50, Color.RED);
         if (pieChart != null) {
             pieChart.setPieWidth(35);
 //            pieChart.setInterval(10);
@@ -35,10 +34,10 @@ public class ChartActivity extends AppCompatActivity {
         }
         mLineChar = (AniLineChar) findViewById(R.id.sug_recode_line);
 
-        List<SugExcel> lines = new ArrayList<>();
+        List<JExcel> lines = new ArrayList<>();
         for (int i = 0; i < 21; i++) {
 
-            lines.add(new SugExcel(new SecureRandom().nextInt(100), Color.parseColor("#b8e986")));
+            lines.add(new JExcel(new SecureRandom().nextInt(100), Color.parseColor("#b8e986")));
         }
         mLineChar.setYaxisValues(0, 100, 4);
 //        mLineChar.setScrollAble(true);

@@ -15,7 +15,7 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
-import com.jonas.schart.chartbean.SugExcel;
+import com.jonas.schart.chartbean.JExcel;
 import com.jonas.schart.superi.SuperChart;
 
 import java.text.DecimalFormat;
@@ -38,7 +38,7 @@ public class LineChar extends SuperChart {
     /**
      * 最高的点
      */
-    private SugExcel mHeightestExcel;
+    private JExcel mHeightestExcel;
     /**
      * 图表显示的区域 x轴起点  左边为刻度
      */
@@ -228,7 +228,7 @@ public class LineChar extends SuperChart {
      */
     private int clickWhere(PointF tup) {
         for (int i = 0; i < mExcels.size(); i++) {
-            SugExcel excel = mExcels.get(i);
+            JExcel excel = mExcels.get(i);
             PointF start = excel.getStart();
             if (start.x > tup.x) {
                 return -1;
@@ -293,7 +293,7 @@ public class LineChar extends SuperChart {
 
 //        mLinePath.reset();
         for (int i = 0; i < mExcels.size(); i++) {
-            SugExcel sugExcel = mExcels.get(i);
+            JExcel jExcel = mExcels.get(i);
 //            if (i<mExcels.size()-1) {
 //                PointF startPoint = mExcels.get(i).getMidPointF();
 //                PointF endPoint = mExcels.get(i + 1).getMidPointF();
@@ -309,21 +309,21 @@ public class LineChar extends SuperChart {
 //                canvas.drawLine(startPoint.x,startPoint.y,controllA_X,controllA_Y,mLinePaint);
 //                canvas.drawLine(endPoint.x,endPoint.y,controllB_X,controllB_Y,mLinePaint);
 //            }
-            drawAbscissaMsg(canvas, sugExcel);
+            drawAbscissaMsg(canvas, jExcel);
         }
     }
 
     private void lineSkip0Point(Canvas canvas) {
         mLinePath.reset();
         for (int i = 0; i < mExcels.size(); i++) {
-            SugExcel sugExcel = mExcels.get(i);
-            PointF midPointF = sugExcel.getMidPointF();
+            JExcel jExcel = mExcels.get(i);
+            PointF midPointF = jExcel.getMidPointF();
             if (i == 0) {
                 mLinePath.moveTo(midPointF.x, midPointF.y);
             } else {
                 mLinePath.lineTo(midPointF.x, midPointF.y);
             }
-            drawAbscissaMsg(canvas, sugExcel);
+            drawAbscissaMsg(canvas, jExcel);
         }
     }
 
@@ -364,7 +364,7 @@ public class LineChar extends SuperChart {
      * @param canvas
      * @param excel
      */
-    private void drawAbscissaMsg(Canvas canvas, SugExcel excel) {
+    private void drawAbscissaMsg(Canvas canvas, JExcel excel) {
         mAbscissaPaint.setTextAlign(Paint.Align.CENTER);
         if (null != excel) {
             PointF midPointF = excel.getMidPointF();
@@ -405,21 +405,21 @@ public class LineChar extends SuperChart {
     /**
      * 传入 数据
      */
-    public void cmdFill(List<SugExcel> sugExcelList) {
+    public void cmdFill(List<JExcel> jExcelList) {
         lineFirstMoved = false;
         mSelected = -1;
         mExcels.clear();
-        if (sugExcelList != null && sugExcelList.size() > 0) {
-            mHeightestExcel = sugExcelList.get(0);
-            for (SugExcel sugExcel : sugExcelList) {
-                mHeightestExcel = mHeightestExcel.getHeight() > sugExcel.getHeight() ? mHeightestExcel : sugExcel;
+        if (jExcelList != null && jExcelList.size() > 0) {
+            mHeightestExcel = jExcelList.get(0);
+            for (JExcel jExcel : jExcelList) {
+                mHeightestExcel = mHeightestExcel.getHeight() > jExcel.getHeight() ? mHeightestExcel : jExcel;
             }
-            for (int i = 0; i < sugExcelList.size(); i++) {
-                SugExcel sugExcel = sugExcelList.get(i);
-                sugExcel.setWidth(mBarWidth);
-                PointF start = sugExcel.getStart();
+            for (int i = 0; i < jExcelList.size(); i++) {
+                JExcel jExcel = jExcelList.get(i);
+                jExcel.setWidth(mBarWidth);
+                PointF start = jExcel.getStart();
                 start.x = mInterval * (i + 1) + mBarWidth * i;
-                mExcels.add(sugExcel);
+                mExcels.add(jExcel);
             }
             if (!mScrollAble && mForceFixNums && mExcels.size() > mVisibleNums) {
                 //如果不可滚动的话 同时要显示固定个数 那么为防止显示不全 将可见个数设置为柱子数量
@@ -500,22 +500,22 @@ public class LineChar extends SuperChart {
         mHeightRatio = (mChartArea.bottom - mChartArea.top) / (mYaxis_Max - mYaxis_min);
 
         for (int i = 0; i < mExcels.size(); i++) {
-            SugExcel sugExcel = mExcels.get(i);
-            sugExcel.setHeight((sugExcel.getHeight() - mYaxis_min) * mHeightRatio);//刷新在画布中的高度
-            sugExcel.setWidth(mBarWidth);
-            PointF start = sugExcel.getStart();
+            JExcel jExcel = mExcels.get(i);
+            jExcel.setHeight(( jExcel.getHeight() - mYaxis_min) * mHeightRatio);//刷新在画布中的高度
+            jExcel.setWidth(mBarWidth);
+            PointF start = jExcel.getStart();
             //刷新 每个柱子矩阵左下角坐标
             start.x = mChartArea.left + mBarWidth * i + mInterval * i;
-            start.y = mChartArea.bottom - mAbove - sugExcel.getLower();
-            sugExcel.setColor(mNormalColor);
+            start.y = mChartArea.bottom - mAbove - jExcel.getLower();
+            jExcel.setColor(mNormalColor);
         }
 
         //填充 path
         mLinePath.reset();
         for (int i = 0; i < mExcels.size(); i++) {
-            SugExcel sugExcel = mExcels.get(i);
+            JExcel jExcel = mExcels.get(i);
 
-//            PointF midPointF = sugExcel.getMidPointF();
+//            PointF midPointF = jExcel.getMidPointF();
 //            if (i == 0) {
 //                mLinePath.moveTo(midPointF.x, midPointF.y );
 //            } else {
@@ -523,7 +523,7 @@ public class LineChar extends SuperChart {
 //            }
 
             if (i < mExcels.size() - 1) {
-                PointF startPoint = sugExcel.getMidPointF();
+                PointF startPoint = jExcel.getMidPointF();
                 PointF endPoint = mExcels.get(i + 1).getMidPointF();//下一个点
                 if (i == 0) mLinePath.moveTo(startPoint.x, startPoint.y);
                 float controllA_X = (startPoint.x + endPoint.x) / 2;
