@@ -6,7 +6,7 @@
         android:layout_height="match_parent"
         tools:context="com.jonas.schart.MainActivity">
 
-    <com.jonas.schart.NChart
+    <com.jonas.schart.chart.NChart
             android:id="@+id/sug_recode_schar"
             android:layout_width="wrap_content"
             android:layout_height="250dp"/>

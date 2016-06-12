@@ -6,7 +6,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.SeekBar;
 
-import com.jonas.schart.chart.NExcel;
+import com.jonas.schart.chart.NChart;
+import com.jonas.schart.chartbean.NExcel;
 
 import java.util.ArrayList;
 import java.util.List;

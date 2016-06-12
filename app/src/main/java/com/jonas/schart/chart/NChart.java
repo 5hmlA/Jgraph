@@ -1,4 +1,4 @@
-package com.jonas.schart;
+package com.jonas.schart.chart;
 
 import android.animation.Animator;
 import android.animation.ValueAnimator;
@@ -24,7 +24,7 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 
-import com.jonas.schart.chart.NExcel;
+import com.jonas.schart.chartbean.NExcel;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -191,6 +191,7 @@ public class NChart extends View implements ValueAnimator.AnimatorUpdateListener
     private int mLineAniStyle = ChartAniStyle.BAR_DOWN;
 
     private float mBarRadio = 0;
+    private float tempTextMargin;
 
     public interface ChartStyle {
         static final int BAR = 1;
@@ -290,7 +291,7 @@ public class NChart extends View implements ValueAnimator.AnimatorUpdateListener
     private void initData() {
         mBarWidth = dip2px(36);
         mInterval = dip2px(20);
-        mTextMarging = dip2px(4);
+        tempTextMargin = mTextMarging = dip2px(4);
         mTextSize = sp2px(15);
         mAbscissaMsgSize = sp2px(15);
 //        mLinePointRadio = dip2px(4);
@@ -311,7 +312,9 @@ public class NChart extends View implements ValueAnimator.AnimatorUpdateListener
             高度缩放();
         }
         mWidth = w;
-        animateExcels();
+        if (mExcels.size()>0) {
+            animateExcels();
+        }
 
     }
 
@@ -497,10 +500,10 @@ public class NChart extends View implements ValueAnimator.AnimatorUpdateListener
         float bgHeight = dip2px(6);
         float bgWidth = dip2px(8);
 
-        float textMarging = dip2px(3);//文字背景 三角尖处 和 柱子的距离
-        if (mChartStyle == SugChart.ChartStyle.LINE) {
-            textMarging = dip2px(2) + mLinePointRadio;
-        }
+//        float textMarging = dip2px(3);//文字背景 三角尖处 和 柱子的距离
+//        if (mChartStyle == SugChart.ChartStyle.LINE) {
+//            textMarging = dip2px(2) + mLinePointRadio;
+//        }
 
         //三角尖 高4宽3
 //        textBg.moveTo(midPointF.x, midPointF.y - mTextMarging);
@@ -512,19 +515,36 @@ public class NChart extends View implements ValueAnimator.AnimatorUpdateListener
 //        textBg.lineTo(midPointF.x + bgWidth/2, midPointF.y - mTextMarging - bgHeight);
 //        textBg.close();
 
+        if (mChartStyle == SugChart.ChartStyle.LINE) {
+            mTextMarging = tempTextMargin + mLinePointRadio;
+        } else {
+            mTextMarging = tempTextMargin;
+        }
         //画三角形
-        textBg.moveTo(midPointF.x, midPointF.y - textMarging);
-        textBg.lineTo(midPointF.x - bgWidth / 2, midPointF.y - textMarging - bgHeight - 1.5f);
-        textBg.lineTo(midPointF.x + bgWidth / 2, midPointF.y - textMarging - bgHeight - 1.5f);
+        textBg.moveTo(midPointF.x, midPointF.y - mTextMarging);
+        textBg.lineTo(midPointF.x - bgWidth / 2, midPointF.y - mTextMarging - bgHeight - 1.5f);
+        textBg.lineTo(midPointF.x + bgWidth / 2, midPointF.y - mTextMarging - bgHeight - 1.5f);
         textBg.close();
         canvas.drawPath(textBg, mTextBgPaint);
         //画圆角矩形
-        RectF rectF = new RectF(midPointF.x - mBounds.width() / 2 - bgWidth, midPointF.y - textMarging - bgHeight - mBounds.height() - bgHeight * 2
-                , midPointF.x + mBounds.width() / 2 + bgWidth, midPointF.y - textMarging - bgHeight);
+        RectF rectF = new RectF(midPointF.x - mBounds.width() / 2 - bgWidth, midPointF.y - mTextMarging - bgHeight - mBounds.height() - bgHeight * 2
+                , midPointF.x + mBounds.width() / 2 + bgWidth, midPointF.y - mTextMarging - bgHeight);
+        float dffw = rectF.right - mWidth;
+        float msgX = midPointF.x;
+        float magin = 1;//最两边背景距离两边框的距离
+        if (dffw > 0) {
+            rectF.right = rectF.right - dffw - magin;
+            rectF.left = rectF.left - dffw - magin;
+            msgX = midPointF.x - dffw - magin;
+        } else if (rectF.left < 0) {
+            rectF.right = rectF.right - rectF.left + magin;
+            msgX = midPointF.x - rectF.left + magin;
+            rectF.left = magin;
+            //画文字
+        }
         canvas.drawRoundRect(rectF, 3, 3, mTextBgPaint);
-
         //画文字
-        canvas.drawText(msg, midPointF.x, midPointF.y - textMarging - bgHeight * 2, mTextPaint);
+        canvas.drawText(msg, msgX, midPointF.y - mTextMarging - bgHeight * 2, mTextPaint);
     }
 
     /**
@@ -733,43 +753,44 @@ public class NChart extends View implements ValueAnimator.AnimatorUpdateListener
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                mDownX = event.getX();
-                break;
-            case MotionEvent.ACTION_MOVE:
-                if (ratio == 1) {//执行动画的时候 不可滑动
-                    float moveX = event.getX();
-                    mSliding = moveX - mDownX;
-                    if (Math.abs(mSliding) > mTouchSlop) {
-                        //          pathLine.reset();
-                        moved = true;
-                        mDownX = moveX;
-                        if (mExcels.get(0).getStart().x + mSliding > mInterval || mExcels.get(mExcels.size() - 1)
-                                .getStart().x + mBarWidth + mInterval + mSliding < mWidth) {
-                            return true;
-                        }
-                        for (int i = 0; i < mExcels.size(); i++) {
-                            NExcel excel = mExcels.get(i);
-                            PointF start = excel.getStart();
-                            start.x += mSliding;//图表左右移动
-                        }
-                        if (mScrollAble) {
-                            invalidate();
+        if (mExcels.size() > 0) {
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    mDownX = event.getX();
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    if (ratio == 1) {//执行动画的时候 不可滑动
+                        float moveX = event.getX();
+                        mSliding = moveX - mDownX;
+                        if (Math.abs(mSliding) > mTouchSlop) {
+                            //          pathLine.reset();
+                            moved = true;
+                            mDownX = moveX;
+                            if (mExcels.get(0).getStart().x + mSliding > mInterval || mExcels.get(mExcels.size() - 1)
+                                    .getStart().x + mBarWidth + mInterval + mSliding < mWidth) {
+                                return true;
+                            }
+                            for (int i = 0; i < mExcels.size(); i++) {
+                                NExcel excel = mExcels.get(i);
+                                PointF start = excel.getStart();
+                                start.x += mSliding;//图表左右移动
+                            }
+                            if (mScrollAble) {
+                                invalidate();
+                            }
                         }
                     }
-                }
-                break;
-            case MotionEvent.ACTION_UP:
-                if (!moved) {
-                    PointF tup = new PointF(event.getX(), event.getY());
-                    mSelected = clickWhere(tup);
-                    invalidate();
-                }
-                moved = false;
-                mSliding = 0;
-                break;
-
+                    break;
+                case MotionEvent.ACTION_UP:
+                    if (!moved) {
+                        PointF tup = new PointF(event.getX(), event.getY());
+                        mSelected = clickWhere(tup);
+                        invalidate();
+                    }
+                    moved = false;
+                    mSliding = 0;
+                    break;
+            }
         }
         return true;
     }
@@ -987,7 +1008,7 @@ public class NChart extends View implements ValueAnimator.AnimatorUpdateListener
     }
 
     public void setTextMarging(float textMarging) {
-        mTextMarging = dip2px(textMarging);
+        tempTextMargin = mTextMarging = dip2px(textMarging);
     }
 
     public float getHCoordinate() {
@@ -1177,6 +1198,7 @@ public class NChart extends View implements ValueAnimator.AnimatorUpdateListener
 
     /**
      * 设置 柱子的圆角 半径
+     *
      * @param barRadio
      */
     public void setBarRadio(float barRadio) {

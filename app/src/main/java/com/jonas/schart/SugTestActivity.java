@@ -5,6 +5,9 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 
+import com.jonas.schart.chart.SugChart;
+import com.jonas.schart.chartbean.SugExcel;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -16,24 +19,25 @@ import java.util.Random;
 public class SugTestActivity extends Activity {
 
     private SugChart mSchart;
-    private List<SugChart.SugExcel> mSugExcels;
+    private List<SugExcel> mSugExcels;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
-        super.onCreate(savedInstanceState);setContentView(R.layout.activity_sugtest);
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_sugtest);
         mSchart = (SugChart) findViewById(R.id.sug_recode_schar);
 
         mSugExcels = new ArrayList<>();
         for (int i = 0; i < 11; i++) {
 
-            SugChart.SugExcel sugExcel = new SugChart.SugExcel(new Random().nextInt(100)+20,"km", "测试");
-//            SugChart.SugExcel sugExcel = new SugChart.SugExcel(100, "测试");
+            SugExcel sugExcel = new SugExcel(new Random().nextInt(100)+20,"km", "测试");
+//            SugExcel sugExcel = new SugExcel(100, "测试");
 //            if (i == 1) {
-//                sugExcel = new SugChart.SugExcel(200, "测试");
+//                sugExcel = new SugExcel(200, "测试");
 //            }
             mSugExcels.add(sugExcel);
         }
-//        mSchart.setChartStyle(SugChart.ChartStyle.LINE);
+//        mSchart.setChartStyle(ChartStyle.LINE);
         mSchart.setChartStyle(SugChart.ChartStyle.BAR);
         mSchart.setExecelPaintShaderColors(new int[]{Color.parseColor("#089900"), Color.parseColor("#9FC700")});
 //        mSchart.setExecelPaintShaderColors(new int[]{Color.parseColor("#4df1dbd4"), Color.TRANSPARENT});

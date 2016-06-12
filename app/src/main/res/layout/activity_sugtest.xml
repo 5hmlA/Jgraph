@@ -7,7 +7,7 @@
         android:orientation="vertical"
         tools:context="com.jonas.schart.MainActivity">
 
-    <com.jonas.schart.SugChart
+    <com.jonas.schart.chart.SugChart
             android:id="@+id/sug_recode_schar"
             android:layout_width="wrap_content"
             android:layout_height="250dp"/>
