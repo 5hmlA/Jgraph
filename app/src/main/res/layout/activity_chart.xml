@@ -22,6 +22,6 @@
         android:paddingTop="10dp"
         android:layout_height="240dp"
         android:layout_marginLeft="10dp"
-        ></com.jonas.schart.chart.AniLineChar>
+        />
 
 </LinearLayout>

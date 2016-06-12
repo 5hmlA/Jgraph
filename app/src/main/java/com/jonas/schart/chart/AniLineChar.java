@@ -22,6 +22,7 @@ import com.jonas.schart.chartbean.JExcel;
 import com.jonas.schart.superi.SuperChart;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -45,6 +46,24 @@ public class AniLineChar extends SuperChart {
      */
     private float mBetween2Excel;
     private ValueAnimator mValueAnimator;
+    private Paint mSelectedTextBgPaint;
+    private Paint mSelectedTextPaint;
+    /**
+     * 选中文字背景 三角尖处 距离图表的距离
+     */
+    private float mSelectedTextMarging = 4;
+    /**
+     * 顶部选中文字 三角尖的高度
+     */
+    private float mBgTriangleHeight;
+    private boolean mAnimationFinished = true;
+    private ArrayList<PointF> mAllPoints = new ArrayList<>();
+    /**
+     * 允许范围内的误差
+     */
+    private float mAllowError = 3;
+    private float mBgTextSize = 4;
+    private ArrayList<PointF> mAllLastPoints;
 
     public static interface LineStyle {
         /**
@@ -106,7 +125,7 @@ public class AniLineChar extends SuperChart {
     /**
      * 动画用的变俩
      */
-    private float aniRatio = -1;
+    private float mAniRatio = 1;
     private Path mLinePath = new Path();
     private Path mAniLinePath = new Path();
     /**
@@ -130,29 +149,31 @@ public class AniLineChar extends SuperChart {
     private float mCharAreaWidth;
     private boolean mNeedY_abscissMasg = true;
 
-    public AniLineChar(Context context) {
+    public AniLineChar(Context context){
         super(context);
     }
 
-    public AniLineChar(Context context, AttributeSet attrs) {
+    public AniLineChar(Context context, AttributeSet attrs){
         super(context, attrs);
     }
 
-    public AniLineChar(Context context, AttributeSet attrs, int defStyleAttr) {
+    public AniLineChar(Context context, AttributeSet attrs, int defStyleAttr){
         super(context, attrs, defStyleAttr);
     }
 
     @Override
-    protected void init(Context context) {
+    protected void init(Context context){
         super.init(context);
         mChartStyle = ChartStyle.LINE;
         mLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mAbscissaPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mAbscisDashPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mSelectedTextBgPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mSelectedTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         initializeData();
     }
 
-    private void initializeData() {
+    private void initializeData(){
         mBarWidth = dip2px(16);//默认的柱子宽度
         mInterval = dip2px(4);//默认的间隔大小
         mAbscissaMsgSize = sp2px(12);//坐标轴信息
@@ -167,13 +188,21 @@ public class AniLineChar extends SuperChart {
         mAbscissaPaint.setTextAlign(Paint.Align.CENTER);
         mAbscissaPaint.setTextSize(mAbscissaMsgSize);
         mAbscissaPaint.setColor(mAbscissaMsgColor);
+
         mAbscisDashPaint.setStrokeWidth(1);
         mAbscisDashPaint.setStyle(Paint.Style.STROKE);
         mAbscisDashPaint.setColor(mAbscissaMsgColor);
+
+        //显示在顶部 选中的文字背景
+        mSelectedTextBgPaint.setColor(Color.GRAY);
+        //顶部选中文字 颜色
+        mSelectedTextPaint.setTextAlign(Paint.Align.CENTER);
+        mSelectedTextPaint.setColor(Color.WHITE);
+        mBgTriangleHeight = dip2px(6);
     }
 
     @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+    protected void onSizeChanged(int w, int h, int oldw, int oldh){
         super.onSizeChanged(w, h, oldw, oldh);
         refreshChartArea();
         refreshChartSetData();
@@ -181,68 +210,87 @@ public class AniLineChar extends SuperChart {
     }
 
     @Override
-    protected void onDraw(Canvas canvas) {
+    protected void onDraw(Canvas canvas){
+        canvas.save();
         canvas.rotate(mAniRotateRatio);
         canvas.translate(mSliding, 0);//大于0 往右移动 小于0往左移动
         super.onDraw(canvas);
-        if (mNeedY_abscissMasg) {
+        canvas.restore();
+        if(mNeedY_abscissMasg) {
             drawYabscissaMsg(canvas);
+        }
+
+        //选中模式启用的时候
+        if(mSelectedMode == SelectedMode.selecetdMsgShow_Top && mAnimationFinished) {
+            if(mSelected>-1) {
+                drawSelectedText(canvas, mExcels.get(mSelected));
+            }else {
+                drawSelectedText(canvas, mExcels.get(mHeightestExcel.getIndex()));
+            }
         }
     }
 
     /**
      * 刷新 画图表的区域
      */
-    private void refreshChartArea() {
+    private void refreshChartArea(){
         float yMsgLength = 0;
         float yMsgHeight = 0;
-        if (mNeedY_abscissMasg) {
+
+        if(mNeedY_abscissMasg) {
             //如果 需要 纵轴坐标的时候
             String yaxismax = new DecimalFormat("##.#").format(mYaxis_Max);
             yMsgLength = mAbscissaPaint.measureText(yaxismax, 0, yaxismax.length());
             Rect bounds = new Rect();
             mAbscissaPaint.getTextBounds(yaxismax, 0, yaxismax.length(), bounds);
-            yMsgLength = bounds.width() < yMsgLength ? bounds.width() : yMsgLength;
-            yMsgHeight = bounds.height();
+            yMsgLength = bounds.width()<yMsgLength ? bounds.width() : yMsgLength;
+            if(mSelectedMode == SelectedMode.selecetdMsgShow_Top) {
+                yMsgHeight = bounds.height()+2.5f*mBgTriangleHeight;
+            }else {
+                yMsgHeight = bounds.height();
+            }
         }
-        if (allowInterval_left_right) {
+        if(allowInterval_left_right) {
             //如过 允许 图表左右两边留有 间隔的时候
-            mChartArea = new RectF(yMsgLength + getPaddingLeft() + mInterval, getPaddingTop() + yMsgHeight
-                    , mWidth + getPaddingLeft() - mInterval, getPaddingTop() + mHeight - 2 * mAbscissaMsgSize);
-        } else {
-            mChartArea = new RectF(yMsgLength + getPaddingLeft(), getPaddingTop() + yMsgHeight
-                    , mWidth + getPaddingLeft(), getPaddingTop() + mHeight - 2 * mAbscissaMsgSize);
+            mChartArea = new RectF(yMsgLength+getPaddingLeft()+mInterval, getPaddingTop()+yMsgHeight,
+                    mWidth+getPaddingLeft()-mInterval, getPaddingTop()+mHeight-2*mAbscissaMsgSize);
+        }else {
+            mChartArea = new RectF(yMsgLength+getPaddingLeft(), getPaddingTop()+yMsgHeight, mWidth+getPaddingLeft(),
+                    getPaddingTop()+mHeight-2*mAbscissaMsgSize);
         }
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        if (mExcels.size() > 0) {
-            switch (event.getAction()) {
+    public boolean onTouchEvent(MotionEvent event){
+        if(mExcels.size()>0) {
+            switch(event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
                     mDownX = event.getX();
                     break;
                 case MotionEvent.ACTION_MOVE:
-                    if (mScrollAble) {
+                    if(mScrollAble) {
                         float moveX = event.getX();
-                        mSliding += moveX - mDownX;
-                        if (Math.abs(mSliding) > mTouchSlop) {
+                        float moving = moveX-mDownX;
+                        mSliding += moving;
+                        if(Math.abs(moving)>mTouchSlop) {
                             moved = true;
                             mDownX = moveX;
-                            if (mExcels != null && mExcels.size() > 0) {
+                            if(mExcels != null && mExcels.size()>0) {
                                 //防止 图表 滑出界面看不到
-                                mSliding = mSliding >= 0 ? 0 : mSliding <= -(mChartRithtest_x - mCharAreaWidth) ? -(mChartRithtest_x - mCharAreaWidth) : mSliding;
-                            } else {
-                                mSliding = mSliding >= 0 ? 0 : mSliding;
+                                mSliding = mSliding>=0 ? 0 : mSliding<=-( mChartRithtest_x-mCharAreaWidth ) ? -( mChartRithtest_x-mCharAreaWidth ) : mSliding;
+                            }else {
+                                mSliding = mSliding>=0 ? 0 : mSliding;
                             }
+                            System.out.println(mSliding);
                             invalidate();
                         }
                     }
                     break;
                 case MotionEvent.ACTION_UP:
-                    if (!moved) {
+                    if(!moved) {
                         PointF tup = new PointF(event.getX(), event.getY());
                         mSelected = clickWhere(tup);
+                        System.out.println(mSelected);
                         invalidate();
                     }
                     moved = false;
@@ -254,31 +302,96 @@ public class AniLineChar extends SuperChart {
         return true;
     }
 
+
     /**
      * 判断 点中哪个柱状图
      */
-    private int clickWhere(PointF tup) {
-        for (int i = 0; i < mExcels.size(); i++) {
-            JExcel excel = mExcels.get(i);
-            PointF start = excel.getStart();
-            if (start.x > tup.x) {
-                return -1;
-            } else if (start.x <= tup.x) {
-                if (start.x + excel.getWidth() > tup.x &&
-                        (start.y > tup.y && start.y - excel.getHeight() < tup.y)) {
-                    return i;
+    private int clickWhere(PointF tup){
+        float clickEffective_x = tup.x-mChartArea.left;
+        if(clickEffective_x>0) {
+            clickEffective_x = tup.x-mChartArea.left-mBarWidth-mInterval/2;
+            if(clickEffective_x>0) {
+                int maybeSelected = (int)( clickEffective_x/( mBarWidth+mInterval ) )+1;
+                //判断y
+                JExcel jExcel = mExcels.get(maybeSelected);
+                if(tup.y>jExcel.getMidPointF().y-mAllowError) {
+                    return maybeSelected;
+                }else {
+                    return -1;
+                }
+            }else {
+                //判断 y
+                JExcel jExcel = mExcels.get(0);
+                if(tup.y>jExcel.getMidPointF().y-mAllowError) {
+                    return 0;
+                }else {
+                    return -1;
                 }
             }
+        }else {
+            return -1;
         }
-        return -1;
+        //        for(int i = 0; i<mExcels.size(); i++) {
+        //            JExcel excel = mExcels.get(i);
+        //            PointF start = excel.getStart();
+        //            if(start.x>tup.x) {
+        //                return -1;
+        //            }else if(start.x-mSliding<=tup.x) {
+        //                if(start.x-mSliding+excel.getWidth()>tup.x && ( start.y>tup.y && start.y-excel.getHeight()<tup.y )) {
+        //                    return i;
+        //                }
+        //            }
+        //        }
+        //        return -1;
+    }
+
+    /**
+     * 画选中的 顶部文字和背景
+     *
+     * @param canvas
+     * @param excel
+     */
+    private void drawSelectedText(Canvas canvas, JExcel excel){
+        PointF midPointF = excel.getMidPointF();
+        //        String msg = excel.getUpper() + excel.getUnit();
+        String msg = excel.getShowMsg();
+        Rect mBounds = new Rect();
+        mSelectedTextPaint.getTextBounds(msg, 0, msg.length(), mBounds);
+        Path textBg = new Path();
+
+        float bgWidth = dip2px(8);
+
+        textBg.moveTo(midPointF.x, midPointF.y-mSelectedTextMarging);
+        textBg.lineTo(midPointF.x-bgWidth/2, midPointF.y-mSelectedTextMarging-mBgTriangleHeight-1.5f);
+        textBg.lineTo(midPointF.x+bgWidth/2, midPointF.y-mSelectedTextMarging-mBgTriangleHeight-1.5f);
+        textBg.close();
+        canvas.drawPath(textBg, mSelectedTextBgPaint);
+
+        RectF rectF = new RectF(midPointF.x-mBounds.width()/2f-bgWidth,
+                midPointF.y-mSelectedTextMarging-mBgTriangleHeight-mBounds.height()-mBgTriangleHeight*2f,
+                midPointF.x+mBounds.width()/2f+bgWidth, midPointF.y-mSelectedTextMarging-mBgTriangleHeight);
+        float dffw = rectF.right-mWidth;
+        float msgX = midPointF.x;
+        float magin = 1;
+        if(dffw>0) {
+            rectF.right = rectF.right-dffw-magin;
+            rectF.left = rectF.left-dffw-magin;
+            msgX = midPointF.x-dffw-magin;
+        }else if(rectF.left<0) {
+            rectF.right = rectF.right-rectF.left+magin;
+            msgX = midPointF.x-rectF.left+magin;
+            rectF.left = magin;
+        }
+        canvas.drawRoundRect(rectF, 3, 3, mSelectedTextBgPaint);
+        canvas.drawText(msg, msgX, midPointF.y-mSelectedTextMarging-mBgTriangleHeight*2, mSelectedTextPaint);
     }
 
     @Override
-    protected void drawSugExcel_LINE(Canvas canvas) {
+    protected void drawSugExcel_LINE(Canvas canvas){
         //不跳过为0的点
         lineWithEvetyPoint(canvas);
         //跳过为0的点（断开，虚线链接）
-//        lineSkip0Point(canvas);
+        //        lineSkip0Point(canvas);
 
     }
 
@@ -287,64 +400,115 @@ public class AniLineChar extends SuperChart {
      *
      * @param paint
      */
-    private void paintSetShader(Paint paint) {
-        if (mShaderColors != null && mShaderColors.length > 1) {
+    private void paintSetShader(Paint paint){
+        if(mShaderColors != null && mShaderColors.length>1) {
             float[] position = new float[mShaderColors.length];
-            float v = 1f / mShaderColors.length;
+            float v = 1f/mShaderColors.length;
             float temp = 0;
-            for (int i = 0; i < mShaderColors.length; i++) {
+            for(int i = 0; i<mShaderColors.length; i++) {
                 position[i] = temp;
                 temp += v;
             }
-            paint.setShader(new LinearGradient(mChartArea.left, mChartArea.top, mChartArea.left, mChartArea.bottom
-                    , mShaderColors, position, Shader.TileMode.CLAMP));
+            paint.setShader(new LinearGradient(mChartArea.left, mChartArea.top, mChartArea.left, mChartArea.bottom,
+                    mShaderColors, position, Shader.TileMode.CLAMP));
         }
     }
 
 
-    private void lineWithEvetyPoint(Canvas canvas) {
+    private void lineWithEvetyPoint(Canvas canvas){
         paintSetShader(mLinePaint);
-        if (aniRatio == -1) {
+        if(mLineShowStyle == -1 || mAnimationFinished) {
             canvas.drawPath(mLinePath, mLinePaint);
-            for (int i = 0; i < mExcels.size(); i++) {
+            for(int i = 0; i<mExcels.size(); i++) {
                 JExcel jExcel = mExcels.get(i);
                 drawAbscissaMsg(canvas, jExcel);
             }
-        } else if (mCurPosition != null) {
-            //动画
-            if (mCurPosition[0] <= mChartLeftest_x) {
+        }else if(mLineShowStyle == LineShowStyle.LINESHOW_DRAWING) {
+            drawLineAllpointDrawing(canvas);
+        }else if(mLineShowStyle == LineShowStyle.LINESHOW_SECTION) {
+            drawLineAllpointSectionMode(canvas);
+        }
+    }
+
+    /**
+     * 无到有 画出完整线条动画
+     *
+     * @param canvas
+     */
+    private void drawLineAllpointDrawing(Canvas canvas){
+        if(mCurPosition == null) {
+            return;
+        }
+        //动画
+        if(mCurPosition[0]<=mChartLeftest_x) {
+            mPrePoint = mExcels.get(0).getMidPointF();
+            mAniLinePath.moveTo(mPrePoint.x, mPrePoint.y);
+        }else {
+            if(mPrePoint == null) {
                 mPrePoint = mExcels.get(0).getMidPointF();
-                mAniLinePath.moveTo(mPrePoint.x, mPrePoint.y);
-            } else {
-                if (mPrePoint == null) {
-                    mPrePoint = mExcels.get(0).getMidPointF();
+            }
+            if(mLineStyle == LineStyle.LINE_CURVE) {
+                float controllA_X = ( mPrePoint.x+mCurPosition[0] )/2;
+                float controllA_Y = mPrePoint.y;
+                float controllB_X = ( mPrePoint.x+mCurPosition[0] )/2;
+                float controllB_Y = mCurPosition[1];
+                mAniLinePath
+                        .cubicTo(controllA_X, controllA_Y, controllB_X, controllB_Y, mCurPosition[0], mCurPosition[1]);
+            }else {
+                mAniLinePath.lineTo(mCurPosition[0], mCurPosition[1]);
+            }
+            mPrePoint.x = mCurPosition[0];
+            mPrePoint.y = mCurPosition[1];
+        }
+        canvas.drawPath(mAniLinePath, mLinePaint);
+        JExcel jExcel = mExcels.get((int)( ( mCurPosition[0]-mChartArea.left )/mBetween2Excel ));
+        drawAbscissaMsg(canvas, jExcel);
+    }
+
+    /**
+     * 一段一段 画出线条
+     *
+     * @param canvas
+     */
+    private void drawLineAllpointSectionMode(Canvas canvas){
+        //            for(int i = 0; i<mAllPoints.size(); i++) {
+        if(mLineStyle == LineStyle.LINE_BROKEN) {
+            for(int i = 0; i<( (int)mAniRatio ); i++) {
+                PointF allPoint = mAllPoints.get(i);
+                if(mAniLinePath.isEmpty()) {
+                    System.out.println(mAniLinePath.isEmpty());
+                    mAniLinePath.moveTo(allPoint.x, allPoint.y);
+                }else {
+                    mAniLinePath.lineTo(allPoint.x, allPoint.y);
                 }
-                if (mLineStyle == LineStyle.LINE_CURVE) {
-                    float controllA_X = (mPrePoint.x + mCurPosition[0]) / 2;
-                    float controllA_Y = mPrePoint.y;
-                    float controllB_X = (mPrePoint.x + mCurPosition[0]) / 2;
-                    float controllB_Y = mCurPosition[1];
-                    mAniLinePath.cubicTo(controllA_X, controllA_Y, controllB_X, controllB_Y, mCurPosition[0], mCurPosition[1]);
-                } else {
-                    mAniLinePath.lineTo(mCurPosition[0], mCurPosition[1]);
-                }
-                mPrePoint.x = mCurPosition[0];
-                mPrePoint.y = mCurPosition[1];
             }
             canvas.drawPath(mAniLinePath, mLinePaint);
-            JExcel jExcel = mExcels.get((int) ((mCurPosition[0]-mChartArea.left)/mBetween2Excel));
+            JExcel jExcel = mExcels.get(( (int)mAniRatio ));
+            drawAbscissaMsg(canvas, jExcel);
+        }else {
+            //曲线
+            for(int i = 0; i<( (int)mAniRatio ); i++) {
+                PointF startPoint = mAllPoints.get(i);
+                PointF endPoint = mAllPoints.get(i+1);//下一个点
+                if(mAniLinePath.isEmpty()) {
+                    mAniLinePath.moveTo(startPoint.x, startPoint.y);
+                }
+                float control_x = ( startPoint.x+endPoint.x )/2;
+                mAniLinePath.cubicTo(control_x, startPoint.y, control_x, endPoint.y, endPoint.x, endPoint.y);
+            }
+            canvas.drawPath(mAniLinePath, mLinePaint);
+            JExcel jExcel = mExcels.get(( (int)mAniRatio ));
             drawAbscissaMsg(canvas, jExcel);
         }
     }
 
-    private void lineSkip0Point(Canvas canvas) {
-//        mLinePath.reset();
-        for (int i = 0; i < mExcels.size(); i++) {
+    private void lineSkip0Point(Canvas canvas){
+        for(int i = 0; i<mExcels.size(); i++) {
             JExcel jExcel = mExcels.get(i);
             PointF midPointF = jExcel.getMidPointF();
-            if (i == 0) {
+            if(i == 0) {
                 mLinePath.moveTo(midPointF.x, midPointF.y);
-            } else {
+            }else {
                 mLinePath.lineTo(midPointF.x, midPointF.y);
             }
             drawAbscissaMsg(canvas, jExcel);
@@ -356,19 +520,20 @@ public class AniLineChar extends SuperChart {
      *
      * @param canvas
      */
-    private void drawYabscissaMsg(Canvas canvas) {
+    private void drawYabscissaMsg(Canvas canvas){
         mAbscissaPaint.setTextAlign(Paint.Align.LEFT);
-        float diffLevel = (mYaxis_Max - mYaxis_min) / ((float) mYaxis_showYnum);
-        float diffCoordinate = diffLevel * mHeightRatio;
-        for (int i = 0; i <= mYaxis_showYnum; i++) {
-            float levelCoordinate = mChartArea.bottom - diffCoordinate * i;
-            canvas.drawText(new DecimalFormat("#").format(mYaxis_min + diffLevel * i), getPaddingLeft(), levelCoordinate, mAbscissaPaint);
-            if (i > 0) {
+        float diffLevel = ( mYaxis_Max-mYaxis_min )/( (float)mYaxis_showYnum );
+        float diffCoordinate = diffLevel*mHeightRatio;
+        for(int i = 0; i<=mYaxis_showYnum; i++) {
+            float levelCoordinate = mChartArea.bottom-diffCoordinate*i;
+            canvas.drawText(new DecimalFormat("#").format(mYaxis_min+diffLevel*i), getPaddingLeft(), levelCoordinate,
+                    mAbscissaPaint);
+            if(i>0) {
                 Path dashPath = new Path();
                 dashPath.moveTo(mChartArea.left, levelCoordinate);
-                if (mExcels != null && mExcels.size() > 0) {
+                if(mExcels != null && mExcels.size()>0) {
                     dashPath.lineTo(mChartRithtest_x, levelCoordinate);
-                } else {
+                }else {
                     dashPath.lineTo(mChartArea.right, levelCoordinate);
                 }
                 mAbscisDashPaint.setPathEffect(pathDashEffect());
@@ -377,7 +542,7 @@ public class AniLineChar extends SuperChart {
         }
     }
 
-    private DashPathEffect pathDashEffect() {                     //线，段，线，段
+    private DashPathEffect pathDashEffect(){                     //线，段，线，段
         DashPathEffect dashEffect = new DashPathEffect(new float[]{4, 4}, phase);
         return dashEffect;
     }
@@ -388,67 +553,75 @@ public class AniLineChar extends SuperChart {
      * @param canvas
      * @param excel
      */
-    private void drawAbscissaMsg(Canvas canvas, JExcel excel) {
+    private void drawAbscissaMsg(Canvas canvas, JExcel excel){
         mAbscissaPaint.setTextAlign(Paint.Align.CENTER);
-        if (null != excel) {
+        if(null != excel) {
             PointF midPointF = excel.getMidPointF();
-            if (!TextUtils.isEmpty(excel.getXmsg())) {
+            if(!TextUtils.isEmpty(excel.getXmsg())) {
                 String xmsg = excel.getXmsg();
                 float w = mAbscissaPaint.measureText(xmsg, 0, xmsg.length());
-                if (!mScrollAble) {
-                    if (midPointF.x - w / 2 < 0) {
+                if(!mScrollAble) {
+                    if(midPointF.x-w/2<0) {
                         //最左边
-                        canvas.drawText(excel.getXmsg(), w / 2, mChartArea.bottom + dip2px(3) + mAbscissaMsgSize, mAbscissaPaint);
-                    } else if (midPointF.x + w / 2 > mWidth) {
+                        canvas.drawText(excel.getXmsg(), w/2, mChartArea.bottom+dip2px(3)+mAbscissaMsgSize,
+                                mAbscissaPaint);
+                    }else if(midPointF.x+w/2>mWidth) {
                         //最右边
-                        canvas.drawText(excel.getXmsg(), mWidth - w / 2, mChartArea.bottom + dip2px(3) + mAbscissaMsgSize, mAbscissaPaint);
-                    } else {
-                        canvas.drawText(excel.getXmsg(), midPointF.x, mChartArea.bottom + dip2px(3) + mAbscissaMsgSize, mAbscissaPaint);
+                        canvas.drawText(excel.getXmsg(), mWidth-w/2, mChartArea.bottom+dip2px(3)+mAbscissaMsgSize,
+                                mAbscissaPaint);
+                    }else {
+                        canvas.drawText(excel.getXmsg(), midPointF.x, mChartArea.bottom+dip2px(3)+mAbscissaMsgSize,
+                                mAbscissaPaint);
                     }
-                } else {
-                    canvas.drawText(excel.getXmsg(), midPointF.x, mChartArea.bottom + dip2px(3) + mAbscissaMsgSize, mAbscissaPaint);
+                }else {
+                    canvas.drawText(excel.getXmsg(), midPointF.x, mChartArea.bottom+dip2px(3)+mAbscissaMsgSize,
+                            mAbscissaPaint);
                 }
             }
         }
     }
 
-    protected void drawCoordinateAxes(Canvas canvas) {
+    protected void drawCoordinateAxes(Canvas canvas){
 
-        if (mExcels != null && mExcels.size() > 0) {
-            canvas.drawLine(mChartArea.left, mChartArea.bottom, mExcels.get(mExcels.size() - 1).getMidPointF().x, mChartArea.bottom, mCoordinatePaint);
-        } else {
+        if(mExcels != null && mExcels.size()>0) {
+            canvas.drawLine(mChartArea.left, mChartArea.bottom, mExcels.get(mExcels.size()-1).getMidPointF().x,
+                    mChartArea.bottom, mCoordinatePaint);
+        }else {
             canvas.drawLine(mChartArea.left, mChartArea.bottom, mChartArea.right, mChartArea.bottom, mCoordinatePaint);
         }
     }
 
     @Override
-    public void setChartStyle(int chartStyle) {
+    public void setChartStyle(int chartStyle){
         mChartStyle = ChartStyle.LINE;
     }
 
     /**
      * 传入 数据
      */
-    public void cmdFill(List<JExcel> jExcelList) {
+    public void cmdFill(List<JExcel> jExcelList){
         mSelected = -1;
         mExcels.clear();
-        if (jExcelList != null && jExcelList.size() > 0) {
+        if(jExcelList != null && jExcelList.size()>0) {
+            mAllLastPoints = new ArrayList<>(jExcelList.size());
             mHeightestExcel = jExcelList.get(0);
-            for (JExcel jExcel : jExcelList) {
-                mHeightestExcel = mHeightestExcel.getHeight() > jExcel.getHeight() ? mHeightestExcel : jExcel;
-            }
-            for (int i = 0; i < jExcelList.size(); i++) {
+            //            for(JExcel jExcel : jExcelList) {
+            //                mHeightestExcel = mHeightestExcel.getUpper()>jExcel.getUpper() ? mHeightestExcel : jExcel;
+            //            }
+            for(int i = 0; i<jExcelList.size(); i++) {
                 JExcel jExcel = jExcelList.get(i);
-                jExcel.setWidth(mBarWidth);
-                PointF start = jExcel.getStart();
-                start.x = mInterval * (i + 1) + mBarWidth * i;
-                mExcels.add(jExcel);
+                if(jExcel.getUpper()>mHeightestExcel.getUpper()) {
+                    mHeightestExcel = jExcel;
+                    mHeightestExcel.setIndex(i);//第几个
+                }
+                mAllLastPoints.add(new PointF(jExcel.getMidX(), 0));
             }
-            if (!mScrollAble && mForceFixNums && mExcels.size() > mVisibleNums) {
+            mExcels.addAll(jExcelList);
+            if(!mScrollAble && mForceFixNums && mExcels.size()>mVisibleNums) {
                 //如果不可滚动的话 同时要显示固定个数 那么为防止显示不全 将可见个数设置为柱子数量
                 mVisibleNums = mExcels.size();
             }
-            if (mWidth > 0) {
+            if(mWidth>0) {
                 //已经显示在界面上了 重新设置数据
                 refreshChartSetData();
             }
@@ -456,57 +629,94 @@ public class AniLineChar extends SuperChart {
         postInvalidate();
     }
 
-    private void refreshChartSetData() {
-        if (mChartStyle == ChartStyle.BAR) {
+    @Override
+    public void aniChangeData(List<JExcel> jExcelList){
+        if(jExcelList != null && jExcelList.size() == mAllLastPoints.size()) {
+
+            mAllLastPoints.clear();
+            for(PointF allPoint : mAllPoints) {
+                mAllLastPoints.add(new PointF(allPoint.x, allPoint.y));
+            }
+            mSelected = -1;
+            mExcels.clear();
+            mAllLastPoints = new ArrayList<>(jExcelList.size());
+            mHeightestExcel = jExcelList.get(0);
+            for(int i = 0; i<jExcelList.size(); i++) {
+                JExcel jExcel = jExcelList.get(i);
+                if(jExcel.getUpper()>mHeightestExcel.getUpper()) {
+                    mHeightestExcel = jExcel;
+                    mHeightestExcel.setIndex(i);//第几个
+                }
+                mAllLastPoints.add(new PointF(jExcel.getMidX(), 0));
+            }
+            mExcels.addAll(jExcelList);
+
+            if(!mScrollAble && mForceFixNums && mExcels.size()>mVisibleNums) {
+                //如果不可滚动的话 同时要显示固定个数 那么为防止显示不全 将可见个数设置为柱子数量
+                mVisibleNums = mExcels.size();
+            }
+
+            if(mWidth>0) {
+                //已经显示在界面上了 重新设置数据
+                refreshChartSetData();
+            }
+            postInvalidate();
+        }else {
+            throw new RuntimeException("aniChangeData的数据必须和第一次传递cmddata的数据量相同");
+        }
+    }
+
+    private void refreshChartSetData(){
+        if(mChartStyle == ChartStyle.BAR) {
             //柱状图默认 间隔固定
             mInterval = mInterval == 0 ? 2 : mInterval;//没设置宽度的时候 默认4设置了就用设置的
             mFixBarWidth = false;
-        } else {
+        }else {
             //折线图 默认柱子宽度固定 小点
             mBarWidth = mBarWidth == -1 ? 4 : mBarWidth;//没设置宽度的时候 默认4设置了就用设置的
             mFixBarWidth = true;
         }
 
         //画 图表区域的宽度
-        mCharAreaWidth = mChartArea.right - mChartArea.left;
+        mCharAreaWidth = mChartArea.right-mChartArea.left;
         //不可滚动 则必须全部显示在界面上  无视mVisibleNums
-        if (!mFixBarWidth) {
+        if(!mFixBarWidth) {
             //间隔 minterval默认 计算柱子宽度
-            if (!mScrollAble) {
+            if(!mScrollAble) {
                 //不可滚动的时候
-                if (mForceFixNums) {
+                if(mForceFixNums) {
                     //固定 显示个数
                     //根据mVisibleNums计算mBarWidth宽度mInterval固定
-                    mBarWidth = (mCharAreaWidth - mInterval * (mVisibleNums - 1)) / mVisibleNums;
-                } else {
+                    mBarWidth = ( mCharAreaWidth-mInterval*( mVisibleNums-1 ) )/mVisibleNums;
+                }else {
                     //所有柱子 平分 整个区域
-                    mBarWidth = (mCharAreaWidth - mInterval * (mExcels.size() - 1)) / mExcels.size();
+                    mBarWidth = ( mCharAreaWidth-mInterval*( mExcels.size()-1 ) )/mExcels.size();
                 }
-            } else {
-                if (mVisibleNums == -1) {
+            }else {
+                if(mVisibleNums == -1) {
                     //默认初始化 可见个数
-                    mVisibleNums = mExcels.size() < 5 ? mExcels.size() : 5;
+                    mVisibleNums = mExcels.size()<5 ? mExcels.size() : 5;
                 }
-                mBarWidth = (mCharAreaWidth - mInterval * (mVisibleNums - 1)) / mVisibleNums;
+                mBarWidth = ( mCharAreaWidth-mInterval*( mVisibleNums-1 ) )/mVisibleNums;
             }
-        } else {
+        }else {
 
-            if (!mScrollAble) {
-                if (mForceFixNums) {
+            if(!mScrollAble) {
+                if(mForceFixNums) {
                     //固定 显示个数 主要作用于 显示个数 大于mExcel.size
                     //根据mVisibleNums计算mBarWidth宽度mInterval固定
-                    mInterval = (mCharAreaWidth - mBarWidth * mVisibleNums) / (mVisibleNums - 1);
-                } else {
+                    mInterval = ( mCharAreaWidth-mBarWidth*mVisibleNums )/( mVisibleNums-1 );
+                }else {
                     //所有柱子 平分 整个区域
-                    mInterval = (mCharAreaWidth - mBarWidth * mExcels.size()) / (mExcels.size() - 1);
+                    mInterval = ( mCharAreaWidth-mBarWidth*mExcels.size() )/( mExcels.size()-1 );
                 }
-            } else {
-                if (mVisibleNums == -1) {
+            }else {
+                if(mVisibleNums == -1) {
                     //默认初始化 可见个数
-                    mVisibleNums = mExcels.size() < 5 ? mExcels.size() : 5;
+                    mVisibleNums = mExcels.size()<5 ? mExcels.size() : 5;
                 }
                 //可滚动
-                mInterval = (mCharAreaWidth - mBarWidth * mVisibleNums) / (mVisibleNums - 1);
+                mInterval = ( mCharAreaWidth-mBarWidth*mVisibleNums )/( mVisibleNums-1 );
             }
         }
         refreshExcels();
@@ -515,111 +725,127 @@ public class AniLineChar extends SuperChart {
     /**
      * 主要 刷新高度
      */
-    private void refreshExcels() {
-        if (mExcels == null) {
+    private void refreshExcels(){
+        if(mExcels == null) {
             return;
         }
-        if (mYaxis_Max <= 0) {
+        if(mYaxis_Max<=0) {
             mYaxis_Max = mHeightestExcel.getHeight();
         }
-        mHeightRatio = (mChartArea.bottom - mChartArea.top) / (mYaxis_Max - mYaxis_min);
+        mHeightRatio = ( mChartArea.bottom-mChartArea.top )/( mYaxis_Max-mYaxis_min );
         //填充 path
         mLinePath.reset();
-        for (int i = 0; i < mExcels.size(); i++) {
+        mAllPoints.clear();
+        for(int i = 0; i<mExcels.size(); i++) {
             JExcel jExcel = mExcels.get(i);
-            jExcel.setHeight(( jExcel.getHeight() - mYaxis_min) * mHeightRatio);//刷新在画布中的高度
+            jExcel.setHeight(( jExcel.getHeight()-mYaxis_min )*mHeightRatio);//刷新在画布中的高度
             jExcel.setWidth(mBarWidth);
             PointF start = jExcel.getStart();
             //刷新 每个柱子矩阵左下角坐标
-            start.x = mChartArea.left + mBarWidth * i + mInterval * i;
-            start.y = mChartArea.bottom - mAbove - jExcel.getLower();
+            start.x = mChartArea.left+mBarWidth*i+mInterval*i;
+            start.y = mChartArea.bottom-mAbove-jExcel.getLower();
             jExcel.setColor(mNormalColor);
-            if (mLineStyle == LineStyle.LINE_BROKEN) {
+            mAllPoints.add(jExcel.getMidPointF());
+
+            if(mLineStyle == LineStyle.LINE_BROKEN) {
                 PointF midPointF = jExcel.getMidPointF();
-                if (i == 0) {
+                if(mLinePath.isEmpty()) {
                     mLinePath.moveTo(midPointF.x, midPointF.y);
-                } else {
+                }else {
                     mLinePath.lineTo(midPointF.x, midPointF.y);
                 }
             }
         }
 
-        if (mLineStyle == LineStyle.LINE_CURVE) {
-            for (int i = 0; i < mExcels.size(); i++) {
-                JExcel jExcel = mExcels.get(i);
-                if (i < mExcels.size() - 1) {
-                    PointF startPoint = jExcel.getMidPointF();
-                    PointF endPoint = mExcels.get(i + 1).getMidPointF();//下一个点
-                    if (i == 0) mLinePath.moveTo(startPoint.x, startPoint.y);
-                    float controllA_X = (startPoint.x + endPoint.x) / 2;
-                    float controllA_Y = startPoint.y;
-                    float controllB_X = (startPoint.x + endPoint.x) / 2;
-                    float controllB_Y = endPoint.y;
-                    mLinePath.cubicTo(controllA_X, controllA_Y, controllB_X, controllB_Y, endPoint.x, endPoint.y);
+        if(mLineStyle == LineStyle.LINE_CURVE) {
+            for(int i = 0; i<mAllPoints.size()-1; i++) {
+                PointF startPoint = mAllPoints.get(i);
+                PointF endPoint = mAllPoints.get(i+1);//下一个点
+                if(mLinePath.isEmpty()) {
+                    mLinePath.moveTo(startPoint.x, startPoint.y);
                 }
+                float controllA_X = ( startPoint.x+endPoint.x )/2;
+                float controllA_Y = startPoint.y;
+                float controllB_X = ( startPoint.x+endPoint.x )/2;
+                float controllB_Y = endPoint.y;
+                mLinePath.cubicTo(controllA_X, controllA_Y, controllB_X, controllB_Y, endPoint.x, endPoint.y);
             }
         }
-        mChartRithtest_x = mExcels.get(mExcels.size() - 1).getMidPointF().x;
+        mChartRithtest_x = mExcels.get(mExcels.size()-1).getMidPointF().x;
         mChartLeftest_x = mExcels.get(0).getMidPointF().x;
-        if (mExcels.size()>1) {
-            mBetween2Excel = mExcels.get(1).getMidPointF().x - mExcels.get(0).getMidPointF().x;
+        if(mExcels.size()>1) {
+            mBetween2Excel = mExcels.get(1).getMidPointF().x-mExcels.get(0).getMidPointF().x;
         }
-        aniShowChar_growing();
+        //        aniShowChar_growing();
     }
 
-    public void aniShowChar_growing() {
-        mAniLinePath.reset();
-        mPathMeasure = new PathMeasure(mLinePath, false);
-        mPathMeasure.getPosTan(0, mCurPosition, null);
-        aniShowChar(mPathMeasure.getLength());
+    public void aniShowChar_growing(){
+        if(mLineShowStyle == LineShowStyle.LINESHOW_DRAWING) {
+            mPathMeasure = new PathMeasure(mLinePath, false);
+            mPathMeasure.getPosTan(0, mCurPosition, null);
+            aniShowChar(0, mPathMeasure.getLength());
+        }else if(mLineShowStyle == LineShowStyle.LINESHOW_SECTION) {
+            aniShowChar(0, mExcels.size());
+        }
     }
 
-    public void aniShowChar(final float end) {
-        if (mValueAnimator == null) {
-            mValueAnimator = ValueAnimator.ofFloat(0, end);
-        } else {
+    public void aniShowChar(float start, final float end){
+        mAnimationFinished = false;
+        if(mValueAnimator == null) {
+            mValueAnimator = ValueAnimator.ofFloat(start, end);
+        }else {
             mValueAnimator.cancel();
-            mAniLinePath.reset();
-            mValueAnimator.setFloatValues(0, end);
+            mValueAnimator.setFloatValues(start, end);
         }
+        mAniLinePath.reset();
+        //        if(mLineStyle == LineStyle.LINE_CURVE) {
+        //            mLinePath.rewind();//倒序
+        //        }
         mValueAnimator.setDuration(ANIDURATION);
         mValueAnimator.setInterpolator(new DecelerateInterpolator());
         mValueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                aniRatio = (float) animation.getAnimatedValue();
-                if (mChartStyle == ChartStyle.LINE) {
-                    //mCurPosition必须要初始化mCurPosition = new float[2];
-                    mPathMeasure.getPosTan(aniRatio, mCurPosition, null);
-                    if (aniRatio == end) {
-                        aniRatio = -1;
+            public void onAnimationUpdate(ValueAnimator animation){
+                mAniRatio = (float)animation.getAnimatedValue();
+                if(mChartStyle == ChartStyle.LINE) {
+                    if(mLineShowStyle == LineShowStyle.LINESHOW_DRAWING) {
+                        //mCurPosition必须要初始化mCurPosition = new float[2];
+                        mPathMeasure.getPosTan(mAniRatio, mCurPosition, null);
+
+                    }else if(mLineShowStyle == LineShowStyle.LINESHOW_SECTION) {
                     }
+                }
+                if(mAniRatio == end) {
+                    mAnimationFinished = true;
                 }
                 invalidate();
             }
         });
         postDelayed(new Runnable() {
             @Override
-            public void run() {
+            public void run(){
                 mValueAnimator.start();
             }
         }, 1000);
     }
 
     @Override
-    protected void onDetachedFromWindow() {
+    protected void onDetachedFromWindow(){
         super.onDetachedFromWindow();
-
+        mAllLastPoints.clear();
+        mAllPoints.clear();
         mExcels.clear();
         mLinePath = null;
         mShaderColors = null;
         mChartArea = null;
-        mPathMeasure=null;
+        mPathMeasure = null;
         mCurPosition = null;
+        mAllPoints = null;
+        mAniLinePath = null;
     }
 
     @Override
-    public void setInterval(float interval) {
+    public void setInterval(float interval){
         super.setInterval(interval);
         refreshChartSetData();
     }
@@ -627,11 +853,14 @@ public class AniLineChar extends SuperChart {
     /**
      * 设置y轴 刻度 信息
      *
-     * @param min      y轴 显示的最小值
-     * @param max      y轴显示的最大值
-     * @param showYnum y轴显示 刻度数量
+     * @param min
+     *         y轴 显示的最小值
+     * @param max
+     *         y轴显示的最大值
+     * @param showYnum
+     *         y轴显示 刻度数量
      */
-    public void setYaxisValues(int min, int max, int showYnum) {
+    public void setYaxisValues(int min, int max, int showYnum){
         mYaxis_Max = max;
         mYaxis_min = min;
         mYaxis_showYnum = showYnum;
@@ -640,10 +869,12 @@ public class AniLineChar extends SuperChart {
     /**
      * 设置y轴 刻度 信息  0开始
      *
-     * @param max      y轴显示的最大值
-     * @param showYnum y轴显示 刻度数量
+     * @param max
+     *         y轴显示的最大值
+     * @param showYnum
+     *         y轴显示 刻度数量
      */
-    public void setYaxisValues(int max, int showYnum) {
+    public void setYaxisValues(int max, int showYnum){
         setYaxisValues(0, max, showYnum);
     }
 
@@ -652,7 +883,7 @@ public class AniLineChar extends SuperChart {
      *
      * @param abscissaMsgColor
      */
-    public void setAbscissaMsgColor(int abscissaMsgColor) {
+    public void setAbscissaMsgColor(int abscissaMsgColor){
         mAbscissaMsgColor = abscissaMsgColor;
     }
 
@@ -661,7 +892,7 @@ public class AniLineChar extends SuperChart {
      *
      * @param abscissaMsgSize
      */
-    public void setAbscissaMsgSize(int abscissaMsgSize) {
+    public void setAbscissaMsgSize(int abscissaMsgSize){
         mAbscissaMsgSize = abscissaMsgSize;
     }
 
@@ -670,7 +901,7 @@ public class AniLineChar extends SuperChart {
      *
      * @param lineColor
      */
-    public void setLineColor(int lineColor) {
+    public void setLineColor(int lineColor){
         mLineColor = lineColor;
     }
 
@@ -679,7 +910,7 @@ public class AniLineChar extends SuperChart {
      *
      * @param lineWidth
      */
-    public void setLineWidth(float lineWidth) {
+    public void setLineWidth(float lineWidth){
         mLineWidth = lineWidth;
     }
 
@@ -689,7 +920,7 @@ public class AniLineChar extends SuperChart {
      *
      * @param colors
      */
-    public void setShaderColors(int... colors) {
+    public void setShaderColors(int... colors){
         mShaderColors = colors;
     }
 
@@ -698,7 +929,7 @@ public class AniLineChar extends SuperChart {
      *
      * @param yaxis_min
      */
-    public void setYaxis_min(float yaxis_min) {
+    public void setYaxis_min(float yaxis_min){
         mYaxis_min = yaxis_min;
     }
 
@@ -707,7 +938,7 @@ public class AniLineChar extends SuperChart {
      *
      * @param yaxis_showYnum
      */
-    public void setYaxis_showYnum(int yaxis_showYnum) {
+    public void setYaxis_showYnum(int yaxis_showYnum){
         mYaxis_showYnum = yaxis_showYnum;
     }
 
@@ -716,7 +947,7 @@ public class AniLineChar extends SuperChart {
      *
      * @param yaxis_Max
      */
-    public void setYaxis_Max(float yaxis_Max) {
+    public void setYaxis_Max(float yaxis_Max){
         mYaxis_Max = yaxis_Max;
     }
 
@@ -725,7 +956,7 @@ public class AniLineChar extends SuperChart {
      *
      * @param allowInterval_left_right
      */
-    public void setAllowInterval_left_right(boolean allowInterval_left_right) {
+    public void setAllowInterval_left_right(boolean allowInterval_left_right){
         this.allowInterval_left_right = allowInterval_left_right;
     }
 
@@ -734,41 +965,57 @@ public class AniLineChar extends SuperChart {
      *
      * @param above
      */
-    public void setAbove(int above) {
+    public void setAbove(int above){
         mAbove = above;
     }
 
-    public void setNeedY_abscissMasg(boolean needY_abscissMasg) {
+    public void setNeedY_abscissMasg(boolean needY_abscissMasg){
         mNeedY_abscissMasg = needY_abscissMasg;
     }
 
-    public float getAniRatio() {
-        return aniRatio;
+    public float getAniRatio(){
+        return mAniRatio;
     }
 
-    public void setAniRatio(float aniRatio) {
-        this.aniRatio = aniRatio;
+    public void setAniRatio(float aniRatio){
+        this.mAniRatio = aniRatio;
     }
 
-    public float getAniRotateRatio() {
+    public float getAniRotateRatio(){
         return mAniRotateRatio;
     }
 
-    public void setAniRotateRatio(float aniRotateRatio) {
+    public void setAniRotateRatio(float aniRotateRatio){
         mAniRotateRatio = aniRotateRatio;
         invalidate();
     }
 
     @Override
-    protected void onWindowVisibilityChanged(int visibility) {
+    protected void onWindowVisibilityChanged(int visibility){
         super.onWindowVisibilityChanged(visibility);
         System.out.println("onWindowVisibilityChanged");
     }
 
     @Override
-    public void onWindowFocusChanged(boolean hasWindowFocus) {
+    public void onWindowFocusChanged(boolean hasWindowFocus){
         super.onWindowFocusChanged(hasWindowFocus);
         System.out.println("onWindowFocusChanged");
+    }
+
+    @Override
+    public void setSelectedMode(int selectedMode){
+        if(mSelectedMode != SelectedMode.selecetdMsgShow_Top) {
+            mSelectedMode = selectedMode;
+            refreshChartArea();
+        }
+    }
+
+    public void setSelectedTextMarging(float selectedTextMarging){
+        mSelectedTextMarging = selectedTextMarging;
+    }
+
+    public void setLineStyle(int lineStyle){
+        mLineStyle = lineStyle;
     }
 }
 //可滚动   根据可见个数 计算barwidth

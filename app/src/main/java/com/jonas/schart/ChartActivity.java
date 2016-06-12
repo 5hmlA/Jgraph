@@ -8,6 +8,7 @@ import android.view.View;
 import com.jonas.schart.chart.AniLineChar;
 import com.jonas.schart.chart.PieChart;
 import com.jonas.schart.chartbean.JExcel;
+import com.jonas.schart.superi.SuperChart;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -35,12 +36,17 @@ public class ChartActivity extends AppCompatActivity {
         mLineChar = (AniLineChar) findViewById(R.id.sug_recode_line);
 
         List<JExcel> lines = new ArrayList<>();
-        for (int i = 0; i < 21; i++) {
+        for (int i = 0; i < 20; i++) {
 
-            lines.add(new JExcel(new SecureRandom().nextInt(100), Color.parseColor("#b8e986")));
+            lines.add(new JExcel(new SecureRandom().nextInt(50)+15, Color.parseColor("#b8e986")));
         }
+        lines.get(3).setUpper(100);
         mLineChar.setYaxisValues(0, 100, 4);
 //        mLineChar.setScrollAble(true);
+        mLineChar.setVisibleNums(10);
+//        mLineChar.setSelectedMode(SuperChart.SelectedMode.selecetdMsgShow_Top);
+        mLineChar.setLineShowStyle(SuperChart.LineShowStyle.LINESHOW_SECTION);
+        mLineChar.setLineStyle(AniLineChar.LineStyle.LINE_BROKEN);
         mLineChar.setShaderColors(Color.RED, Color.parseColor("#ffbf55"), Color.parseColor("#f7eb57"), Color.parseColor("#b8e986"), Color.parseColor("#73c0fd"));
         mLineChar.cmdFill(lines);
     }

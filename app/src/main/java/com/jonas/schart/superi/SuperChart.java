@@ -57,6 +57,42 @@ public class SuperChart extends View {
      */
     protected boolean mForceFixNums;
 
+    /**
+     * 选中模式 为-1 表示不处理点击选中状态
+     */
+    protected int mSelectedMode = -1;
+
+    public interface SelectedMode {
+        /**
+         * 选中的 颜色变  显示所有柱子 文字
+         */
+        int selectedActivated = 0;
+        /**
+         * 选中的 显示 柱子 文字 其他不显示
+         */
+        int selecetdMsgShow_Top = 1;
+    }
+
+    public interface LineShowStyle {
+        /**
+         * 线条从无到有 慢慢出现
+         */
+        int LINESHOW_DRAWING = 1;
+        /**
+         * 线条 一段一段显示
+         */
+        int LINESHOW_SECTION = 2;
+        /**
+         * 线条 一从直线慢慢变成折线/曲线
+         */
+        int LINESHOW_FROMLINE = 3;
+    }
+
+    /**
+     * 线条展示的动画风格
+     */
+    protected int mLineShowStyle = -1;
+
     public interface ChartStyle {
         /**
          * 心率柱状图
@@ -307,6 +343,15 @@ public class SuperChart extends View {
         mForceFixNums = forceFixNums;
     }
 
+    public void setSelectedMode(int selectedMode){
+        mSelectedMode = selectedMode;
+    }
+
+    public void setLineShowStyle(int lineShowStyle){
+        mLineShowStyle = lineShowStyle;
+    }
+
+    public void aniChangeData(List<JExcel> jExcelList){};
     public int dip2px(float dipValue) {
         final float scale = mContext.getResources().getDisplayMetrics().density;
         return (int) (dipValue * scale + 0.5f);
