@@ -33,7 +33,7 @@ import java.util.List;
  */
 public class AniLineChar extends SuperChart {
 
-    private static final long ANIDURATION = 6000;
+    private static final long ANIDURATION = 9000;
     private int mLineStyle = LineStyle.LINE_CURVE;
     private PathMeasure mPathMeasure;
     /**
@@ -471,35 +471,35 @@ public class AniLineChar extends SuperChart {
      * @param canvas
      */
     private void drawLineAllpointSectionMode(Canvas canvas){
-        //            for(int i = 0; i<mAllPoints.size(); i++) {
+        int currPosition = (int)mAniRatio;
         if(mLineStyle == LineStyle.LINE_BROKEN) {
-            for(int i = 0; i<( (int)mAniRatio ); i++) {
-                PointF allPoint = mAllPoints.get(i);
-                if(mAniLinePath.isEmpty()) {
-                    System.out.println(mAniLinePath.isEmpty());
-                    mAniLinePath.moveTo(allPoint.x, allPoint.y);
-                }else {
-                    mAniLinePath.lineTo(allPoint.x, allPoint.y);
-                }
+            JExcel jExcel = mExcels.get(currPosition);
+            if(currPosition == 0) {
+                mAniLinePath.moveTo(jExcel.getMidPointF().x, jExcel.getMidPointF().y);
+            }else {
+                mAniLinePath.lineTo(jExcel.getMidPointF().x, jExcel.getMidPointF().y);
             }
             canvas.drawPath(mAniLinePath, mLinePaint);
-            JExcel jExcel = mExcels.get(( (int)mAniRatio ));
             drawAbscissaMsg(canvas, jExcel);
         }else {
-            //曲线
-            for(int i = 0; i<( (int)mAniRatio ); i++) {
-                PointF startPoint = mAllPoints.get(i);
-                PointF endPoint = mAllPoints.get(i+1);//下一个点
-                if(mAniLinePath.isEmpty()) {
-                    mAniLinePath.moveTo(startPoint.x, startPoint.y);
-                }
-                float control_x = ( startPoint.x+endPoint.x )/2;
-                mAniLinePath.cubicTo(control_x, startPoint.y, control_x, endPoint.y, endPoint.x, endPoint.y);
+            PointF currPointf = mExcels.get(currPosition).getMidPointF();
+            if(mPrePoint == null) {
+                mPrePoint = mExcels.get(0).getMidPointF();
             }
+            if(currPosition == 0) {
+                mAniLinePath.moveTo(mPrePoint.x, mPrePoint.y);
+            }
+            float controllA_X = ( mPrePoint.x+currPointf.x )/2;
+            float controllA_Y = mPrePoint.y;
+            float controllB_X = ( mPrePoint.x+currPointf.x )/2;
+            float controllB_Y = currPointf.y;
+            mAniLinePath.cubicTo(controllA_X, controllA_Y, controllB_X, controllB_Y, currPointf.x, currPointf.y);
+            mPrePoint = currPointf;
             canvas.drawPath(mAniLinePath, mLinePaint);
             JExcel jExcel = mExcels.get(( (int)mAniRatio ));
             drawAbscissaMsg(canvas, jExcel);
         }
+
     }
 
     private void lineSkip0Point(Canvas canvas){

@@ -46,7 +46,7 @@ public class ChartActivity extends AppCompatActivity {
         mLineChar.setVisibleNums(10);
 //        mLineChar.setSelectedMode(SuperChart.SelectedMode.selecetdMsgShow_Top);
         mLineChar.setLineShowStyle(SuperChart.LineShowStyle.LINESHOW_SECTION);
-        mLineChar.setLineStyle(AniLineChar.LineStyle.LINE_BROKEN);
+        mLineChar.setLineStyle(AniLineChar.LineStyle.LINE_CURVE);
         mLineChar.setShaderColors(Color.RED, Color.parseColor("#ffbf55"), Color.parseColor("#f7eb57"), Color.parseColor("#b8e986"), Color.parseColor("#73c0fd"));
         mLineChar.cmdFill(lines);
     }
