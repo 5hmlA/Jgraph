@@ -86,6 +86,11 @@ public class SuperChart extends View {
          * 线条 一从直线慢慢变成折线/曲线
          */
         int LINESHOW_FROMLINE = 3;
+
+        /**
+         * 从左上角 放大
+         */
+        int LINESHOW_FROMCORNER = 4;
     }
 
     /**
@@ -184,7 +189,6 @@ public class SuperChart extends View {
                 drawSugExcel_BAR(canvas);
                 drawSugExcel_LINE(canvas);
             }
-
         }
         drawCoordinateAxes(canvas);
     }

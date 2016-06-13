@@ -438,7 +438,42 @@ public class AniLineChar extends SuperChart {
             drawLineAllpointSectionMode(canvas);
         }else if(mLineShowStyle == LineShowStyle.LINESHOW_FROMLINE) {
             drawLineAllpointFromLineMode(canvas);
+        }else if(mLineShowStyle == LineShowStyle.LINESHOW_FROMCORNER) {
+            drawLineAllpointFromCornerMode(canvas);
         }
+    }
+
+    private void drawLineAllpointFromCornerMode(Canvas canvas){
+        mAniLinePath.reset();
+        if(mLineStyle == LineStyle.LINE_CURVE) {
+            for(int i = 0; i<mAllPoints.size()-1; i++) {
+                PointF midPointF = mAllPoints.get(i);
+                PointF endPointF = mAllPoints.get(i+1);
+
+                if(mAniLinePath.isEmpty()) {
+                    mAniLinePath.moveTo(midPointF.x*mAniRatio, midPointF.y*mAniRatio);
+                }
+
+                float con_x = ( midPointF.x+endPointF.x )/2;
+
+                mAniLinePath.cubicTo(con_x*mAniRatio, midPointF.y*mAniRatio, con_x*mAniRatio,
+                        endPointF.y*mAniRatio, endPointF.x*mAniRatio,endPointF.y*mAniRatio);
+            }
+            for(JExcel excel : mExcels) {
+                drawAbscissaMsg(canvas, excel);
+            }
+        }else {
+            for(int i = 0; i<mAllPoints.size(); i++) {
+                PointF midPointF = mAllPoints.get(i);
+                if(mAniLinePath.isEmpty()) {
+                    mAniLinePath.moveTo(midPointF.x*mAniRatio, midPointF.y*mAniRatio);
+                }else {
+                    mAniLinePath.lineTo(midPointF.x*mAniRatio, midPointF.y*mAniRatio);
+                }
+                drawAbscissaMsg(canvas, mExcels.get(i));
+            }
+        }
+        canvas.drawPath(mAniLinePath, mLinePaint);
     }
 
     private void drawLineAllpointFromLineMode(Canvas canvas){
@@ -474,7 +509,6 @@ public class AniLineChar extends SuperChart {
                 PointF midPointF = mAllPoints.get(i);
                 PointF lastPointF = mAllLastPoints.get(i);
                 if(mAniLinePath.isEmpty()) {
-                    System.out.println(lastPointF.y+".........");
                     mAniLinePath.moveTo(midPointF.x, lastPointF.y+( midPointF.y-lastPointF.y )*mAniRatio);
                 }else {
                     mAniLinePath.lineTo(midPointF.x, lastPointF.y+( midPointF.y-lastPointF.y )*mAniRatio);
@@ -853,7 +887,7 @@ public class AniLineChar extends SuperChart {
             aniShowChar(0, mPathMeasure.getLength());
         }else if(mLineShowStyle == LineShowStyle.LINESHOW_SECTION) {
             aniShowChar(0, mExcels.size());
-        }else if(mLineShowStyle == LineShowStyle.LINESHOW_FROMLINE) {
+        }else if(mLineShowStyle == LineShowStyle.LINESHOW_FROMLINE||mLineShowStyle == LineShowStyle.LINESHOW_FROMCORNER) {
             aniShowChar(0, 1);
         }
     }
