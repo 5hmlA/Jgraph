@@ -45,9 +45,10 @@ public class ChartActivity extends AppCompatActivity {
 //        mLineChar.setScrollAble(true);
         mLineChar.setVisibleNums(10);
 //        mLineChar.setSelectedMode(SuperChart.SelectedMode.selecetdMsgShow_Top);
-        mLineChar.setLineShowStyle(SuperChart.LineShowStyle.LINESHOW_SECTION);
+        mLineChar.setLineShowStyle(SuperChart.LineShowStyle.LINESHOW_FROMLINE);
         mLineChar.setLineStyle(AniLineChar.LineStyle.LINE_CURVE);
         mLineChar.setShaderColors(Color.RED, Color.parseColor("#ffbf55"), Color.parseColor("#f7eb57"), Color.parseColor("#b8e986"), Color.parseColor("#73c0fd"));
+        mLineChar.setShowFromMode(AniLineChar.ShowFromMode.SHOWFROMMIDDLE);
         mLineChar.cmdFill(lines);
     }
 
@@ -55,4 +56,12 @@ public class ChartActivity extends AppCompatActivity {
         mLineChar.aniShowChar_growing();
     }
 
+    public void changedata(View v){
+        List<JExcel> lines = new ArrayList<>();
+        for (int i = 0; i < 20; i++) {
+            lines.add(new JExcel(new SecureRandom().nextInt(50)+15, Color.parseColor("#b8e986")));
+        }
+        mLineChar.aniChangeData(lines);
+
+    }
 }

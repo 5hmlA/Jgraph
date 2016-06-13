@@ -33,7 +33,7 @@ import java.util.List;
  */
 public class AniLineChar extends SuperChart {
 
-    private static final long ANIDURATION = 9000;
+    private static final long ANIDURATION = 1000;
     private int mLineStyle = LineStyle.LINE_CURVE;
     private PathMeasure mPathMeasure;
     /**
@@ -64,6 +64,8 @@ public class AniLineChar extends SuperChart {
     private float mAllowError = 3;
     private float mBgTextSize = 4;
     private ArrayList<PointF> mAllLastPoints;
+    private float FROM_LINE_Y = 0;
+    private float mAbscisDashLineWidth = 0.4f;
 
     public static interface LineStyle {
         /**
@@ -76,6 +78,14 @@ public class AniLineChar extends SuperChart {
         int LINE_CURVE = 2;
 
     }
+
+    public static interface ShowFromMode {
+        int SHOWFROMTOP = 0;
+        int SHOWFROMBUTTOM = 1;
+        int SHOWFROMMIDDLE = 2;
+    }
+
+    private int mShowFromMode = ShowFromMode.SHOWFROMBUTTOM;
 
     private boolean moved;
     private float mDownX;
@@ -189,7 +199,7 @@ public class AniLineChar extends SuperChart {
         mAbscissaPaint.setTextSize(mAbscissaMsgSize);
         mAbscissaPaint.setColor(mAbscissaMsgColor);
 
-        mAbscisDashPaint.setStrokeWidth(1);
+        mAbscisDashPaint.setStrokeWidth(mAbscisDashLineWidth);
         mAbscisDashPaint.setStyle(Paint.Style.STROKE);
         mAbscisDashPaint.setColor(mAbscissaMsgColor);
 
@@ -301,7 +311,6 @@ public class AniLineChar extends SuperChart {
         }
         return true;
     }
-
 
     /**
      * 判断 点中哪个柱状图
@@ -427,7 +436,53 @@ public class AniLineChar extends SuperChart {
             drawLineAllpointDrawing(canvas);
         }else if(mLineShowStyle == LineShowStyle.LINESHOW_SECTION) {
             drawLineAllpointSectionMode(canvas);
+        }else if(mLineShowStyle == LineShowStyle.LINESHOW_FROMLINE) {
+            drawLineAllpointFromLineMode(canvas);
         }
+    }
+
+    private void drawLineAllpointFromLineMode(Canvas canvas){
+        if(mAllPoints.size() != mExcels.size()) {
+            throw new RuntimeException("mAllPoints.size() == mExcels.size()");
+        }
+        mAniLinePath.reset();
+        if(mLineStyle == LineStyle.LINE_CURVE) {
+            for(int i = 0; i<mAllPoints.size()-1; i++) {
+                PointF midPointF = mAllPoints.get(i);
+                PointF endPointF = mAllPoints.get(i+1);
+
+                PointF midLastPointF = mAllLastPoints.get(i);
+                PointF endLastPointF = mAllLastPoints.get(i+1);
+
+
+                if(mAniLinePath.isEmpty()) {
+                    mAniLinePath.moveTo(midPointF.x, midLastPointF.y+( midPointF.y-midLastPointF.y )*mAniRatio);
+                }
+
+                float con_x = ( midPointF.x+endPointF.x )/2;
+                float conLast_x = ( midLastPointF.x+endLastPointF.x )/2;
+
+                mAniLinePath.cubicTo(con_x, midLastPointF.y+( midPointF.y-midLastPointF.y )*mAniRatio, con_x,
+                        endLastPointF.y+( endPointF.y-endLastPointF.y )*mAniRatio, endPointF.x,
+                        endLastPointF.y+( endPointF.y-endLastPointF.y )*mAniRatio);
+            }
+            for(JExcel excel : mExcels) {
+                drawAbscissaMsg(canvas, excel);
+            }
+        }else {
+            for(int i = 0; i<mAllPoints.size(); i++) {
+                PointF midPointF = mAllPoints.get(i);
+                PointF lastPointF = mAllLastPoints.get(i);
+                if(mAniLinePath.isEmpty()) {
+                    System.out.println(lastPointF.y+".........");
+                    mAniLinePath.moveTo(midPointF.x, lastPointF.y+( midPointF.y-lastPointF.y )*mAniRatio);
+                }else {
+                    mAniLinePath.lineTo(midPointF.x, lastPointF.y+( midPointF.y-lastPointF.y )*mAniRatio);
+                }
+                drawAbscissaMsg(canvas, mExcels.get(i));
+            }
+        }
+        canvas.drawPath(mAniLinePath, mLinePaint);
     }
 
     /**
@@ -614,7 +669,7 @@ public class AniLineChar extends SuperChart {
                     mHeightestExcel = jExcel;
                     mHeightestExcel.setIndex(i);//第几个
                 }
-                mAllLastPoints.add(new PointF(jExcel.getMidX(), 0));
+                mAllLastPoints.add(new PointF(jExcel.getMidX(), FROM_LINE_Y));
             }
             mExcels.addAll(jExcelList);
             if(!mScrollAble && mForceFixNums && mExcels.size()>mVisibleNums) {
@@ -639,7 +694,6 @@ public class AniLineChar extends SuperChart {
             }
             mSelected = -1;
             mExcels.clear();
-            mAllLastPoints = new ArrayList<>(jExcelList.size());
             mHeightestExcel = jExcelList.get(0);
             for(int i = 0; i<jExcelList.size(); i++) {
                 JExcel jExcel = jExcelList.get(i);
@@ -647,7 +701,6 @@ public class AniLineChar extends SuperChart {
                     mHeightestExcel = jExcel;
                     mHeightestExcel.setIndex(i);//第几个
                 }
-                mAllLastPoints.add(new PointF(jExcel.getMidX(), 0));
             }
             mExcels.addAll(jExcelList);
 
@@ -660,7 +713,11 @@ public class AniLineChar extends SuperChart {
                 //已经显示在界面上了 重新设置数据
                 refreshChartSetData();
             }
-            postInvalidate();
+            if(mChartStyle == ChartStyle.LINE && mLineShowStyle == LineShowStyle.LINESHOW_FROMLINE) {
+                aniShowChar(0, 1);
+            }else {
+                postInvalidate();
+            }
         }else {
             throw new RuntimeException("aniChangeData的数据必须和第一次传递cmddata的数据量相同");
         }
@@ -747,6 +804,16 @@ public class AniLineChar extends SuperChart {
             jExcel.setColor(mNormalColor);
             mAllPoints.add(jExcel.getMidPointF());
 
+            if(mAllLastPoints.get(i).y == 0) {
+                if(mShowFromMode == ShowFromMode.SHOWFROMBUTTOM) {
+                    mAllLastPoints.get(i).y = mChartArea.bottom;//0转为横轴纵坐标
+                }else if(mShowFromMode == ShowFromMode.SHOWFROMTOP) {
+                    mAllLastPoints.get(i).y = mChartArea.top;//0转为横轴纵坐标
+                }else if(mShowFromMode == ShowFromMode.SHOWFROMMIDDLE) {
+                    mAllLastPoints.get(i).y = ( mChartArea.bottom+mChartArea.top )/2;//0转为横轴纵坐标
+                }
+            }
+
             if(mLineStyle == LineStyle.LINE_BROKEN) {
                 PointF midPointF = jExcel.getMidPointF();
                 if(mLinePath.isEmpty()) {
@@ -786,6 +853,8 @@ public class AniLineChar extends SuperChart {
             aniShowChar(0, mPathMeasure.getLength());
         }else if(mLineShowStyle == LineShowStyle.LINESHOW_SECTION) {
             aniShowChar(0, mExcels.size());
+        }else if(mLineShowStyle == LineShowStyle.LINESHOW_FROMLINE) {
+            aniShowChar(0, 1);
         }
     }
 
@@ -811,8 +880,6 @@ public class AniLineChar extends SuperChart {
                     if(mLineShowStyle == LineShowStyle.LINESHOW_DRAWING) {
                         //mCurPosition必须要初始化mCurPosition = new float[2];
                         mPathMeasure.getPosTan(mAniRatio, mCurPosition, null);
-
-                    }else if(mLineShowStyle == LineShowStyle.LINESHOW_SECTION) {
                     }
                 }
                 if(mAniRatio == end) {
@@ -821,12 +888,7 @@ public class AniLineChar extends SuperChart {
                 invalidate();
             }
         });
-        postDelayed(new Runnable() {
-            @Override
-            public void run(){
-                mValueAnimator.start();
-            }
-        }, 1000);
+        mValueAnimator.start();
     }
 
     @Override
@@ -1016,6 +1078,15 @@ public class AniLineChar extends SuperChart {
 
     public void setLineStyle(int lineStyle){
         mLineStyle = lineStyle;
+    }
+
+    /**
+     * 设置fromline动画的最初起点
+     *
+     * @param showFromMode
+     */
+    public void setShowFromMode(int showFromMode){
+        mShowFromMode = showFromMode;
     }
 }
 //可滚动   根据可见个数 计算barwidth
