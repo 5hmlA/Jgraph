@@ -45,9 +45,10 @@ public class ChartActivity extends AppCompatActivity {
 //        mLineChar.setScrollAble(true);
         mLineChar.setVisibleNums(10);
 //        mLineChar.setSelectedMode(SuperChart.SelectedMode.selecetdMsgShow_Top);
-        mLineChar.setLineShowStyle(SuperChart.LineShowStyle.LINESHOW_FROMCORNER);
+        mLineChar.setLineShowStyle(SuperChart.LineShowStyle.LINESHOW_FROMLINE);
         mLineChar.setLineStyle(AniLineChar.LineStyle.LINE_CURVE);
-        mLineChar.setShaderColors(Color.RED, Color.parseColor("#ffbf55"), Color.parseColor("#f7eb57"), Color.parseColor("#b8e986"), Color.parseColor("#73c0fd"));
+        mLineChar.setShaderAreaColors(Color.GRAY,Color.TRANSPARENT);
+//        mLineChar.setLineShaderColors(Color.RED, Color.parseColor("#ffbf55"), Color.parseColor("#f7eb57"), Color.parseColor("#b8e986"), Color.parseColor("#73c0fd"));
         mLineChar.setShowFromMode(AniLineChar.ShowFromMode.SHOWFROMMIDDLE);
         mLineChar.cmdFill(lines);
     }

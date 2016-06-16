@@ -33,7 +33,7 @@ import java.util.List;
  */
 public class AniLineChar extends SuperChart {
 
-    private static final long ANIDURATION = 1000;
+    private static final long ANIDURATION = 4000;
     private int mLineStyle = LineStyle.LINE_CURVE;
     private PathMeasure mPathMeasure;
     /**
@@ -66,6 +66,12 @@ public class AniLineChar extends SuperChart {
     private ArrayList<PointF> mAllLastPoints;
     private float FROM_LINE_Y = 0;
     private float mAbscisDashLineWidth = 0.4f;
+    /**
+     * 线条 和横轴之间的 渐变区域
+     */
+    private Paint mShaderAreaPaint;
+    private int[] mShaderAreaColors;
+    private Path mShadeAreaPath;
 
     public static interface LineStyle {
         /**
@@ -78,6 +84,24 @@ public class AniLineChar extends SuperChart {
         int LINE_CURVE = 2;
 
     }
+
+    public static interface LineMode {
+        /**
+         * 连接每一个点
+         */
+        int LINE_EVERYPOINT = 1;
+        /**
+         * 跳过0  断开
+         */
+        int LINE_JUMP0 = 2;
+
+        /**
+         * 跳过0 用虚线链接
+         */
+        int LINE_DASH_0 = 2;
+    }
+
+    private int mLineMode = LineMode.LINE_EVERYPOINT;
 
     public static interface ShowFromMode {
         int SHOWFROMTOP = 0;
@@ -180,6 +204,7 @@ public class AniLineChar extends SuperChart {
         mAbscisDashPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mSelectedTextBgPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mSelectedTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mShaderAreaPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         initializeData();
     }
 
@@ -397,10 +422,13 @@ public class AniLineChar extends SuperChart {
 
     @Override
     protected void drawSugExcel_LINE(Canvas canvas){
-        //不跳过为0的点
-        lineWithEvetyPoint(canvas);
-        //跳过为0的点（断开，虚线链接）
-        //        lineSkip0Point(canvas);
+        if(mLineMode == LineMode.LINE_EVERYPOINT) {
+            //不跳过为0的点
+            lineWithEvetyPoint(canvas);
+        }else {
+            //跳过为0的点（断开，虚线链接）
+            lineSkip0Point(canvas);
+        }
 
     }
 
@@ -409,28 +437,42 @@ public class AniLineChar extends SuperChart {
      *
      * @param paint
      */
-    private void paintSetShader(Paint paint){
-        if(mShaderColors != null && mShaderColors.length>1) {
-            float[] position = new float[mShaderColors.length];
-            float v = 1f/mShaderColors.length;
+    private void paintSetShader(Paint paint, int[] shaders){
+        if(shaders != null && shaders.length>1) {
+            float[] position = new float[shaders.length];
+            float v = 1f/shaders.length;
             float temp = 0;
-            for(int i = 0; i<mShaderColors.length; i++) {
-                position[i] = temp;
-                temp += v;
+            if(shaders.length>2) {
+                for(int i = 0; i<shaders.length; i++) {
+                    position[i] = temp;
+                    temp += v;
+                }
+            }else {
+                position[0] = 0;
+                position[1] = 1;
             }
-            paint.setShader(new LinearGradient(mChartArea.left, mChartArea.top, mChartArea.left, mChartArea.bottom,
-                    mShaderColors, position, Shader.TileMode.CLAMP));
+            paint.setShader(
+                    new LinearGradient(mChartArea.left, mChartArea.top, mChartArea.left, mChartArea.bottom, shaders,
+                            position, Shader.TileMode.CLAMP));
         }
     }
 
 
     private void lineWithEvetyPoint(Canvas canvas){
-        paintSetShader(mLinePaint);
+        paintSetShader(mLinePaint, mShaderColors);
         if(mLineShowStyle == -1 || mAnimationFinished) {
             canvas.drawPath(mLinePath, mLinePaint);
             for(int i = 0; i<mExcels.size(); i++) {
                 JExcel jExcel = mExcels.get(i);
                 drawAbscissaMsg(canvas, jExcel);
+            }
+            //渐变区域
+            if(mShaderAreaColors != null) {
+                paintSetShader(mShaderAreaPaint, mShaderAreaColors);
+                mShadeAreaPath.lineTo(mChartRithtest_x, mChartArea.bottom);
+                mShadeAreaPath.lineTo(mChartArea.left, mChartArea.bottom);
+                mShadeAreaPath.close();
+                canvas.drawPath(mShadeAreaPath, mShaderAreaPaint);
             }
         }else if(mLineShowStyle == LineShowStyle.LINESHOW_DRAWING) {
             drawLineAllpointDrawing(canvas);
@@ -456,8 +498,8 @@ public class AniLineChar extends SuperChart {
 
                 float con_x = ( midPointF.x+endPointF.x )/2;
 
-                mAniLinePath.cubicTo(con_x*mAniRatio, midPointF.y*mAniRatio, con_x*mAniRatio,
-                        endPointF.y*mAniRatio, endPointF.x*mAniRatio,endPointF.y*mAniRatio);
+                mAniLinePath.cubicTo(con_x*mAniRatio, midPointF.y*mAniRatio, con_x*mAniRatio, endPointF.y*mAniRatio,
+                        endPointF.x*mAniRatio, endPointF.y*mAniRatio);
             }
             for(JExcel excel : mExcels) {
                 drawAbscissaMsg(canvas, excel);
@@ -592,15 +634,23 @@ public class AniLineChar extends SuperChart {
     }
 
     private void lineSkip0Point(Canvas canvas){
-        for(int i = 0; i<mExcels.size(); i++) {
-            JExcel jExcel = mExcels.get(i);
-            PointF midPointF = jExcel.getMidPointF();
-            if(i == 0) {
-                mLinePath.moveTo(midPointF.x, midPointF.y);
-            }else {
-                mLinePath.lineTo(midPointF.x, midPointF.y);
+        if(mLineMode == LineMode.LINE_DASH_0) {
+            //虚线连接
+
+            for(int i = 0; i<mExcels.size(); i++) {
+                JExcel jExcel = mExcels.get(i);
+                PointF midPointF = jExcel.getMidPointF();
+                if(i == 0) {
+                    mLinePath.moveTo(midPointF.x, midPointF.y);
+                }else {
+                    mLinePath.lineTo(midPointF.x, midPointF.y);
+                }
+                drawAbscissaMsg(canvas, jExcel);
             }
-            drawAbscissaMsg(canvas, jExcel);
+        }else {
+            //跳过0 断开
+
+
         }
     }
 
@@ -718,8 +768,16 @@ public class AniLineChar extends SuperChart {
         postInvalidate();
     }
 
+    /**
+     * 以动画方式 切换数据
+     *
+     * @param jExcelList
+     */
     @Override
     public void aniChangeData(List<JExcel> jExcelList){
+        if(mLineMode != LineMode.LINE_EVERYPOINT) {
+            throw new RuntimeException("use aniChangeData lineMode must be LineMode.LINE_EVERYPOINT");
+        }
         if(jExcelList != null && jExcelList.size() == mAllLastPoints.size()) {
 
             mAllLastPoints.clear();
@@ -757,6 +815,9 @@ public class AniLineChar extends SuperChart {
         }
     }
 
+    /**
+     * 获取屏幕 宽高 后 更新 图表区域 矩阵数据 柱子宽 间隔宽度
+     */
     private void refreshChartSetData(){
         if(mChartStyle == ChartStyle.BAR) {
             //柱状图默认 间隔固定
@@ -836,7 +897,13 @@ public class AniLineChar extends SuperChart {
             start.x = mChartArea.left+mBarWidth*i+mInterval*i;
             start.y = mChartArea.bottom-mAbove-jExcel.getLower();
             jExcel.setColor(mNormalColor);
-            mAllPoints.add(jExcel.getMidPointF());
+            if(mLineMode == LineMode.LINE_EVERYPOINT) {
+                mAllPoints.add(jExcel.getMidPointF());
+            }else {
+                if(jExcel.getHeight()>0) {
+                    mAllPoints.add(jExcel.getMidPointF());
+                }
+            }
 
             if(mAllLastPoints.get(i).y == 0) {
                 if(mShowFromMode == ShowFromMode.SHOWFROMBUTTOM) {
@@ -845,15 +912,6 @@ public class AniLineChar extends SuperChart {
                     mAllLastPoints.get(i).y = mChartArea.top;//0转为横轴纵坐标
                 }else if(mShowFromMode == ShowFromMode.SHOWFROMMIDDLE) {
                     mAllLastPoints.get(i).y = ( mChartArea.bottom+mChartArea.top )/2;//0转为横轴纵坐标
-                }
-            }
-
-            if(mLineStyle == LineStyle.LINE_BROKEN) {
-                PointF midPointF = jExcel.getMidPointF();
-                if(mLinePath.isEmpty()) {
-                    mLinePath.moveTo(midPointF.x, midPointF.y);
-                }else {
-                    mLinePath.lineTo(midPointF.x, midPointF.y);
                 }
             }
         }
@@ -871,9 +929,26 @@ public class AniLineChar extends SuperChart {
                 float controllB_Y = endPoint.y;
                 mLinePath.cubicTo(controllA_X, controllA_Y, controllB_X, controllB_Y, endPoint.x, endPoint.y);
             }
+        }else {
+            for(PointF allPoint : mAllPoints) {
+                if(mLinePath.isEmpty()) {
+                    mLinePath.moveTo(allPoint.x, allPoint.y);
+                }else {
+                    mLinePath.lineTo(allPoint.x, allPoint.y);
+                }
+            }
         }
         mChartRithtest_x = mExcels.get(mExcels.size()-1).getMidPointF().x;
         mChartLeftest_x = mExcels.get(0).getMidPointF().x;
+
+        if(mShaderAreaColors != null&& mChartStyle == ChartStyle.LINE) {
+            mShadeAreaPath = new Path(mLinePath);//起点为第一个点
+//            mShadeAreaPath.addPath(mLinePath);//起点为第一个点
+            mShadeAreaPath.setLastPoint(mChartLeftest_x,mExcels.get(0).getMidPointF().y);
+            mShadeAreaPath.lineTo(mChartLeftest_x, mChartArea.bottom);
+            mShadeAreaPath.lineTo(mChartRithtest_x, mChartArea.bottom);
+//            mShadeAreaPath.lineTo(mChartRithtest_x,mExcels.get(mExcels.size()-1).getMidPointF().y);
+        }
         if(mExcels.size()>1) {
             mBetween2Excel = mExcels.get(1).getMidPointF().x-mExcels.get(0).getMidPointF().x;
         }
@@ -887,7 +962,7 @@ public class AniLineChar extends SuperChart {
             aniShowChar(0, mPathMeasure.getLength());
         }else if(mLineShowStyle == LineShowStyle.LINESHOW_SECTION) {
             aniShowChar(0, mExcels.size());
-        }else if(mLineShowStyle == LineShowStyle.LINESHOW_FROMLINE||mLineShowStyle == LineShowStyle.LINESHOW_FROMCORNER) {
+        }else if(mLineShowStyle == LineShowStyle.LINESHOW_FROMLINE || mLineShowStyle == LineShowStyle.LINESHOW_FROMCORNER) {
             aniShowChar(0, 1);
         }
     }
@@ -1016,8 +1091,12 @@ public class AniLineChar extends SuperChart {
      *
      * @param colors
      */
-    public void setShaderColors(int... colors){
+    public void setLineShaderColors(int... colors){
         mShaderColors = colors;
+    }
+
+    public void setShaderAreaColors(int... colors){
+        mShaderAreaColors = colors;
     }
 
     /**
