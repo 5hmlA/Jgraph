@@ -1,6 +1,6 @@
-package com.jonas.schart.superi;
+package com.jonas.jdiagram.inter;
 
-import com.jonas.schart.chartbean.JExcel;
+import com.jonas.jdiagram.models.Jchart;
 
 import java.util.List;
 
@@ -15,12 +15,12 @@ public interface IChart {
     /**
      * 传入 数据
      */
-    public void cmdFill(JExcel... jExcels);
+    public void cmdFill(Jchart... jcharts);
 
 
     /**
      * 传入 数据
      */
-    public void cmdFill(List<JExcel> jExcelList);
+    public void cmdFill(List<Jchart> jchartList);
 
 }

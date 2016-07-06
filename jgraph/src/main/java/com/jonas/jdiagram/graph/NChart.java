@@ -1,4 +1,4 @@
-package com.jonas.schart.chart;
+package com.jonas.jdiagram.graph;
 
 import android.animation.Animator;
 import android.animation.ValueAnimator;
@@ -24,7 +24,7 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 
-import com.jonas.schart.chartbean.NExcel;
+import com.jonas.jdiagram.models.NExcel;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -323,7 +323,7 @@ public class NChart extends View implements ValueAnimator.AnimatorUpdateListener
         if (!mScrollAble) {
             if (mFixedNums != 0 && mChartStyle == ChartStyle.BAR) {
 //                mBarWidth = (w - 2 * (mFixedNums - 1)) / mFixedNums;
-//                mInterval = (w - mBarWidth * mExcels.size()) / (mExcels.size() - 1);
+//                mInterval = (w - mBarWidth * mJcharts.size()) / (mJcharts.size() - 1);
                 mBarWidth = (w - 2 * (mFixedNums + 1)) / mFixedNums;
                 mInterval = (w - mBarWidth * mExcels.size()) / (mExcels.size() + 1);
             } else {
@@ -634,7 +634,7 @@ public class NChart extends View implements ValueAnimator.AnimatorUpdateListener
                 //                            pathLine.moveTo(midPointF.x, midPointF.y);
             } else {
                 pathLine.lineTo(midPointF.x, mHeight / 2f + (midPointF.y - mHeight / 2f) * ratio);
-                //                    pathLine.quadTo(mExcels.get(i-1).getMidPointF().x, mExcels.get(i-1).getMidPointF().y, midPointF.x,
+                //                    pathLine.quadTo(mJcharts.get(i-1).getMidPointF().x, mJcharts.get(i-1).getMidPointF().y, midPointF.x,
                 //                            midPointF.y);
             }
 

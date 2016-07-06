@@ -1,4 +1,4 @@
-package com.jonas.schart.chartbean;
+package com.jonas.jdiagram.models;
 
 import android.graphics.Color;
 import android.graphics.PointF;

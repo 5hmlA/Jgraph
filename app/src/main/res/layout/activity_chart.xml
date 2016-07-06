@@ -10,13 +10,13 @@
         android:onClick="clicked"
         android:text="点击试试"/>
 
-    <com.jonas.schart.chart.PieChart
+    <com.jonas.jdiagram.graph.PieGraph
         android:id="@+id/sug_record_pie"
         android:background="#000000"
         android:layout_width="240dp"
         android:layout_height="160dp"/>
 
-    <com.jonas.schart.chart.AniLineChar
+    <com.jonas.jdiagram.graph.JcoolGraph
         android:id="@+id/sug_recode_line"
         android:layout_width="match_parent"
         android:paddingTop="10dp"

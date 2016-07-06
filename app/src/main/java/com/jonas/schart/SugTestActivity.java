@@ -5,8 +5,8 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 
-import com.jonas.schart.chart.JChart;
-import com.jonas.schart.chartbean.JExcel;
+import com.jonas.jdiagram.graph.JChart;
+import com.jonas.jdiagram.models.Jchart;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +19,7 @@ import java.util.Random;
 public class SugTestActivity extends Activity {
 
     private JChart mSchart;
-    private List<JExcel> mJExcels;
+    private List<Jchart> mJcharts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -27,15 +27,15 @@ public class SugTestActivity extends Activity {
         setContentView(R.layout.activity_sugtest);
         mSchart = (JChart) findViewById(R.id.sug_recode_schar);
 
-        mJExcels = new ArrayList<>();
+        mJcharts = new ArrayList<>();
         for (int i = 0; i < 11; i++) {
 
-            JExcel jExcel = new JExcel(new Random().nextInt(100)+20,"km", "测试");
-//            JExcel jExcel = new JExcel(100, "测试");
+            Jchart jchart = new Jchart(0,new Random().nextInt(100)+20,"测试");
+//            Jchart jchart = new Jchart(100, "测试");
 //            if (i == 1) {
-//                jExcel = new JExcel(200, "测试");
+//                jchart = new Jchart(200, "测试");
 //            }
-            mJExcels.add(jExcel);
+            mJcharts.add(jchart);
         }
 //        mSchart.setChartStyle(ChartStyle.LINE);
         mSchart.setChartStyle(JChart.ChartStyle.BAR);
@@ -43,18 +43,18 @@ public class SugTestActivity extends Activity {
 //        mSchart.setExecelPaintShaderColors(new int[]{Color.parseColor("#4df1dbd4"), Color.TRANSPARENT});
 //        mSchart.setScrollAble(false);
         mSchart.setFixedWidth(31);
-        mSchart.cmdFill(mJExcels);
+        mSchart.cmdFill(mJcharts);
     }
 
     public void changestyle(View v) {
         if (mSchart.getChartStyle() == JChart.ChartStyle.BAR) {
             mSchart.setChartStyle(JChart.ChartStyle.LINE);
             mSchart.setExecelPaintShaderColors(new int[]{Color.parseColor("#4df1dbd4"), Color.TRANSPARENT});
-            mSchart.cmdFill(mJExcels);
+            mSchart.cmdFill(mJcharts);
         } else {
             mSchart.setChartStyle(JChart.ChartStyle.BAR);
             mSchart.setExecelPaintShaderColors(new int[]{Color.parseColor("#089900"), Color.parseColor("#9FC700")});
-            mSchart.cmdFill(mJExcels);
+            mSchart.cmdFill(mJcharts);
         }
         mSchart.postInvalidate();
     }

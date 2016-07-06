@@ -1,16 +1,18 @@
-package com.jonas.schart.superi;
+package com.jonas.jdiagram.inter;
 
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.PointF;
+import android.graphics.Shader;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewConfiguration;
 
-import com.jonas.schart.chartbean.JExcel;
+import com.jonas.jdiagram.models.Jchart;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,7 +24,7 @@ import java.util.List;
  * @Description: 折线+虚线
  * @Others: {https://github.com/mychoices}
  */
-public class SuperChart extends View {
+public class SuperGraph extends View {
 
     /**
      * 选中的 柱状图
@@ -117,7 +119,7 @@ public class SuperChart extends View {
     /**
      * 图表 数据集合
      */
-    protected List<JExcel> mExcels = new ArrayList<>();
+    protected List<Jchart> mJcharts = new ArrayList<>();
 
     /**
      * 柱状图 选中的颜色
@@ -139,25 +141,25 @@ public class SuperChart extends View {
      */
     protected float mSliding = 0;
 
-    public SuperChart(Context context) {
+    public SuperGraph(Context context){
         super(context);
         init(context);
     }
 
 
-    public SuperChart(Context context, AttributeSet attrs) {
+    public SuperGraph(Context context, AttributeSet attrs){
         super(context, attrs);
         init(context);
     }
 
 
-    public SuperChart(Context context, AttributeSet attrs, int defStyleAttr) {
+    public SuperGraph(Context context, AttributeSet attrs, int defStyleAttr){
         super(context, attrs, defStyleAttr);
         init(context);
     }
 
 
-    protected void init(Context context) {
+    protected void init(Context context){
         mContext = context;
         mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
         mCoordinatePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -168,24 +170,24 @@ public class SuperChart extends View {
     }
 
     @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+    protected void onSizeChanged(int w, int h, int oldw, int oldh){
         super.onSizeChanged(w, h, oldw, oldh);
-        mHeight = h - getPaddingBottom() - getPaddingTop();
-        mWidth = w - getPaddingLeft() - getPaddingRight();
-        mCenterPoint = new PointF(w / 2f, h / 2f);
+        mHeight = h-getPaddingBottom()-getPaddingTop();
+        mWidth = w-getPaddingLeft()-getPaddingRight();
+        mCenterPoint = new PointF(w/2f, h/2f);
     }
 
     @Override
-    protected void onDraw(Canvas canvas) {
+    protected void onDraw(Canvas canvas){
         super.onDraw(canvas);
-        if (null != mExcels && mExcels.size() > 0) {
-            if (mChartStyle == ChartStyle.BAR) {
+        if(null != mJcharts && mJcharts.size()>0) {
+            if(mChartStyle == ChartStyle.BAR) {
                 drawSugExcel_BAR(canvas);
-            } else if (mChartStyle == ChartStyle.LINE) {
+            }else if(mChartStyle == ChartStyle.LINE) {
                 drawSugExcel_LINE(canvas);
-            } else if (mChartStyle == ChartStyle.PIE) {
+            }else if(mChartStyle == ChartStyle.PIE) {
                 drawSugExcel_PIE(canvas);
-            } else {
+            }else {
                 drawSugExcel_BAR(canvas);
                 drawSugExcel_LINE(canvas);
             }
@@ -193,7 +195,7 @@ public class SuperChart extends View {
         drawCoordinateAxes(canvas);
     }
 
-    protected void drawSugExcel_PIE(Canvas canvas) {
+    protected void drawSugExcel_PIE(Canvas canvas){
 
     }
 
@@ -202,7 +204,7 @@ public class SuperChart extends View {
      *
      * @param canvas
      */
-    protected void drawSugExcel_BAR(Canvas canvas) {
+    protected void drawSugExcel_BAR(Canvas canvas){
     }
 
     /**
@@ -211,44 +213,66 @@ public class SuperChart extends View {
      * @param canvas
      * @param msg
      */
-    protected void drawAbscissaMsg(Canvas canvas, String msg) {
+    protected void drawAbscissaMsg(Canvas canvas, String msg){
     }
 
     /**
      * 画 折线
      */
-    protected void drawSugExcel_LINE(Canvas canvas) {
+    protected void drawSugExcel_LINE(Canvas canvas){
     }
 
     /**
      * 画 坐标轴  横轴
      */
-    protected void drawCoordinateAxes(Canvas canvas) {
+    protected void drawCoordinateAxes(Canvas canvas){
 
-        if (mExcels != null && mExcels.size() > 0) {
-            canvas.drawLine(0, mHeight, mExcels.get(mExcels.size() - 1).getMidPointF().x, mHeight, mCoordinatePaint);
-        } else {
+        if(mJcharts != null && mJcharts.size()>0) {
+            canvas.drawLine(0, mHeight, mJcharts.get(mJcharts.size()-1).getMidPointF().x, mHeight, mCoordinatePaint);
+        }else {
             canvas.drawLine(0, mHeight, mWidth, mHeight, mCoordinatePaint);
         }
     }
 
+    /**
+     * 为画笔 设置 渲染器
+     *
+     * @param paint
+     */
+    protected void paintSetShader(Paint paint, int[] shaders, float x0, float y0, float x1, float y1){
+        if(shaders != null && shaders.length>1) {
+            float[] position = new float[shaders.length];
+            float v = 1f/shaders.length;
+            float temp = 0;
+            if(shaders.length>2) {
+                for(int i = 0; i<shaders.length; i++) {
+                    position[i] = temp;
+                    temp += v;
+                }
+            }else {
+                position[0] = 0;
+                position[1] = 1;
+            }
+            paint.setShader(new LinearGradient(x0, y0, x1, y1, shaders, position, Shader.TileMode.CLAMP));
+        }
+    }
 
     /**
      * 传入 数据
      */
-    public void cmdFill(@NonNull JExcel... jExcels) {
-        cmdFill(new ArrayList<JExcel>(Arrays.asList(jExcels)));
+    public void cmdFill(@NonNull Jchart... jcharts){
+        cmdFill(new ArrayList<Jchart>(Arrays.asList(jcharts)));
     }
 
 
     /**
      * 传入 数据
      */
-    public void cmdFill(@NonNull List<JExcel> jExcelList) {
+    public void cmdFill(@NonNull List<Jchart> jchartList){
     }
 
 
-    public int getNormalColor() {
+    public int getNormalColor(){
         return mNormalColor;
     }
 
@@ -256,12 +280,12 @@ public class SuperChart extends View {
     /**
      * 默认颜色
      */
-    public void setNormalColor(int normalColor) {
+    public void setNormalColor(int normalColor){
         mNormalColor = normalColor;
     }
 
 
-    public int getActivationColor() {
+    public int getActivationColor(){
         return mActivationColor;
     }
 
@@ -269,12 +293,12 @@ public class SuperChart extends View {
     /**
      * 设置 柱状图 被选中的颜色
      */
-    public void setActivationColor(int activationColor) {
+    public void setActivationColor(int activationColor){
         mActivationColor = activationColor;
     }
 
 
-    public int getChartStyle() {
+    public int getChartStyle(){
         return mChartStyle;
     }
 
@@ -282,7 +306,7 @@ public class SuperChart extends View {
     /**
      * 设置 图表类型  柱状 折线  折线+柱状
      */
-    public void setChartStyle(int chartStyle) {
+    public void setChartStyle(int chartStyle){
         mChartStyle = chartStyle;
     }
 
@@ -291,27 +315,27 @@ public class SuperChart extends View {
      *
      * @param sliding
      */
-    public void setSliding(float sliding) {
+    public void setSliding(float sliding){
         mSliding = sliding;
     }
 
-    public boolean isScrollAble() {
+    public boolean isScrollAble(){
         return mScrollAble;
     }
 
-    public void setScrollAble(boolean scrollAble) {
+    public void setScrollAble(boolean scrollAble){
         mScrollAble = scrollAble;
     }
 
-    public float getInterval() {
+    public float getInterval(){
         return mInterval;
     }
 
-    public void setInterval(float interval) {
+    public void setInterval(float interval){
         mInterval = interval;
     }
 
-    public int getSelected() {
+    public int getSelected(){
         return mSelected;
     }
 
@@ -320,11 +344,11 @@ public class SuperChart extends View {
      *
      * @param selected
      */
-    public void setSelected(int selected) {
+    public void setSelected(int selected){
         mSelected = selected;
     }
 
-    public int getVisibleNums() {
+    public int getVisibleNums(){
         return mVisibleNums;
     }
 
@@ -334,16 +358,16 @@ public class SuperChart extends View {
      *
      * @param visibleNums
      */
-    public void setVisibleNums(int visibleNums) {
+    public void setVisibleNums(int visibleNums){
         mVisibleNums = visibleNums;
         //防止 不可滚动时visibleNums设置太小
-        if (!mScrollAble && mForceFixNums && mExcels.size() > mVisibleNums) {
+        if(!mScrollAble && mForceFixNums && mJcharts.size()>mVisibleNums) {
             //如果不可滚动的话 同时要显示固定个数 那么为防止显示不全 将可见个数设置为柱子数量
-            mVisibleNums = mExcels.size();
+            mVisibleNums = mJcharts.size();
         }
     }
 
-    public void setForceFixNums(boolean forceFixNums) {
+    public void setForceFixNums(boolean forceFixNums){
         mForceFixNums = forceFixNums;
     }
 
@@ -355,19 +379,24 @@ public class SuperChart extends View {
         mLineShowStyle = lineShowStyle;
     }
 
-    public void aniChangeData(List<JExcel> jExcelList){};
-    public int dip2px(float dipValue) {
+    public void aniChangeData(List<Jchart> jchartList){
+    }
+
+    ;
+
+    public int dip2px(float dipValue){
         final float scale = mContext.getResources().getDisplayMetrics().density;
-        return (int) (dipValue * scale + 0.5f);
+        return (int)( dipValue*scale+0.5f );
     }
 
     /**
      * 将sp值转换为px值，保证文字大小不变
      *
-     * @param spValue （DisplayMetrics类中属性scaledDensity）
+     * @param spValue
+     *         （DisplayMetrics类中属性scaledDensity）
      */
-    public int sp2px(float spValue) {
+    public int sp2px(float spValue){
         final float fontScale = mContext.getResources().getDisplayMetrics().scaledDensity;
-        return (int) (spValue * fontScale + 0.5f);
+        return (int)( spValue*fontScale+0.5f );
     }
 }

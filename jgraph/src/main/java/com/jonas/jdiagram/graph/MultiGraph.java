@@ -1,4 +1,4 @@
-package com.jonas.schart.chart;
+package com.jonas.jdiagram.graph;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -15,10 +15,10 @@ import android.graphics.Shader;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
-import android.view.View;
 import android.view.ViewConfiguration;
 
-import com.jonas.schart.chartbean.JExcel;
+import com.jonas.jdiagram.models.Jchart;
+import com.jonas.jdiagram.inter.SuperGraph;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,7 +32,7 @@ import java.util.List;
  * @Others: {https://github.com/mychoices}
  *
  */
-public class JChart extends View {
+public class MultiGraph extends SuperGraph {
 
     private int mWidth;
     private int mHeight;
@@ -65,7 +65,7 @@ public class JChart extends View {
     private float mTextMarging;
     private float mTextSize = 15;
     //    private float mSugHeightest;
-    private JExcel mHeightestExcel;
+    private Jchart mHeightestExcel;
     private float mHeightRatio;
     /**
      * 横坐标 信息颜色
@@ -108,7 +108,7 @@ public class JChart extends View {
         int BAR_LINE = 3;
     }
 
-//    public static class JExcel {
+//    public static class Jchart {
 //        private String mShowMsg;
 //        private int index;
 //        private float mWidth;//柱状 的 宽
@@ -127,31 +127,31 @@ public class JChart extends View {
 //         */
 //        private String unit;
 //
-//        public JExcel(float num, String mXmsg, int index) {
+//        public Jchart(float num, String mXmsg, int index) {
 //            this(0, num, mXmsg);
 //            this.index = index;
 //        }
 //
-//        public JExcel(float num, String mXmsg) {
+//        public Jchart(float num, String mXmsg) {
 //            this(0, num, mXmsg);
 //        }
 //
-//        public JExcel(float lower, float upper, String mXmsg) {
+//        public Jchart(float lower, float upper, String mXmsg) {
 //            this(lower, upper, mXmsg, Color.GRAY);
 //        }
 //
 //
-//        public JExcel(float lower, float upper, String mXmsg, int color) {
+//        public Jchart(float lower, float upper, String mXmsg, int color) {
 //            this(lower, upper, "", mXmsg, Color.GRAY);
 //        }
 //
 //
-//        public JExcel(float num, String unit, String mXmsg) {
+//        public Jchart(float num, String unit, String mXmsg) {
 //            this(0, num, unit, mXmsg, Color.GRAY);
 //        }
 //
 //
-//        public JExcel(float lower, float upper, String unit, String mXmsg, int color) {
+//        public Jchart(float lower, float upper, String unit, String mXmsg, int color) {
 //            mUpper = upper;
 //            mLower = lower;
 //            mHeight = mNum = upper - lower;
@@ -328,7 +328,7 @@ public class JChart extends View {
     /**
      * 图表 数据集合
      */
-    private List<JExcel> mExcels = new ArrayList<>();
+    private List<Jchart> mExcels = new ArrayList<>();
 
     /**
      * 柱状图 选中的颜色
@@ -353,29 +353,29 @@ public class JChart extends View {
     /**
      * 柱形图 宽
      */
-    private float mBarWidth = 20;
+    private float mBarWidth = 0;
     private Path pathLine = new Path();
 
 
-    public JChart(Context context) {
+    public MultiGraph(Context context) {
         super(context);
         init(context);
     }
 
 
-    public JChart(Context context, AttributeSet attrs) {
+    public MultiGraph(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context);
     }
 
 
-    public JChart(Context context, AttributeSet attrs, int defStyleAttr) {
+    public MultiGraph(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context);
     }
 
 
-    private void init(Context context) {
+    protected void init(Context context) {
         mContext = context;
         initData();
         mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
@@ -454,17 +454,17 @@ public class JChart extends View {
         if (mHCoordinate > 0) {
             mHeightRatio = (mHCoordinate - 2 * mTextSize - mAbove - mTextMarging - mLinePointRadio * 2) / mHeightestExcel.getHeight();
             for (int i = 0; i < mExcels.size(); i++) {
-                JExcel jExcel = mExcels.get(i);
-                jExcel.setHeight(jExcel.getHeight() * mHeightRatio);
-                jExcel.setWidth(mBarWidth);
-                PointF start = jExcel.getStart();
+                Jchart jchart = mExcels.get(i);
+                jchart.setHeight(jchart.getHeight() * mHeightRatio);
+                jchart.setWidth(mBarWidth);
+                PointF start = jchart.getStart();
                 if (mFixedNums > 0 && mChartStyle == ChartStyle.BAR) {
                     start.x = mPading + mInterval * (i + 1) + mBarWidth * i;
                 } else {
                     start.x = mPading + mInterval * i + mBarWidth * i;
                 }
-                start.y = mHCoordinate - mAbove - jExcel.getLower();
-                jExcel.setColor(mNormalColor);
+                start.y = mHCoordinate - mAbove - jchart.getLower();
+                jchart.setColor(mNormalColor);
             }
         }
     }
@@ -485,9 +485,9 @@ public class JChart extends View {
         drawCoordinateAxes(canvas);
     }
 
-    private void drawSugExcel_BAR(Canvas canvas) {
+    protected void drawSugExcel_BAR(Canvas canvas) {
         for (int i = 0; i < mExcels.size(); i++) {
-            JExcel excel = mExcels.get(i);
+            Jchart excel = mExcels.get(i);
             PointF start = excel.getStart();
             start.x += mSliding;
             if (null != mShaderColors) {
@@ -518,7 +518,7 @@ public class JChart extends View {
         }
     }
 
-    private void drawAbscissaMsg(Canvas canvas, JExcel excel) {
+    private void drawAbscissaMsg(Canvas canvas, Jchart excel) {
         if (null != excel) {
             mAbscissaPaint.setColor(mAbscissaMsgColor);
             PointF midPointF = excel.getMidPointF();
@@ -536,7 +536,7 @@ public class JChart extends View {
         }
     }
 
-    private void drawSelectedText(Canvas canvas, JExcel excel) {
+    private void drawSelectedText(Canvas canvas, Jchart excel) {
 
         mTextPaint.setColor(mTextColor);
         PointF midPointF = excel.getMidPointF();
@@ -588,7 +588,7 @@ public class JChart extends View {
     /**
      * 画 折线
      */
-    private void drawSugExcel_LINE(Canvas canvas) {
+    protected void drawSugExcel_LINE(Canvas canvas) {
         pathLine.reset();
         mLinePaint.setColor(mLineColor);
         mDashLinePaint.setColor(mLineColor);
@@ -601,7 +601,7 @@ public class JChart extends View {
             canvas.drawPath(path, mDashLinePaint);
         }
         if (mLinePointRadio > 0) {
-            for (JExcel excel : mExcels) {
+            for (Jchart excel : mExcels) {
                 if (excel.getHeight() > 0) {
                     PointF midPointF = excel.getMidPointF();
                     canvas.drawCircle(midPointF.x, midPointF.y, mLinePointRadio, mPointPaint);
@@ -666,7 +666,7 @@ public class JChart extends View {
             if (!lineFirstMoved) {
                 pathline = new Path();
             }
-            JExcel excel = null;
+            Jchart excel = null;
             if (pathline != null) {
                 excel = mExcels.get(i);
                 if (null == excel) {
@@ -712,7 +712,7 @@ public class JChart extends View {
     /**
      * 画 坐标轴
      */
-    private void drawCoordinateAxes(Canvas canvas) {
+    protected void drawCoordinateAxes(Canvas canvas) {
         mCoordinatePaint.setColor(Color.parseColor("#AFAFB0"));
         mCoordinatePaint.setStrokeWidth(2);
         canvas.drawLine(0, mHCoordinate, mWidth, mHCoordinate, mCoordinatePaint);
@@ -768,7 +768,7 @@ public class JChart extends View {
      */
     private int clickWhere(PointF tup) {
         for (int i = 0; i < mExcels.size(); i++) {
-            JExcel excel = mExcels.get(i);
+            Jchart excel = mExcels.get(i);
             PointF start = excel.getStart();
             if (start.x > tup.x) {
                 return -1;
@@ -785,30 +785,30 @@ public class JChart extends View {
     /**
      * 传入 数据
      */
-    public void cmdFill(JExcel... jExcels) {
-        cmdFill(Arrays.asList(jExcels));
+    public void cmdFill(Jchart... jcharts) {
+        cmdFill(Arrays.asList(jcharts));
     }
 
 
     /**
      * 传入 数据
      */
-    public void cmdFill(List<JExcel> jExcelList) {
+    public void cmdFill(List<Jchart> jchartList) {
         lineFirstMoved = false;
         mSelected = -1;
         mExcels.clear();
-        if (jExcelList != null && jExcelList.size() > 0) {
-            mHeightestExcel = jExcelList.get(0);
-            for (JExcel jExcel : jExcelList) {
-                mHeightestExcel = mHeightestExcel.getHeight() > jExcel.getHeight() ? mHeightestExcel : jExcel;
+        if (jchartList != null && jchartList.size() > 0) {
+            mHeightestExcel = jchartList.get(0);
+            for (Jchart jchart : jchartList) {
+                mHeightestExcel = mHeightestExcel.getHeight() > jchart.getHeight() ? mHeightestExcel : jchart;
             }
-            for (int i = 0; i < jExcelList.size(); i++) {
-                JExcel jExcel = jExcelList.get(i);
-                jExcel.setWidth(mBarWidth);
-                PointF start = jExcel.getStart();
+            for (int i = 0; i < jchartList.size(); i++) {
+                Jchart jchart = jchartList.get(i);
+                jchart.setWidth(mBarWidth);
+                PointF start = jchart.getStart();
                 start.x = mInterval * (i + 1) + mBarWidth * i;
-                jExcel.setColor(mNormalColor);
-                mExcels.add(jExcel);
+                jchart.setColor(mNormalColor);
+                mExcels.add(jchart);
             }
             if (mWidth > 0) {
                 //已经显示在界面上了 重新设置数据

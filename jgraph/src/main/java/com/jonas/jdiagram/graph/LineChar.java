@@ -1,4 +1,4 @@
-package com.jonas.schart.chart;
+package com.jonas.jdiagram.graph;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -15,8 +15,8 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
-import com.jonas.schart.chartbean.JExcel;
-import com.jonas.schart.superi.SuperChart;
+import com.jonas.jdiagram.models.Jchart;
+import com.jonas.jdiagram.inter.SuperGraph;
 
 import java.text.DecimalFormat;
 import java.util.List;
@@ -28,7 +28,7 @@ import java.util.List;
  * @since [产品/模版版本]
  */
 
-public class LineChar extends SuperChart {
+public class LineChar extends SuperGraph {
 
     private boolean moved;
     private float mDownX;
@@ -38,7 +38,7 @@ public class LineChar extends SuperChart {
     /**
      * 最高的点
      */
-    private JExcel mHeightestExcel;
+    private Jchart mHeightestExcel;
     /**
      * 图表显示的区域 x轴起点  左边为刻度
      */
@@ -186,7 +186,7 @@ public class LineChar extends SuperChart {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (mExcels.size() > 0) {
+        if (mJcharts.size() > 0) {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
                     mDownX = event.getX();
@@ -198,7 +198,7 @@ public class LineChar extends SuperChart {
                         if (Math.abs(mSliding) > mTouchSlop) {
                             moved = true;
                             mDownX = moveX;
-                            if (mExcels != null && mExcels.size() > 0) {
+                            if (mJcharts != null && mJcharts.size() > 0) {
                                 //防止 图表 滑出界面看不到
                                 mSliding = mSliding >= 0 ? 0 : mSliding <= -(mChartRithtest_x - mCharAreaWidth) ? -(mChartRithtest_x - mCharAreaWidth) : mSliding;
                             } else {
@@ -227,8 +227,8 @@ public class LineChar extends SuperChart {
      * 判断 点中哪个柱状图
      */
     private int clickWhere(PointF tup) {
-        for (int i = 0; i < mExcels.size(); i++) {
-            JExcel excel = mExcels.get(i);
+        for (int i = 0; i < mJcharts.size(); i++) {
+            Jchart excel = mJcharts.get(i);
             PointF start = excel.getStart();
             if (start.x > tup.x) {
                 return -1;
@@ -292,11 +292,11 @@ public class LineChar extends SuperChart {
         canvas.drawPath(mLinePath, mLinePaint);
 
 //        mLinePath.reset();
-        for (int i = 0; i < mExcels.size(); i++) {
-            JExcel jExcel = mExcels.get(i);
-//            if (i<mExcels.size()-1) {
-//                PointF startPoint = mExcels.get(i).getMidPointF();
-//                PointF endPoint = mExcels.get(i + 1).getMidPointF();
+        for (int i = 0; i < mJcharts.size(); i++) {
+            Jchart jchart = mJcharts.get(i);
+//            if (i<mJcharts.size()-1) {
+//                PointF startPoint = mJcharts.get(i).getMidPointF();
+//                PointF endPoint = mJcharts.get(i + 1).getMidPointF();
 //                if (i == 0) mLinePath.moveTo(startPoint.x, startPoint.y);
 //                float controllA_X = (startPoint.x + endPoint.x) /2;
 //                float controllA_Y = startPoint.y;
@@ -309,21 +309,21 @@ public class LineChar extends SuperChart {
 //                canvas.drawLine(startPoint.x,startPoint.y,controllA_X,controllA_Y,mLinePaint);
 //                canvas.drawLine(endPoint.x,endPoint.y,controllB_X,controllB_Y,mLinePaint);
 //            }
-            drawAbscissaMsg(canvas, jExcel);
+            drawAbscissaMsg(canvas, jchart);
         }
     }
 
     private void lineSkip0Point(Canvas canvas) {
         mLinePath.reset();
-        for (int i = 0; i < mExcels.size(); i++) {
-            JExcel jExcel = mExcels.get(i);
-            PointF midPointF = jExcel.getMidPointF();
+        for (int i = 0; i < mJcharts.size(); i++) {
+            Jchart jchart = mJcharts.get(i);
+            PointF midPointF = jchart.getMidPointF();
             if (i == 0) {
                 mLinePath.moveTo(midPointF.x, midPointF.y);
             } else {
                 mLinePath.lineTo(midPointF.x, midPointF.y);
             }
-            drawAbscissaMsg(canvas, jExcel);
+            drawAbscissaMsg(canvas, jchart);
         }
     }
 
@@ -342,7 +342,7 @@ public class LineChar extends SuperChart {
             if (i > 0) {
                 Path dashPath = new Path();
                 dashPath.moveTo(mChartArea.left, levelCoordinate);
-                if (mExcels != null && mExcels.size() > 0) {
+                if (mJcharts != null && mJcharts.size() > 0) {
                     dashPath.lineTo(mChartRithtest_x, levelCoordinate);
                 } else {
                     dashPath.lineTo(mChartArea.right, levelCoordinate);
@@ -364,7 +364,7 @@ public class LineChar extends SuperChart {
      * @param canvas
      * @param excel
      */
-    private void drawAbscissaMsg(Canvas canvas, JExcel excel) {
+    private void drawAbscissaMsg(Canvas canvas, Jchart excel) {
         mAbscissaPaint.setTextAlign(Paint.Align.CENTER);
         if (null != excel) {
             PointF midPointF = excel.getMidPointF();
@@ -390,8 +390,8 @@ public class LineChar extends SuperChart {
 
     protected void drawCoordinateAxes(Canvas canvas) {
 
-        if (mExcels != null && mExcels.size() > 0) {
-            canvas.drawLine(mChartArea.left, mChartArea.bottom, mExcels.get(mExcels.size() - 1).getMidPointF().x, mChartArea.bottom, mCoordinatePaint);
+        if (mJcharts != null && mJcharts.size() > 0) {
+            canvas.drawLine(mChartArea.left, mChartArea.bottom, mJcharts.get(mJcharts.size() - 1).getMidPointF().x, mChartArea.bottom, mCoordinatePaint);
         } else {
             canvas.drawLine(mChartArea.left, mChartArea.bottom, mChartArea.right, mChartArea.bottom, mCoordinatePaint);
         }
@@ -405,25 +405,25 @@ public class LineChar extends SuperChart {
     /**
      * 传入 数据
      */
-    public void cmdFill(List<JExcel> jExcelList) {
+    public void cmdFill(List<Jchart> jchartList) {
         lineFirstMoved = false;
         mSelected = -1;
-        mExcels.clear();
-        if (jExcelList != null && jExcelList.size() > 0) {
-            mHeightestExcel = jExcelList.get(0);
-            for (JExcel jExcel : jExcelList) {
-                mHeightestExcel = mHeightestExcel.getHeight() > jExcel.getHeight() ? mHeightestExcel : jExcel;
+        mJcharts.clear();
+        if (jchartList != null && jchartList.size() > 0) {
+            mHeightestExcel = jchartList.get(0);
+            for (Jchart jchart : jchartList) {
+                mHeightestExcel = mHeightestExcel.getHeight() > jchart.getHeight() ? mHeightestExcel : jchart;
             }
-            for (int i = 0; i < jExcelList.size(); i++) {
-                JExcel jExcel = jExcelList.get(i);
-                jExcel.setWidth(mBarWidth);
-                PointF start = jExcel.getStart();
+            for (int i = 0; i < jchartList.size(); i++) {
+                Jchart jchart = jchartList.get(i);
+                jchart.setWidth(mBarWidth);
+                PointF start = jchart.getStart();
                 start.x = mInterval * (i + 1) + mBarWidth * i;
-                mExcels.add(jExcel);
+                mJcharts.add(jchart);
             }
-            if (!mScrollAble && mForceFixNums && mExcels.size() > mVisibleNums) {
+            if (!mScrollAble && mForceFixNums && mJcharts.size() > mVisibleNums) {
                 //如果不可滚动的话 同时要显示固定个数 那么为防止显示不全 将可见个数设置为柱子数量
-                mVisibleNums = mExcels.size();
+                mVisibleNums = mJcharts.size();
             }
             if (mWidth > 0) {
                 //已经显示在界面上了 重新设置数据
@@ -457,12 +457,12 @@ public class LineChar extends SuperChart {
                     mBarWidth = (mCharAreaWidth - mInterval * (mVisibleNums - 1)) / mVisibleNums;
                 } else {
                     //所有柱子 平分 整个区域
-                    mBarWidth = (mCharAreaWidth - mInterval * (mExcels.size() - 1)) / mExcels.size();
+                    mBarWidth = (mCharAreaWidth - mInterval * ( mJcharts.size() - 1)) / mJcharts.size();
                 }
             } else {
                 if (mVisibleNums == -1) {
                     //默认初始化 可见个数
-                    mVisibleNums = mExcels.size() < 5 ? mExcels.size() : 5;
+                    mVisibleNums = mJcharts.size() < 5 ? mJcharts.size() : 5;
                 }
                 mBarWidth = (mCharAreaWidth - mInterval * (mVisibleNums - 1)) / mVisibleNums;
             }
@@ -475,12 +475,12 @@ public class LineChar extends SuperChart {
                     mInterval = (mCharAreaWidth - mBarWidth * mVisibleNums) / (mVisibleNums - 1);
                 } else {
                     //所有柱子 平分 整个区域
-                    mInterval = (mCharAreaWidth - mBarWidth * mExcels.size()) / (mExcels.size() - 1);
+                    mInterval = (mCharAreaWidth - mBarWidth * mJcharts.size()) / ( mJcharts.size() - 1);
                 }
             } else {
                 if (mVisibleNums == -1) {
                     //默认初始化 可见个数
-                    mVisibleNums = mExcels.size() < 5 ? mExcels.size() : 5;
+                    mVisibleNums = mJcharts.size() < 5 ? mJcharts.size() : 5;
                 }
                 //可滚动
                 mInterval = (mCharAreaWidth - mBarWidth * mVisibleNums) / (mVisibleNums - 1);
@@ -499,32 +499,32 @@ public class LineChar extends SuperChart {
 //        mHeightRatio = (mChartArea.bottom - mChartArea.top) / (mHeightestExcel.getHeight() - mYaxis_min);
         mHeightRatio = (mChartArea.bottom - mChartArea.top) / (mYaxis_Max - mYaxis_min);
 
-        for (int i = 0; i < mExcels.size(); i++) {
-            JExcel jExcel = mExcels.get(i);
-            jExcel.setHeight(( jExcel.getHeight() - mYaxis_min) * mHeightRatio);//刷新在画布中的高度
-            jExcel.setWidth(mBarWidth);
-            PointF start = jExcel.getStart();
+        for (int i = 0; i < mJcharts.size(); i++) {
+            Jchart jchart = mJcharts.get(i);
+            jchart.setHeight(( jchart.getHeight() - mYaxis_min) * mHeightRatio);//刷新在画布中的高度
+            jchart.setWidth(mBarWidth);
+            PointF start = jchart.getStart();
             //刷新 每个柱子矩阵左下角坐标
             start.x = mChartArea.left + mBarWidth * i + mInterval * i;
-            start.y = mChartArea.bottom - mAbove - jExcel.getLower();
-            jExcel.setColor(mNormalColor);
+            start.y = mChartArea.bottom - mAbove - jchart.getLower();
+            jchart.setColor(mNormalColor);
         }
 
         //填充 path
         mLinePath.reset();
-        for (int i = 0; i < mExcels.size(); i++) {
-            JExcel jExcel = mExcels.get(i);
+        for (int i = 0; i < mJcharts.size(); i++) {
+            Jchart jchart = mJcharts.get(i);
 
-//            PointF midPointF = jExcel.getMidPointF();
+//            PointF midPointF = jchart.getMidPointF();
 //            if (i == 0) {
 //                mLinePath.moveTo(midPointF.x, midPointF.y );
 //            } else {
 //                mLinePath.lineTo(midPointF.x, midPointF.y );
 //            }
 
-            if (i < mExcels.size() - 1) {
-                PointF startPoint = jExcel.getMidPointF();
-                PointF endPoint = mExcels.get(i + 1).getMidPointF();//下一个点
+            if (i < mJcharts.size() - 1) {
+                PointF startPoint = jchart.getMidPointF();
+                PointF endPoint = mJcharts.get(i + 1).getMidPointF();//下一个点
                 if (i == 0) mLinePath.moveTo(startPoint.x, startPoint.y);
                 float controllA_X = (startPoint.x + endPoint.x) / 2;
                 float controllA_Y = startPoint.y;
@@ -533,7 +533,7 @@ public class LineChar extends SuperChart {
                 mLinePath.cubicTo(controllA_X, controllA_Y, controllB_X, controllB_Y, endPoint.x, endPoint.y);
             }
         }
-        mChartRithtest_x = mExcels.get(mExcels.size() - 1).getMidPointF().x;
+        mChartRithtest_x = mJcharts.get(mJcharts.size() - 1).getMidPointF().x;
     }
 
     @Override

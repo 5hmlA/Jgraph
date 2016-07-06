@@ -1,4 +1,4 @@
-package com.jonas.schart.chart;
+package com.jonas.jdiagram.graph;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -9,8 +9,8 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 
-import com.jonas.schart.chartbean.JExcel;
-import com.jonas.schart.superi.SuperChart;
+import com.jonas.jdiagram.models.Jchart;
+import com.jonas.jdiagram.inter.SuperGraph;
 
 import java.util.List;
 
@@ -21,7 +21,7 @@ import java.util.List;
  * @since [产品/模版版本]
  */
 
-public class PieChart extends SuperChart {
+public class PieGraph extends SuperGraph {
 
     private float dataFloatTotal;
     private Paint mPiePaint;
@@ -48,15 +48,15 @@ public class PieChart extends SuperChart {
     private float mArcRadio;
     private float mIntervalWidth;
 
-    public PieChart(Context context) {
+    public PieGraph(Context context) {
         super(context);
     }
 
-    public PieChart(Context context, AttributeSet attrs) {
+    public PieGraph(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public PieChart(Context context, AttributeSet attrs, int defStyleAttr) {
+    public PieGraph(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
@@ -101,7 +101,7 @@ public class PieChart extends SuperChart {
     protected void drawSugExcel_PIE(Canvas canvas) {
 
         mStartAnger = 0;
-        for (JExcel excel : mExcels) {
+        for (Jchart excel : mJcharts) {
             mPiePaint.setColor(excel.getColor());
             canvas.drawArc(mAecRect, mStartAnger, excel.getHeight(), false, mPiePaint);
             mStartAnger += excel.getHeight();
@@ -110,7 +110,7 @@ public class PieChart extends SuperChart {
         mIntervalPaint.setStrokeWidth(mIntervalWidth);
         mIntervalPaint.setColor(mIntervalColor);
         canvas.save();
-        for (JExcel excel : mExcels) {
+        for (Jchart excel : mJcharts) {
             canvas.drawLine(mCenterPoint.x + mArcRadio - pieWidth / 2 - 1f, mCenterPoint.y, mWidth, mHeight / 2, mIntervalPaint);
             canvas.rotate(excel.getHeight(), mCenterPoint.x, mCenterPoint.y);
         }
@@ -118,15 +118,15 @@ public class PieChart extends SuperChart {
     }
 
     @Override
-    public void cmdFill(List<JExcel> jExcelList) {
-        mExcels.clear();
+    public void cmdFill(List<Jchart> jchartList) {
+        mJcharts.clear();
         //sugexcel的lower为0 upper就是数据 height可以用来填充角度信息
-        for (JExcel jExcel : jExcelList) {
-            dataFloatTotal += jExcel.getUpper();
+        for (Jchart jchart : jchartList) {
+            dataFloatTotal += jchart.getUpper();
         }
-        mExcels.addAll(jExcelList);
+        mJcharts.addAll(jchartList);
         // 平分的角度
-        for (JExcel excel : mExcels) {
+        for (Jchart excel : mJcharts) {
             excel.setHeight(excel.getUpper() / dataFloatTotal * 360);
         }
         refreshPieSet();
