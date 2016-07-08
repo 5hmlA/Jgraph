@@ -36,31 +36,38 @@ public class ChartActivity extends AppCompatActivity {
         mLineChar = (JcoolGraph) findViewById(R.id.sug_recode_line);
 
         List<Jchart> lines = new ArrayList<>();
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 10; i++) {
 
             lines.add(new Jchart(new SecureRandom().nextInt(50)+15, Color.parseColor("#b8e986")));
         }
 //        lines.get(3).setUpper(100);
-//        mLineChar.setYaxisValues(0, 100, 4);
 //        mLineChar.setScrollAble(true);
         mLineChar.setVisibleNums(10);
-//        mLineChar.setSelectedMode(SuperChart.SelectedMode.selecetdMsgShow_Top);
-        mLineChar.setLineShowStyle(SuperGraph.LineShowStyle.LINESHOW_FROMLINE);
+//        mLineChar.setYaxisValues(0, 80, 4);
+//        mLineChar.setYaxisValues("test","测试","text");
+//        mLineChar.setSelectedMode(SuperGraph.SelectedMode.selecetdMsgShow_Top);
+//        mLineChar.setLineShowStyle(SuperGraph.LineShowStyle.LINESHOW_FROMLINE);
+        mLineChar.setLineShowStyle(SuperGraph.LineShowStyle.LINESHOW_ASWAVE);
         mLineChar.setLineStyle(JcoolGraph.LineStyle.LINE_CURVE);
-        mLineChar.setShaderAreaColors(Color.GRAY,Color.TRANSPARENT);
+//        mLineChar.setLineStyle(JcoolGraph.LineStyle.LINE_BROKEN);
+        mLineChar.setShaderAreaColors(Color.parseColor("#4B494B"),Color.TRANSPARENT);
+//        mLineChar.setLineShaderColors(Color.BLUE,Color.TRANSPARENT);
 //        mLineChar.setLineShaderColors(Color.RED, Color.parseColor("#ffbf55"), Color.parseColor("#f7eb57"), Color.parseColor("#b8e986"), Color.parseColor("#73c0fd"));
+//        mLineChar.setLineShaderColors(0xff059800, 0xffa0c700, 0xf7eb57, 0xb8e986);
+//        mLineChar.setLineShaderColors(Color.parseColor("#80ff3320"), Color.parseColor("#ffbf55"), Color.parseColor("#f7eb57"), Color.parseColor("#b8e986"), Color.parseColor("#73c0fd"));
+        mLineChar.setNormalColor(Color.parseColor("#676567"));
         mLineChar.setShowFromMode(JcoolGraph.ShowFromMode.SHOWFROMBUTTOM);
         mLineChar.cmdFill(lines);
     }
 
     public void clicked(View v){
-        mLineChar.aniShowChar_growing();
+        mLineChar.aniShow_growing();
     }
 
     public void changedata(View v){
         List<Jchart> lines = new ArrayList<>();
-        for (int i = 0; i < 20; i++) {
-            lines.add(new Jchart(new SecureRandom().nextInt(50)+15, Color.parseColor("#b8e986")));
+        for (int i = 0; i < 10; i++) {
+            lines.add(new Jchart(new SecureRandom().nextInt(50)+15, 0xb8e986));
         }
         mLineChar.aniChangeData(lines);
 

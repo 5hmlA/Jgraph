@@ -3,6 +3,7 @@ package com.jonas.jdiagram.inter;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.DashPathEffect;
 import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.PointF;
@@ -93,6 +94,17 @@ public class SuperGraph extends View {
          * 从左上角 放大
          */
         int LINESHOW_FROMCORNER = 4;
+        /**
+         * 水波 方式展开
+         */
+        int LINESHOW_ASWAVE = 5;
+    }
+
+    protected int mState = 0;
+    protected interface State{
+        int aniChange = 1;
+        int aniShow = 2;
+        int aniFinish = 3;
     }
 
     /**
@@ -140,6 +152,10 @@ public class SuperGraph extends View {
      * 滑动 距离
      */
     protected float mSliding = 0;
+    /**
+     * 虚线 用移动
+     */
+    private float mPhase = 3;
 
     public SuperGraph(Context context){
         super(context);
@@ -164,9 +180,8 @@ public class SuperGraph extends View {
         mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
         mCoordinatePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mCoordinatePaint.setStyle(Paint.Style.STROKE);
-
         mCoordinatePaint.setColor(Color.parseColor("#AFAFB0"));
-        mCoordinatePaint.setStrokeWidth(2);
+        mCoordinatePaint.setStrokeWidth(1f);
     }
 
     @Override
@@ -226,7 +241,6 @@ public class SuperGraph extends View {
      * 画 坐标轴  横轴
      */
     protected void drawCoordinateAxes(Canvas canvas){
-
         if(mJcharts != null && mJcharts.size()>0) {
             canvas.drawLine(0, mHeight, mJcharts.get(mJcharts.size()-1).getMidPointF().x, mHeight, mCoordinatePaint);
         }else {
@@ -255,6 +269,11 @@ public class SuperGraph extends View {
             }
             paint.setShader(new LinearGradient(x0, y0, x1, y1, shaders, position, Shader.TileMode.CLAMP));
         }
+    }
+
+    protected DashPathEffect pathDashEffect(float[] intervals) {                     //线，段，线，段
+        DashPathEffect dashEffect = new DashPathEffect(intervals, mPhase);
+        return dashEffect;
     }
 
     /**

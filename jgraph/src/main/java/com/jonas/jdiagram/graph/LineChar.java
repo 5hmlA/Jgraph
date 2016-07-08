@@ -3,7 +3,6 @@ package com.jonas.jdiagram.graph;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.DashPathEffect;
 import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -15,8 +14,8 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
-import com.jonas.jdiagram.models.Jchart;
 import com.jonas.jdiagram.inter.SuperGraph;
+import com.jonas.jdiagram.models.Jchart;
 
 import java.text.DecimalFormat;
 import java.util.List;
@@ -71,10 +70,6 @@ public class LineChar extends SuperGraph {
      * 渐变色
      */
     private int[] mShaderColors;
-    /**
-     * 虚线 用移动
-     */
-    private float phase = 3;
     private Paint mAbscisDashPaint;
     /**
      * 动画用的变俩
@@ -347,15 +342,10 @@ public class LineChar extends SuperGraph {
                 } else {
                     dashPath.lineTo(mChartArea.right, levelCoordinate);
                 }
-                mAbscisDashPaint.setPathEffect(pathDashEffect());
+                mAbscisDashPaint.setPathEffect(pathDashEffect(new float[]{4, 4}));
                 canvas.drawPath(dashPath, mAbscisDashPaint);
             }
         }
-    }
-
-    private DashPathEffect pathDashEffect() {                     //线，段，线，段
-        DashPathEffect dashEffect = new DashPathEffect(new float[]{4, 4}, phase);
-        return dashEffect;
     }
 
     /**
