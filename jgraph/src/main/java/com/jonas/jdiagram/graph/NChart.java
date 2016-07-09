@@ -178,7 +178,7 @@ public class NChart extends View implements ValueAnimator.AnimatorUpdateListener
     /**
      * 要画的 图表的 风格
      */
-    //    private int mChartStyle = ChartStyle.BAR_LINE;
+    //    private int mGraphStyle = GraphStyle.BAR_LINE;
     private int mChartStyle = ChartStyle.BAR;
     private int mTextAniStyle = TextAniStyle.ANIDOWN;
     /**
@@ -501,7 +501,7 @@ public class NChart extends View implements ValueAnimator.AnimatorUpdateListener
         float bgWidth = dip2px(8);
 
 //        float textMarging = dip2px(3);//文字背景 三角尖处 和 柱子的距离
-//        if (mChartStyle == SugChart.ChartStyle.LINE) {
+//        if (mGraphStyle == SugChart.GraphStyle.LINE) {
 //            textMarging = dip2px(2) + mLinePointRadio;
 //        }
 
@@ -623,7 +623,7 @@ public class NChart extends View implements ValueAnimator.AnimatorUpdateListener
         for (int i = 0; i < mExcels.size(); i++) {
             NExcel excel = mExcels.get(i);
             //                PointF start = excel.getStart();
-            //                if(mChartStyle == ChartStyle.LINE) {
+            //                if(mGraphStyle == GraphStyle.LINE) {
             //                    start.x += mSliding;//当 柱状和折线都画的时候 只要其中一个改变起点横坐标即可
             //                }
             PointF midPointF = excel.getMidPointF();

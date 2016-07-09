@@ -10,7 +10,7 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 
 import com.jonas.jdiagram.models.Jchart;
-import com.jonas.jdiagram.inter.SuperGraph;
+import com.jonas.jdiagram.inter.BaseGraph;
 
 import java.util.List;
 
@@ -21,8 +21,9 @@ import java.util.List;
  * @since [产品/模版版本]
  */
 
-public class PieGraph extends SuperGraph {
+public class PieGraph extends BaseGraph {
 
+    private static final int PIE = 4;
     private float dataFloatTotal;
     private Paint mPiePaint;
     private float pieWidth = 20;
@@ -70,7 +71,7 @@ public class PieGraph extends SuperGraph {
     @Override
     protected void init(Context context) {
         super.init(context);
-        mChartStyle = ChartStyle.PIE;
+        mGraphStyle = PIE;
         mPiePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mPiePaint.setStyle(Paint.Style.STROKE);
         mIntervalPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -94,25 +95,27 @@ public class PieGraph extends SuperGraph {
     }
 
     @Override
-    protected void drawCoordinateAxes(Canvas canvas) {
+    protected void onDraw(Canvas canvas) {
+        if (mJcharts != null && mJcharts.size() > 0) {
+            drawSugExcel_PIE(canvas);
+        }
     }
 
-    @Override
     protected void drawSugExcel_PIE(Canvas canvas) {
 
         mStartAnger = 0;
         for (Jchart excel : mJcharts) {
             mPiePaint.setColor(excel.getColor());
-            canvas.drawArc(mAecRect, mStartAnger, excel.getHeight(), false, mPiePaint);
-            mStartAnger += excel.getHeight();
+            canvas.drawArc(mAecRect, mStartAnger, excel.getPercent(), false, mPiePaint);
+            mStartAnger += excel.getPercent();
         }
 
         mIntervalPaint.setStrokeWidth(mIntervalWidth);
         mIntervalPaint.setColor(mIntervalColor);
         canvas.save();
         for (Jchart excel : mJcharts) {
-            canvas.drawLine(mCenterPoint.x + mArcRadio - pieWidth / 2 - 1f, mCenterPoint.y, mWidth, mHeight / 2, mIntervalPaint);
-            canvas.rotate(excel.getHeight(), mCenterPoint.x, mCenterPoint.y);
+            canvas.drawLine(mCenterPoint.x + mArcRadio - pieWidth / 2 - 0.25f, mCenterPoint.y, mCenterPoint.x + mArcRadio - pieWidth / 2 + pieWidth, mCenterPoint.y, mIntervalPaint);
+            canvas.rotate(excel.getPercent(), mCenterPoint.x, mCenterPoint.y);
         }
         canvas.restore();
     }
@@ -127,7 +130,7 @@ public class PieGraph extends SuperGraph {
         mJcharts.addAll(jchartList);
         // 平分的角度
         for (Jchart excel : mJcharts) {
-            excel.setHeight(excel.getUpper() / dataFloatTotal * 360);
+            excel.setPercent(excel.getUpper() / dataFloatTotal * 360);
         }
         refreshPieSet();
 
@@ -164,9 +167,4 @@ public class PieGraph extends SuperGraph {
         refreshPieSet();
     }
 
-    @Deprecated
-    @Override
-    public void setChartStyle(int chartStyle) {
-        mChartStyle = ChartStyle.PIE;
-    }
 }

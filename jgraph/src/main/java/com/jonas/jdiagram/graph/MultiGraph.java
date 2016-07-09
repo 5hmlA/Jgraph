@@ -10,15 +10,14 @@ import android.graphics.Path;
 import android.graphics.PathMeasure;
 import android.graphics.PointF;
 import android.graphics.Rect;
-import android.graphics.RectF;
 import android.graphics.Shader;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.ViewConfiguration;
 
+import com.jonas.jdiagram.inter.BaseGraph;
 import com.jonas.jdiagram.models.Jchart;
-import com.jonas.jdiagram.inter.SuperGraph;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,7 +31,7 @@ import java.util.List;
  * @Others: {https://github.com/mychoices}
  *
  */
-public class MultiGraph extends SuperGraph {
+public class MultiGraph extends BaseGraph {
 
     private int mWidth;
     private int mHeight;
@@ -450,7 +449,7 @@ public class MultiGraph extends SuperGraph {
     }
 
 
-    private void refreshExcels() {
+    protected void refreshExcels() {
         if (mHCoordinate > 0) {
             mHeightRatio = (mHCoordinate - 2 * mTextSize - mAbove - mTextMarging - mLinePointRadio * 2) / mHeightestExcel.getHeight();
             for (int i = 0; i < mExcels.size(); i++) {
@@ -518,7 +517,7 @@ public class MultiGraph extends SuperGraph {
         }
     }
 
-    private void drawAbscissaMsg(Canvas canvas, Jchart excel) {
+    protected void drawAbscissaMsg(Canvas canvas, Jchart excel) {
         if (null != excel) {
             mAbscissaPaint.setColor(mAbscissaMsgColor);
             PointF midPointF = excel.getMidPointF();
@@ -536,45 +535,45 @@ public class MultiGraph extends SuperGraph {
         }
     }
 
-    private void drawSelectedText(Canvas canvas, Jchart excel) {
-
-        mTextPaint.setColor(mTextColor);
-        PointF midPointF = excel.getMidPointF();
-//        String msg = excel.getUpper() + excel.getUnit();
-        String msg = excel.getShowMsg();
-        mTextPaint.getTextBounds(msg, 0, msg.length(), mBounds);
-        Path textBg = new Path();
-
-        float bgHeight = dip2px(6);
-        float bgWidth = dip2px(8);
-        if (mChartStyle == ChartStyle.LINE) {
-            mTextMarging = tempTextMargin + mLinePointRadio;
-        } else {
-            mTextMarging = tempTextMargin;
-        }
-        textBg.moveTo(midPointF.x, midPointF.y - mTextMarging);
-        textBg.lineTo(midPointF.x - bgWidth / 2, midPointF.y - mTextMarging - bgHeight - 1.5f);
-        textBg.lineTo(midPointF.x + bgWidth / 2, midPointF.y - mTextMarging - bgHeight - 1.5f);
-        textBg.close();
-        canvas.drawPath(textBg, mTextBgPaint);
-
-        RectF rectF = new RectF(midPointF.x - mBounds.width() / 2f - bgWidth, midPointF.y - mTextMarging - bgHeight - mBounds.height() - bgHeight * 2f
-                , midPointF.x + mBounds.width() / 2f + bgWidth, midPointF.y - mTextMarging - bgHeight);
-        float dffw = rectF.right - mWidth;
-        float msgX = midPointF.x;
-        float magin = 1;
-        if (dffw > 0) {
-            rectF.right = rectF.right - dffw - magin;
-            rectF.left = rectF.left - dffw - magin;
-            msgX = midPointF.x - dffw - magin;
-        } else if (rectF.left < 0) {
-            rectF.right = rectF.right - rectF.left + magin;
-            msgX = midPointF.x - rectF.left + magin;
-            rectF.left = magin;
-        }
-        canvas.drawRoundRect(rectF, 3, 3, mTextBgPaint);
-        canvas.drawText(msg, msgX, midPointF.y - mTextMarging - bgHeight * 2, mTextPaint);
-    }
+//    private void drawSelectedText(Canvas canvas, Jchart excel) {
+//
+//        mTextPaint.setColor(mTextColor);
+//        PointF midPointF = excel.getMidPointF();
+////        String msg = excel.getUpper() + excel.getUnit();
+//        String msg = excel.getShowMsg();
+//        mTextPaint.getTextBounds(msg, 0, msg.length(), mBounds);
+//        Path textBg = new Path();
+//
+//        float bgHeight = dip2px(6);
+//        float bgWidth = dip2px(8);
+//        if (mGraphStyle == GraphStyle.LINE) {
+//            mTextMarging = tempTextMargin + mLinePointRadio;
+//        } else {
+//            mTextMarging = tempTextMargin;
+//        }
+//        textBg.moveTo(midPointF.x, midPointF.y - mTextMarging);
+//        textBg.lineTo(midPointF.x - bgWidth / 2, midPointF.y - mTextMarging - bgHeight - 1.5f);
+//        textBg.lineTo(midPointF.x + bgWidth / 2, midPointF.y - mTextMarging - bgHeight - 1.5f);
+//        textBg.close();
+//        canvas.drawPath(textBg, mTextBgPaint);
+//
+//        RectF rectF = new RectF(midPointF.x - mBounds.width() / 2f - bgWidth, midPointF.y - mTextMarging - bgHeight - mBounds.height() - bgHeight * 2f
+//                , midPointF.x + mBounds.width() / 2f + bgWidth, midPointF.y - mTextMarging - bgHeight);
+//        float dffw = rectF.right - mWidth;
+//        float msgX = midPointF.x;
+//        float magin = 1;
+//        if (dffw > 0) {
+//            rectF.right = rectF.right - dffw - magin;
+//            rectF.left = rectF.left - dffw - magin;
+//            msgX = midPointF.x - dffw - magin;
+//        } else if (rectF.left < 0) {
+//            rectF.right = rectF.right - rectF.left + magin;
+//            msgX = midPointF.x - rectF.left + magin;
+//            rectF.left = magin;
+//        }
+//        canvas.drawRoundRect(rectF, 3, 3, mTextBgPaint);
+//        canvas.drawText(msg, msgX, midPointF.y - mTextMarging - bgHeight * 2, mTextPaint);
+//    }
 
     /**
      * 折线集合
@@ -764,25 +763,6 @@ public class MultiGraph extends SuperGraph {
 
 
     /**
-     * 判断 点中哪个柱状图
-     */
-    private int clickWhere(PointF tup) {
-        for (int i = 0; i < mExcels.size(); i++) {
-            Jchart excel = mExcels.get(i);
-            PointF start = excel.getStart();
-            if (start.x > tup.x) {
-                return -1;
-            } else if (start.x <= tup.x) {
-                if (start.x + excel.getWidth() > tup.x &&
-                        (start.y > tup.y && start.y - excel.getHeight() < tup.y)) {
-                    return i;
-                }
-            }
-        }
-        return -1;
-    }
-
-    /**
      * 传入 数据
      */
     public void cmdFill(Jchart... jcharts) {
@@ -868,7 +848,7 @@ public class MultiGraph extends SuperGraph {
     }
 
 
-    public int getChartStyle() {
+    public int getGraphStyle() {
         return mChartStyle;
     }
 
@@ -876,8 +856,8 @@ public class MultiGraph extends SuperGraph {
     /**
      * 设置 图表类型  柱状 折线  折线+柱状
      */
-    public void setChartStyle(int chartStyle) {
-        mChartStyle = chartStyle;
+    public void setGraphStyle(int graphStyle) {
+        mChartStyle = graphStyle;
     }
 
 

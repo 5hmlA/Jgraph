@@ -18,4 +18,10 @@
             android:onClick="changestyle"
             android:text="切换风格"/>
 
+
+    <com.jonas.jdiagram.graph.PieGraph
+        android:id="@+id/sug_record_pie"
+        android:layout_width="240dp"
+        android:layout_height="160dp"/>
+
 </LinearLayout>

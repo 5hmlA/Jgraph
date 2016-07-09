@@ -29,6 +29,7 @@ public class Jchart implements Cloneable {
     private int mColor;
     private float mNum; //当前数字
     private float mMax; //总数据
+    private float percent;//占比
     private String textMsg; //要显示的信息
     private String mXmsg; //横坐标信息
     private float mUpper;
@@ -215,6 +216,14 @@ public class Jchart implements Cloneable {
 
     public void setTag(String tag) {
         this.tag = tag;
+    }
+
+    public float getPercent() {
+        return percent;
+    }
+
+    public void setPercent(float percent) {
+        this.percent = percent;
     }
 
     public float getAniratio() {

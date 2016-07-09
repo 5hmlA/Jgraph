@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.jonas.jdiagram.graph.JChart;
+import com.jonas.jdiagram.graph.PieGraph;
 import com.jonas.jdiagram.models.Jchart;
 
 import java.util.ArrayList;
@@ -37,13 +38,25 @@ public class SugTestActivity extends Activity {
 //            }
             mJcharts.add(jchart);
         }
-//        mSchart.setChartStyle(ChartStyle.LINE);
+//        mSchart.setGraphStyle(GraphStyle.LINE);
         mSchart.setChartStyle(JChart.ChartStyle.BAR);
         mSchart.setExecelPaintShaderColors(new int[]{Color.parseColor("#089900"), Color.parseColor("#9FC700")});
 //        mSchart.setExecelPaintShaderColors(new int[]{Color.parseColor("#4df1dbd4"), Color.TRANSPARENT});
 //        mSchart.setScrollAble(false);
         mSchart.setFixedWidth(31);
         mSchart.cmdFill(mJcharts);
+
+        PieGraph pieChart = (PieGraph) findViewById(R.id.sug_record_pie);
+        Jchart hotbody = new Jchart(50, Color.parseColor("#73c0fd"));
+        Jchart burn = new Jchart(50, Color.parseColor("#b8e986"));
+        Jchart anaerobic = new Jchart(50, Color.parseColor("#f7eb57"));
+        Jchart aerobic = new Jchart(50, Color.parseColor("#ffbf55"));
+        Jchart limit = new Jchart(50, Color.RED);
+        if (pieChart != null) {
+            pieChart.setPieWidth(35);
+//            pieChart.setInterval(10);
+            pieChart.cmdFill(hotbody, burn, anaerobic, aerobic, limit);
+        }
     }
 
     public void changestyle(View v) {

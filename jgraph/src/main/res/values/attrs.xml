@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="AndroidJgraph">
+        <attr name="graphstyle" format="enum">
+            <enum name="bar" value="1"/>
+            <enum name="line" value="2"/>
+        </attr>
+        <attr name="scrollable" format="boolean"/>
+        <attr name="showymsg" format="boolean"/>
+        <attr name="normolcolor" format="color"/>
+    </declare-styleable>
+</resources>

@@ -1,41 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:background="#323032"
               android:layout_width="match_parent"
-              android:layout_height="match_parent">
+              android:layout_height="match_parent"
+              android:background="#323032"
+              android:orientation="vertical">
 
     <Button
+        android:id="@+id/button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="clicked"
         android:text="点击试试"/>
 
-    <com.jonas.jdiagram.graph.PieGraph
-        android:id="@+id/sug_record_pie"
-        android:background="#000000"
-        android:layout_width="240dp"
-        android:layout_height="160dp"/>
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:foreground="?android:attr/selectableItemBackground">
 
-    <com.jonas.jdiagram.graph.JcoolGraph
-        android:id="@+id/sug_recode_line"
+        <com.jonas.jdiagram.graph.JcoolGraph
+            android:id="@+id/sug_recode_line"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:layout_width="match_parent"
+            android:layout_height="240dp"
+            android:clickable="true"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="10dp"
+            app:showymsg="true"
+            />
+    </FrameLayout>
+
+    <Button
         android:layout_width="match_parent"
-        android:paddingTop="10dp"
-        android:layout_height="240dp"
-        android:layout_marginLeft="10dp"
-        />
-<Button
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:onClick="changedata"/>
+        android:layout_height="wrap_content"
+        android:onClick="changedata"/>
 
     <FrameLayout
         android:layout_width="wrap_content"
-        android:foreground="?android:attr/selectableItemBackground"
-        android:layout_height="wrap_content">
-    <ImageView
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@mipmap/ic_launcher"/>
+        android:clickable="true"
+        android:foreground="?android:attr/selectableItemBackground">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/ic_launcher"/>
     </FrameLayout>
 </LinearLayout>

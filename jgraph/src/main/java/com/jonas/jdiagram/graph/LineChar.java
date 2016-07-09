@@ -7,17 +7,13 @@ import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PointF;
-import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Shader;
-import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.view.MotionEvent;
 
-import com.jonas.jdiagram.inter.SuperGraph;
+import com.jonas.jdiagram.inter.BaseGraph;
 import com.jonas.jdiagram.models.Jchart;
 
-import java.text.DecimalFormat;
 import java.util.List;
 
 /**
@@ -27,7 +23,7 @@ import java.util.List;
  * @since [产品/模版版本]
  */
 
-public class LineChar extends SuperGraph {
+public class LineChar extends BaseGraph {
 
     private boolean moved;
     private float mDownX;
@@ -107,7 +103,7 @@ public class LineChar extends SuperGraph {
     @Override
     protected void init(Context context) {
         super.init(context);
-        mChartStyle = ChartStyle.LINE;
+        mGraphStyle = GraphStyle.LINE;
         mLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mAbscissaPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mAbscisDashPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -152,89 +148,6 @@ public class LineChar extends SuperGraph {
         if (mNeedY_abscissMasg) {
             drawYabscissaMsg(canvas);
         }
-    }
-
-    /**
-     * 刷新 画图表的区域
-     */
-    private void refreshChartArea() {
-        float yMsgLength = 0;
-        float yMsgHeight = 0;
-        if (mNeedY_abscissMasg) {
-            //如果 需要 纵轴坐标的时候
-            String yaxismax = mYaxis_Max + "";
-            yMsgLength = mAbscissaPaint.measureText(yaxismax, 0, yaxismax.length());
-            Rect bounds = new Rect();
-            mAbscissaPaint.getTextBounds(yaxismax, 0, yaxismax.length(), bounds);
-            yMsgLength = bounds.width() < yMsgLength ? bounds.width() : yMsgLength;
-            yMsgHeight = bounds.height();
-        }
-        if (allowInterval_left_right) {
-            //如过 允许 图表左右两边留有 间隔的时候
-            mChartArea = new RectF(yMsgLength + getPaddingLeft() + mInterval, getPaddingTop() + yMsgHeight
-                    , mWidth + getPaddingLeft() - mInterval, getPaddingTop() + mHeight - 2 * mAbscissaMsgSize);
-        } else {
-            mChartArea = new RectF(yMsgLength + getPaddingLeft(), getPaddingTop() + yMsgHeight
-                    , mWidth + getPaddingLeft(), getPaddingTop() + mHeight - 2 * mAbscissaMsgSize);
-        }
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        if (mJcharts.size() > 0) {
-            switch (event.getAction()) {
-                case MotionEvent.ACTION_DOWN:
-                    mDownX = event.getX();
-                    break;
-                case MotionEvent.ACTION_MOVE:
-                    if (mScrollAble) {
-                        float moveX = event.getX();
-                        mSliding += moveX - mDownX;
-                        if (Math.abs(mSliding) > mTouchSlop) {
-                            moved = true;
-                            mDownX = moveX;
-                            if (mJcharts != null && mJcharts.size() > 0) {
-                                //防止 图表 滑出界面看不到
-                                mSliding = mSliding >= 0 ? 0 : mSliding <= -(mChartRithtest_x - mCharAreaWidth) ? -(mChartRithtest_x - mCharAreaWidth) : mSliding;
-                            } else {
-                                mSliding = mSliding >= 0 ? 0 : mSliding;
-                            }
-                            invalidate();
-                        }
-                    }
-                    break;
-                case MotionEvent.ACTION_UP:
-                    if (!moved) {
-                        PointF tup = new PointF(event.getX(), event.getY());
-                        mSelected = clickWhere(tup);
-                        invalidate();
-                    }
-                    moved = false;
-                    break;
-                default:
-                    break;
-            }
-        }
-        return true;
-    }
-
-    /**
-     * 判断 点中哪个柱状图
-     */
-    private int clickWhere(PointF tup) {
-        for (int i = 0; i < mJcharts.size(); i++) {
-            Jchart excel = mJcharts.get(i);
-            PointF start = excel.getStart();
-            if (start.x > tup.x) {
-                return -1;
-            } else if (start.x <= tup.x) {
-                if (start.x + excel.getWidth() > tup.x &&
-                        (start.y > tup.y && start.y - excel.getHeight() < tup.y)) {
-                    return i;
-                }
-            }
-        }
-        return -1;
     }
 
     @Override
@@ -322,61 +235,6 @@ public class LineChar extends SuperGraph {
         }
     }
 
-    /**
-     * 画纵坐标信息
-     *
-     * @param canvas
-     */
-    private void drawYabscissaMsg(Canvas canvas) {
-        mAbscissaPaint.setTextAlign(Paint.Align.LEFT);
-        float diffLevel = (mYaxis_Max - mYaxis_min) / ((float) mYaxis_showYnum);
-        float diffCoordinate = diffLevel * mHeightRatio;
-        for (int i = 0; i <= mYaxis_showYnum; i++) {
-            float levelCoordinate = mChartArea.bottom - diffCoordinate * i;
-            canvas.drawText(new DecimalFormat("#").format(mYaxis_min + diffLevel * i), getPaddingLeft(), levelCoordinate, mAbscissaPaint);
-            if (i > 0) {
-                Path dashPath = new Path();
-                dashPath.moveTo(mChartArea.left, levelCoordinate);
-                if (mJcharts != null && mJcharts.size() > 0) {
-                    dashPath.lineTo(mChartRithtest_x, levelCoordinate);
-                } else {
-                    dashPath.lineTo(mChartArea.right, levelCoordinate);
-                }
-                mAbscisDashPaint.setPathEffect(pathDashEffect(new float[]{4, 4}));
-                canvas.drawPath(dashPath, mAbscisDashPaint);
-            }
-        }
-    }
-
-    /**
-     * 画 对应的 横轴信息
-     *
-     * @param canvas
-     * @param excel
-     */
-    private void drawAbscissaMsg(Canvas canvas, Jchart excel) {
-        mAbscissaPaint.setTextAlign(Paint.Align.CENTER);
-        if (null != excel) {
-            PointF midPointF = excel.getMidPointF();
-            if (!TextUtils.isEmpty(excel.getXmsg())) {
-                String xmsg = excel.getXmsg();
-                float w = mAbscissaPaint.measureText(xmsg, 0, xmsg.length());
-                if (!mScrollAble) {
-                    if (midPointF.x - w / 2 < 0) {
-                        //最左边
-                        canvas.drawText(excel.getXmsg(), w / 2, mChartArea.bottom + dip2px(3) + mAbscissaMsgSize, mAbscissaPaint);
-                    } else if (midPointF.x + w / 2 > mWidth) {
-                        //最右边
-                        canvas.drawText(excel.getXmsg(), mWidth - w / 2, mChartArea.bottom + dip2px(3) + mAbscissaMsgSize, mAbscissaPaint);
-                    } else {
-                        canvas.drawText(excel.getXmsg(), midPointF.x, mChartArea.bottom + dip2px(3) + mAbscissaMsgSize, mAbscissaPaint);
-                    }
-                } else {
-                    canvas.drawText(excel.getXmsg(), midPointF.x, mChartArea.bottom + dip2px(3) + mAbscissaMsgSize, mAbscissaPaint);
-                }
-            }
-        }
-    }
 
     protected void drawCoordinateAxes(Canvas canvas) {
 
@@ -388,8 +246,8 @@ public class LineChar extends SuperGraph {
     }
 
     @Override
-    public void setChartStyle(int chartStyle) {
-        mChartStyle = ChartStyle.LINE;
+    public void setGraphStyle(int graphStyle) {
+        mGraphStyle = GraphStyle.LINE;
     }
 
     /**
@@ -423,66 +281,11 @@ public class LineChar extends SuperGraph {
         postInvalidate();
     }
 
-    private void refreshChartSetData() {
-        if (mChartStyle == ChartStyle.BAR) {
-            //柱状图默认 间隔固定
-            mInterval = mInterval == 0 ? 2 : mInterval;//没设置宽度的时候 默认4设置了就用设置的
-            mFixBarWidth = false;
-        } else {
-            //折线图 默认柱子宽度固定 小点
-            mBarWidth = mBarWidth == -1 ? 4 : mBarWidth;//没设置宽度的时候 默认4设置了就用设置的
-            mFixBarWidth = true;
-        }
-
-        //画 图表区域的宽度
-        mCharAreaWidth = mChartArea.right - mChartArea.left;
-        //不可滚动 则必须全部显示在界面上  无视mVisibleNums
-        if (!mFixBarWidth) {
-            //间隔 minterval默认 计算柱子宽度
-            if (!mScrollAble) {
-                //不可滚动的时候
-                if (mForceFixNums) {
-                    //固定 显示个数
-                    //根据mVisibleNums计算mBarWidth宽度mInterval固定
-                    mBarWidth = (mCharAreaWidth - mInterval * (mVisibleNums - 1)) / mVisibleNums;
-                } else {
-                    //所有柱子 平分 整个区域
-                    mBarWidth = (mCharAreaWidth - mInterval * ( mJcharts.size() - 1)) / mJcharts.size();
-                }
-            } else {
-                if (mVisibleNums == -1) {
-                    //默认初始化 可见个数
-                    mVisibleNums = mJcharts.size() < 5 ? mJcharts.size() : 5;
-                }
-                mBarWidth = (mCharAreaWidth - mInterval * (mVisibleNums - 1)) / mVisibleNums;
-            }
-        } else {
-
-            if (!mScrollAble) {
-                if (mForceFixNums) {
-                    //固定 显示个数 主要作用于 显示个数 大于mExcel.size
-                    //根据mVisibleNums计算mBarWidth宽度mInterval固定
-                    mInterval = (mCharAreaWidth - mBarWidth * mVisibleNums) / (mVisibleNums - 1);
-                } else {
-                    //所有柱子 平分 整个区域
-                    mInterval = (mCharAreaWidth - mBarWidth * mJcharts.size()) / ( mJcharts.size() - 1);
-                }
-            } else {
-                if (mVisibleNums == -1) {
-                    //默认初始化 可见个数
-                    mVisibleNums = mJcharts.size() < 5 ? mJcharts.size() : 5;
-                }
-                //可滚动
-                mInterval = (mCharAreaWidth - mBarWidth * mVisibleNums) / (mVisibleNums - 1);
-            }
-        }
-        refreshExcels();
-    }
 
     /**
      * 主要 刷新高度
      */
-    private void refreshExcels() {
+    protected void refreshExcels() {
         if (mYaxis_Max <= 0) {
             mYaxis_Max = mHeightestExcel.getHeight();
         }
@@ -504,13 +307,6 @@ public class LineChar extends SuperGraph {
         mLinePath.reset();
         for (int i = 0; i < mJcharts.size(); i++) {
             Jchart jchart = mJcharts.get(i);
-
-//            PointF midPointF = jchart.getMidPointF();
-//            if (i == 0) {
-//                mLinePath.moveTo(midPointF.x, midPointF.y );
-//            } else {
-//                mLinePath.lineTo(midPointF.x, midPointF.y );
-//            }
 
             if (i < mJcharts.size() - 1) {
                 PointF startPoint = jchart.getMidPointF();
