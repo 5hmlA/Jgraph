@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.jonas.schart">
+<manifest package="com.jonas.schart"
+          xmlns:android="http://schemas.android.com/apk/res/android">
 
     <application
-            android:allowBackup="true"
-            android:icon="@mipmap/ic_launcher"
-            android:label="@string/app_name"
-            android:supportsRtl="true"
-            android:theme="@style/AppTheme">
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
         <activity android:name=".EntActivity">
-        <!--<activity android:name=".SugTestActivity">-->
+
+            <!-- <activity android:name=".SugTestActivity"> -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -19,6 +20,12 @@
         <activity android:name=".SugTestActivity"/>
         <activity android:name=".ChartActivity"/>
         <activity android:name=".MainActivity"/>
+        <activity android:name=".Main2Activity">
+        </activity>
+        <activity android:name=".PieActivity">
+        </activity>
+        <activity android:name=".ProgActivity">
+        </activity>
     </application>
 
 </manifest>

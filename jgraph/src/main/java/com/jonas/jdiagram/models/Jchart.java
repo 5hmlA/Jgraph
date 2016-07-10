@@ -38,7 +38,7 @@ public class Jchart implements Cloneable {
     private float mAniratio = 1;
     private ValueAnimator mValueAnimator = ValueAnimator.ofFloat(0, 1);
     ;
-    private long DURATION = 1000;
+    private long DURATION = 700;
     //    private TimeInterpolator INTERPOLATOR = new BounceInterpolator();
     private TimeInterpolator INTERPOLATOR = new OvershootInterpolator(3);
     private float mHeightRatio = 1;
