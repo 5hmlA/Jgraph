@@ -39,8 +39,9 @@ public class Jchart implements Cloneable {
     private ValueAnimator mValueAnimator = ValueAnimator.ofFloat(0, 1);
     ;
     private long DURATION = 1000;
-//    private TimeInterpolator INTERPOLATOR = new BounceInterpolator();
+    //    private TimeInterpolator INTERPOLATOR = new BounceInterpolator();
     private TimeInterpolator INTERPOLATOR = new OvershootInterpolator(3);
+    private float mHeightRatio = 1;
 
     public Jchart(float num, int color) {
         this(0, num, "", color);
@@ -57,11 +58,11 @@ public class Jchart implements Cloneable {
         mStart.y = mLower;
         this.mColor = color;
         this.mXmsg = TextUtils.isEmpty(mXmsg) ? new DecimalFormat("##").format(mHeight) : mXmsg;
-        mShowMsg = new DecimalFormat("##").format(mHeight);
+        mShowMsg = new DecimalFormat("##").format(mNum);
     }
 
     public RectF getRectF() {
-        return new RectF(mStart.x, mStart.y - mHeight * mAniratio, mStart.x + mWidth, mStart.y);
+        return new RectF(mStart.x, mStart.y - mHeight * mHeightRatio * mAniratio, mStart.x + mWidth, mStart.y);
     }
 
     /**
@@ -70,7 +71,7 @@ public class Jchart implements Cloneable {
      * @return
      */
     public PointF getMidPointF() {
-        return new PointF(getMidX(), mStart.y - mHeight * mAniratio);
+        return new PointF(getMidX(), mStart.y - mHeight * mHeightRatio * mAniratio);
     }
 
 
@@ -94,7 +95,8 @@ public class Jchart implements Cloneable {
 
 
     public float getHeight() {
-        return mHeight;
+//        return mHeight;
+        return mHeight * mHeightRatio;
     }
 
 
@@ -102,6 +104,13 @@ public class Jchart implements Cloneable {
         this.mHeight = height;
     }
 
+    public float getHeightRatio() {
+        return mHeightRatio;
+    }
+
+    public void setHeightRatio(float heightRatio) {
+        mHeightRatio = heightRatio;
+    }
 
     public PointF getStart() {
         return mStart;
@@ -186,7 +195,11 @@ public class Jchart implements Cloneable {
 
 
     public void setLower(float lower) {
+        if (mLower == lower) {
+            return;
+        }
         mLower = lower;
+        mHeight = mUpper - mLower;
     }
 
     public int getIndex() {
@@ -235,20 +248,29 @@ public class Jchart implements Cloneable {
         mAniratio = aniratio;
     }
 
-    public Jchart aniHeight(final View view) {
+    public Jchart aniHeight(final View view, float from, TimeInterpolator interpolator) {
+        mValueAnimator.setFloatValues(from, 1);
         mValueAnimator.setDuration(DURATION);
-        mValueAnimator.setInterpolator(INTERPOLATOR);
+        mValueAnimator.setInterpolator(interpolator);
         mValueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 mAniratio = (float) animation.getAnimatedValue();
                 view.postInvalidate();
+                setPercent(mAniratio);
+                if (index == 0) {
+                    System.out.println(mAniratio);
+                }
             }
         });
         if (!mValueAnimator.isRunning() && mAniratio < 0.8) {
             mValueAnimator.start();
         }
         return this;
+    }
+
+    public Jchart aniHeight(View view) {
+        return aniHeight(view, 0, INTERPOLATOR);
     }
 
     public void draw(Canvas canvas, Paint paint, boolean point) {

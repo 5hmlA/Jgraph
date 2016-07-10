@@ -269,10 +269,7 @@ public class LineChar extends BaseGraph {
                 start.x = mInterval * (i + 1) + mBarWidth * i;
                 mJcharts.add(jchart);
             }
-            if (!mScrollAble && mForceFixNums && mJcharts.size() > mVisibleNums) {
-                //如果不可滚动的话 同时要显示固定个数 那么为防止显示不全 将可见个数设置为柱子数量
-                mVisibleNums = mJcharts.size();
-            }
+
             if (mWidth > 0) {
                 //已经显示在界面上了 重新设置数据
                 refreshChartSetData();

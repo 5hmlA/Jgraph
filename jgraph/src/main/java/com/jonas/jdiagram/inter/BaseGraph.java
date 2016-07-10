@@ -123,10 +123,6 @@ public abstract class BaseGraph extends View {
      * 是否允许 滚动
      */
     protected boolean mScrollAble;
-    /**
-     * 是否固定 柱子宽度
-     */
-    protected boolean mFixBarWidth;
 
     /**
      * 控件 中心 点
@@ -135,14 +131,16 @@ public abstract class BaseGraph extends View {
 
     /**
      * 可见的 个数(柱状图(最多可见的柱子数量)/折线图(最多可见的点))
+     * <p>可滚动的时候 mVisibleNums可以小于mchart的数量</p>
+     * <p>不可滚动的时候 mVisibleNums必须大于等于mchart的数量</p>
      */
-    protected int mVisibleNums = -1;
+    protected int mVisibleNums = 0;
 
     /**
      * 在不可滚动时 最多显示可见个数
      * <p color="red">mVisibleNums>=mExecels.size 否则部分不可见
      */
-    protected boolean mForceFixNums;
+//    protected boolean mForceFixNums;
 
     /**
      * 选中模式 为-1 表示不处理点击选中状态
@@ -179,9 +177,9 @@ public abstract class BaseGraph extends View {
     }
 
     public interface GraphStyle {
-        int BAR = 1;
-        int LINE = 2;
-        int BAR_LINE = 3;
+        int BAR = 0;
+        int LINE = 1;
+        int BAR_LINE = 2;
     }
 
     protected Context mContext;
@@ -247,10 +245,12 @@ public abstract class BaseGraph extends View {
     public BaseGraph(Context context, AttributeSet attrs) {
         super(context, attrs);
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.AndroidJgraph);
-        mGraphStyle = a.getInt(R.styleable.AndroidJgraph_graphstyle, 1);
+        mGraphStyle = a.getInt(R.styleable.AndroidJgraph_graphstyle, GraphStyle.LINE);
         mScrollAble = a.getBoolean(R.styleable.AndroidJgraph_scrollable, false);
         mNeedY_abscissMasg = a.getBoolean(R.styleable.AndroidJgraph_showymsg, true);
         mNormalColor = a.getColor(R.styleable.AndroidJgraph_normolcolor, Color.parseColor("#676567"));
+        mActivationColor = a.getColor(R.styleable.AndroidJgraph_activationcolor, Color.RED);
+        mVisibleNums = a.getInt(R.styleable.AndroidJgraph_visiblenums, 0);
         a.recycle();
         init(context);
     }
@@ -293,7 +293,7 @@ public abstract class BaseGraph extends View {
         mSelectedTextPaint.setColor(Color.WHITE);
         mSelectedTextPaint.setTextSize(sp2px(12));
 
-        mBarWidth = dip2px(16);//默认的柱子宽度
+        mBarWidth = dip2px(10);//默认的柱子宽度
         mInterval = dip2px(4);//默认的间隔大小
     }
 
@@ -337,54 +337,28 @@ public abstract class BaseGraph extends View {
     protected void refreshChartSetData() {
         if (mGraphStyle == GraphStyle.BAR) {
             //柱状图默认 间隔固定
-            mInterval = mInterval == dip2px(4) ? dip2px(4) : mInterval;//没设置宽度的时候 默认4设置了就用设置的
+            mInterval = mInterval >= dip2px(4) ? dip2px(4) : mInterval;
 //            mFixBarWidth = false;
         } else {
             //折线图 默认柱子宽度固定 小点
-            mBarWidth = 6f;//没设置宽度的时候 默认4设置了就用设置的
-            mFixBarWidth = true;
+            mBarWidth = 3;
+        }
+
+        if (mScrollAble) {
+            mVisibleNums = mVisibleNums <= 0 ? 5 : mVisibleNums;//可滚动的状态下 默认可见个数为5
+        } else {
+            //不可滚动的状态下 可见的数量必须 大于等于 数据数量
+            mVisibleNums = mVisibleNums >= mJcharts.size() ? mVisibleNums : mJcharts.size();
         }
 
         //画 图表区域的宽度
         mCharAreaWidth = mChartArea.right - mChartArea.left;
         //不可滚动 则必须全部显示在界面上  无视mVisibleNums
-        if (!mFixBarWidth) {
+        if (mGraphStyle == GraphStyle.BAR) {
             //间隔 minterval默认 计算柱子宽度
-            if (!mScrollAble) {
-                //不可滚动的时候
-                if (mForceFixNums) {
-                    //固定 显示个数
-                    //根据mVisibleNums计算mBarWidth宽度mInterval固定
-                    mBarWidth = (mCharAreaWidth - mInterval * (mVisibleNums - 1)) / mVisibleNums;
-                } else {
-                    //所有柱子 平分 整个区域
-                    mBarWidth = (mCharAreaWidth - mInterval * (mJcharts.size() - 1)) / mJcharts.size();
-                }
-            } else {
-                if (mVisibleNums == -1) {
-                    //默认初始化 可见个数
-                    mVisibleNums = mJcharts.size() < 5 ? mJcharts.size() : 5;
-                }
-                mBarWidth = (mCharAreaWidth - mInterval * (mVisibleNums - 1)) / mVisibleNums;
-            }
+            mBarWidth = (mCharAreaWidth - mInterval * (mVisibleNums - 1)) / mVisibleNums;
         } else {
-            if (!mScrollAble) {
-                if (mForceFixNums) {
-                    //固定 显示个数 主要作用于 显示个数 大于mExcel.size
-                    //根据mVisibleNums计算mBarWidth宽度mInterval固定
-                    mInterval = (mCharAreaWidth - mBarWidth * mVisibleNums) / (mVisibleNums - 1);
-                } else {
-                    //所有柱子 平分 整个区域
-                    mInterval = (mCharAreaWidth - mBarWidth * mJcharts.size()) / (mJcharts.size() - 1);
-                }
-            } else {
-                if (mVisibleNums == -1) {
-                    //默认初始化 可见个数
-                    mVisibleNums = mJcharts.size() < 5 ? mJcharts.size() : 5;
-                }
-                //可滚动
-                mInterval = (mCharAreaWidth - mBarWidth * mVisibleNums) / (mVisibleNums - 1);
-            }
+            mInterval = (mCharAreaWidth - mBarWidth * mVisibleNums) / (mVisibleNums - 1);
         }
         refreshExcels();
     }
@@ -403,7 +377,9 @@ public abstract class BaseGraph extends View {
         mHeightRatio = (mChartArea.bottom - mChartArea.top) / (mYaxis_Max - mYaxis_min);
         for (int i = 0; i < mJcharts.size(); i++) {
             Jchart jchart = mJcharts.get(i);
-            jchart.setHeight((jchart.getHeight() - mYaxis_min) * mHeightRatio);//刷新在画布中的高度
+            jchart.setLower(mYaxis_min);
+            jchart.setHeightRatio(mHeightRatio);//刷新在画布中的高度比例
+//            jchart.setHeight((jchart.getHeight() - mYaxis_min) * mHeightRatio);//刷新在画布中的高度
             jchart.setWidth(mBarWidth);
             PointF start = jchart.getStart();
             jchart.setIndex(i);
@@ -466,12 +442,9 @@ public abstract class BaseGraph extends View {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
                     mDownX = event.getX();
-//                    if (!mScrollAble) {
-//                        return false;
-//                    }
                     break;
                 case MotionEvent.ACTION_MOVE:
-                    if (mScrollAble) {
+                    if (mScrollAble && (mJcharts.size() > mVisibleNums)) {
                         float moveX = event.getX();
                         float moving = moveX - mDownX;
                         mSliding += moving;
@@ -522,6 +495,9 @@ public abstract class BaseGraph extends View {
             clickEffective_x = tup.x - mChartArea.left - mBarWidth - mInterval / 2;
             if (clickEffective_x > 0) {
                 int maybeSelected = (int) (clickEffective_x / (mBarWidth + mInterval)) + 1;
+                if (maybeSelected >= mJcharts.size()) {
+                    return -1;
+                }
                 //判断y
                 Jchart jchart = mJcharts.get(maybeSelected);
                 if (tup.y > jchart.getMidPointF().y - mAllowError) {
@@ -623,11 +599,13 @@ public abstract class BaseGraph extends View {
             if (i > 0) {
                 Path dashPath = new Path();
                 dashPath.moveTo(mChartArea.left, levelCoordinate);
+                float ydash_x = 0;
                 if (mJcharts != null && mJcharts.size() > 0) {
-                    dashPath.lineTo(mChartRithtest_x, levelCoordinate);
+                    ydash_x = mChartRithtest_x < mChartArea.right ? mChartArea.right : mChartRithtest_x;
                 } else {
-                    dashPath.lineTo(mChartArea.right, levelCoordinate);
+                    ydash_x = mChartArea.right;
                 }
+                dashPath.lineTo(ydash_x, levelCoordinate);
                 mAbscisDashPaint.setPathEffect(pathDashEffect(new float[]{4, 4}));
                 canvas.drawPath(dashPath, mAbscisDashPaint);
             }
@@ -680,7 +658,9 @@ public abstract class BaseGraph extends View {
      */
     protected void drawCoordinateAxes(Canvas canvas) {
         if (mScrollAble) {
-            canvas.drawLine(mChartArea.left, mChartArea.bottom, mChartRithtest_x + mBarWidth / 2, mChartArea.bottom, mCoordinatePaint);
+            float coordinate_x = mChartRithtest_x + mBarWidth / 2;
+            coordinate_x = coordinate_x < mChartArea.right ? mChartArea.right : coordinate_x;
+            canvas.drawLine(mChartArea.left, mChartArea.bottom, coordinate_x, mChartArea.bottom, mCoordinatePaint);
         } else {
             canvas.drawLine(mChartArea.left, mChartArea.bottom, mChartArea.right, mChartArea.bottom, mCoordinatePaint);
         }
@@ -707,6 +687,8 @@ public abstract class BaseGraph extends View {
                 position[1] = 1;
             }
             paint.setShader(new LinearGradient(x0, y0, x1, y1, shaders, position, Shader.TileMode.CLAMP));
+        } else if (paint.getShader() != null) {
+            paint.setShader(null);
         }
     }
 
@@ -721,7 +703,7 @@ public abstract class BaseGraph extends View {
     }
 
     public void aniShowChar(float start, final float end, TimeInterpolator interpolator) {
-        aniShowChar(start, end, interpolator, 800);
+        aniShowChar(start, end, interpolator, 1000);
     }
 
     public void aniShowChar(float start, final float end, TimeInterpolator interpolator, long duration) {
@@ -770,11 +752,7 @@ public abstract class BaseGraph extends View {
                 jchart.setIndex(i);
                 mAllLastPoints.add(new PointF(jchart.getMidX(), -1));
             }
-            if (!mScrollAble && mForceFixNums && mJcharts.size() > mVisibleNums) {
-                //如果不可滚动的话 同时要显示固定个数 那么为防止显示不全 将可见个数设置为柱子数量
-                mVisibleNums = mJcharts.size();
-            }
-//            findTheBestChart();
+
             if (mWidth > 0) {
                 //已经显示在界面上了 重新设置数据
                 refreshChartSetData();
@@ -918,6 +896,9 @@ public abstract class BaseGraph extends View {
      */
     public void setGraphStyle(int graphStyle) {
         mGraphStyle = graphStyle;
+        if (mWidth > 0) {
+            refreshChartSetData();
+        }
     }
 
     /**
@@ -984,15 +965,9 @@ public abstract class BaseGraph extends View {
      */
     public void setVisibleNums(int visibleNums) {
         mVisibleNums = visibleNums;
-        //防止 不可滚动时visibleNums设置太小
-        if (!mScrollAble && mForceFixNums && mJcharts.size() > mVisibleNums) {
-            //如果不可滚动的话 同时要显示固定个数 那么为防止显示不全 将可见个数设置为柱子数量
-            mVisibleNums = mJcharts.size();
+        if (mWidth > 0) {
+            refreshChartSetData();
         }
-    }
-
-    public void setForceFixNums(boolean forceFixNums) {
-        mForceFixNums = forceFixNums;
     }
 
     public void setSelectedMode(int selectedMode) {
@@ -1018,7 +993,7 @@ public abstract class BaseGraph extends View {
         return mSelectedTextBgPaint;
     }
 
-    public Paint getSelectedText() {
+    public Paint getSelectedTextPaint() {
         return mSelectedTextPaint;
     }
 

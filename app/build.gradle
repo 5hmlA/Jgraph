@@ -16,7 +16,7 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
-        beta6 {
+        beta5 {
             signingConfig signingConfigs.debug
             applicationIdSuffix ".beta"
         }

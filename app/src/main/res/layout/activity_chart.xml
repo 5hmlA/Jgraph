@@ -28,24 +28,64 @@
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
             android:paddingTop="10dp"
+            app:graphstyle="bar"
             app:showymsg="true"
             />
+        <!--app:linestyle="broken"-->
+        <!--app:linewidth="3dp"-->
     </FrameLayout>
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="changedata"/>
+        android:onClick="changedata"
+        android:text="切换数据"/>
 
-    <FrameLayout
-        android:layout_width="wrap_content"
+    <CheckBox
+        android:id="@+id/graphshader"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:clickable="true"
-        android:foreground="?android:attr/selectableItemBackground">
+        android:text="图表渐变"/>
+    <CheckBox
+        android:id="@+id/areashader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="折线阴影渐变"/>
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@mipmap/ic_launcher"/>
-    </FrameLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:orientation="horizontal">
+
+        <ListView
+            android:id="@+id/graphstyle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+        </ListView>
+
+        <ListView
+            android:id="@+id/linestyle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+        </ListView>
+
+        <ListView
+            android:id="@+id/showstyle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+        </ListView>
+
+        <ListView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:visibility="gone">
+        </ListView>
+
+    </LinearLayout>
+
+
 </LinearLayout>

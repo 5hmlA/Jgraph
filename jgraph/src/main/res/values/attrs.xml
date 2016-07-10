@@ -2,11 +2,35 @@
 <resources>
     <declare-styleable name="AndroidJgraph">
         <attr name="graphstyle" format="enum">
-            <enum name="bar" value="1"/>
-            <enum name="line" value="2"/>
+            <enum name="bar" value="0"/>
+            <enum name="line" value="1"/>
         </attr>
         <attr name="scrollable" format="boolean"/>
+        <attr name="visiblenums" format="integer"/>
         <attr name="showymsg" format="boolean"/>
         <attr name="normolcolor" format="color"/>
+        <attr name="activationcolor" format="color"/>
+        <attr name="linestyle" format="enum">
+            <!--折线-->
+            <enum name="broken" value="0"/>
+            <!--曲线-->
+            <enum name="curve" value="1"/>
+        </attr>
+        <attr name="linemode" format="enum">
+            <!--链接每一个点-->
+            <enum name="everypoint" value="1"/>
+            <!--跳过0的点-->
+            <enum name="jump0" value="2"/>
+            <!--跳过的0点用虚线链接-->
+            <enum name="dash0" value="3"/>
+        </attr>
+        <attr name="linewidth" format="dimension"/>
+        <attr name="lineshowstyle" format="enum">
+            <enum name="drawing" value="0"/>
+            <enum name="section" value="1"/>
+            <enum name="fromline" value="2"/>
+            <enum name="fromcorner" value="3"/>
+            <enum name="aswave" value="4"/>
+        </attr>
     </declare-styleable>
 </resources>
