@@ -16,7 +16,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:clickable="true"
-        android:foreground="?android:attr/selectableItemBackground">
+        android:foreground="?attr/selectableItemBackground">
 
         <com.jonas.jdiagram.graph.JcoolGraph
             android:id="@+id/sug_recode_line"
@@ -28,7 +28,7 @@
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
             android:paddingTop="10dp"
-            app:graphstyle="bar"
+            app:graphstyle="line"
             app:showymsg="true"
             />
         <!--app:linestyle="broken"-->
@@ -61,7 +61,7 @@
             android:id="@+id/graphstyle"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1">
+            android:layout_weight="2">
         </ListView>
 
         <ListView
@@ -75,7 +75,7 @@
             android:id="@+id/showstyle"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1">
+            android:layout_weight="2">
         </ListView>
 
         <ListView

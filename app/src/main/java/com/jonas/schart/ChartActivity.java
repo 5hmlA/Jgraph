@@ -24,6 +24,7 @@ public class ChartActivity extends AppCompatActivity implements CompoundButton.O
     private JcoolGraph mLineChar;
     private String linestyleItems[] = new String[]{"折线", "曲线"};
     private String showstyleItems[] = new String[]{"DRAWING", "SECTION", "FROMLINE", "FROMCORNER", "ASWAVE"};
+    private String barshowstyleItems[] = new String[]{"ASWAVE", "FROMLINE", "EXPAND", "SECTION"};
     private int chartNum = 15;
 
     @Override
@@ -40,7 +41,7 @@ public class ChartActivity extends AppCompatActivity implements CompoundButton.O
             lines.add(new Jchart(new SecureRandom().nextInt(50) + 15, Color.parseColor("#b8e986")));
         }
 //        lines.get(3).setUpper(100);
-        mLineChar.setScrollAble(true);
+//        mLineChar.setScrollAble(true);
         mLineChar.setVisibleNums(10);
 //        mLineChar.setYaxisValues(20, 80, 5);
 //        mLineChar.setYaxisValues("test","测试","text");
@@ -86,14 +87,14 @@ public class ChartActivity extends AppCompatActivity implements CompoundButton.O
     private void setUpListview() {
 
         ListView graphstyle = (ListView) findViewById(R.id.graphstyle);
-        ListView linestyle = (ListView) findViewById(R.id.linestyle);
-        ListView showstyle = (ListView) findViewById(R.id.showstyle);
+        final ListView linestyle = (ListView) findViewById(R.id.linestyle);
+        final ListView showstyle = (ListView) findViewById(R.id.showstyle);
         linestyle.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
         showstyle.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
         graphstyle.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
-        ArrayAdapter graphstyleadapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_checked, new String[]{"柱状图", "折线图"});
-        ArrayAdapter linestyleadapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_checked, linestyleItems);
-        ArrayAdapter showstyleadapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_checked, showstyleItems);
+        ArrayAdapter graphstyleadapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_single_choice, new String[]{"柱状图", "折线图"});
+        ArrayAdapter linestyleadapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_single_choice, linestyleItems);
+        ArrayAdapter showstyleadapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_single_choice, showstyleItems);
 
         graphstyle.setAdapter(graphstyleadapter);
         linestyle.setAdapter(linestyleadapter);
@@ -104,6 +105,15 @@ public class ChartActivity extends AppCompatActivity implements CompoundButton.O
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 mLineChar.setGraphStyle(position);
                 mLineChar.invalidate();
+                ArrayAdapter linestyleadapter;
+                if (position == 1) {
+                    linestyle.setVisibility(View.VISIBLE);
+                    linestyleadapter = new ArrayAdapter<String>(ChartActivity.this, android.R.layout.simple_list_item_single_choice, showstyleItems);
+                } else {
+                    linestyle.setVisibility(View.GONE);
+                    linestyleadapter = new ArrayAdapter<String>(ChartActivity.this, android.R.layout.simple_list_item_single_choice, barshowstyleItems);
+                }
+                showstyle.setAdapter(linestyleadapter);
             }
         });
         linestyle.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -116,7 +126,11 @@ public class ChartActivity extends AppCompatActivity implements CompoundButton.O
         showstyle.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                mLineChar.setLineShowStyle(position);
+                if (linestyle.getVisibility() == View.GONE) {
+                    mLineChar.setBarShowStyle(position);
+                } else {
+                    mLineChar.setLineShowStyle(position);
+                }
             }
         });
 

@@ -337,7 +337,7 @@ public abstract class BaseGraph extends View {
     protected void refreshChartSetData() {
         if (mGraphStyle == GraphStyle.BAR) {
             //柱状图默认 间隔固定
-            mInterval = mInterval >= dip2px(4) ? dip2px(4) : mInterval;
+            mInterval = mInterval >= dip2px(6) ? dip2px(6) : mInterval;
 //            mFixBarWidth = false;
         } else {
             //折线图 默认柱子宽度固定 小点
