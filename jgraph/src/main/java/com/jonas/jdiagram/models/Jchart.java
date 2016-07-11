@@ -249,21 +249,18 @@ public class Jchart implements Cloneable {
     }
 
     public Jchart aniHeight(final View view, float from, TimeInterpolator interpolator) {
-        mValueAnimator.setFloatValues(from, 1);
-        mValueAnimator.setDuration(DURATION);
-        mValueAnimator.setInterpolator(interpolator);
-        mValueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                mAniratio = (float) animation.getAnimatedValue();
-                view.postInvalidate();
-                setPercent(mAniratio);
-                if (index == 0) {
-                    System.out.println(mAniratio);
-                }
-            }
-        });
         if (!mValueAnimator.isRunning() && mAniratio < 0.8) {
+            mValueAnimator.setFloatValues(from, 1);
+            mValueAnimator.setDuration(DURATION);
+            mValueAnimator.setInterpolator(interpolator);
+            mValueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator animation) {
+                    mAniratio = (float) animation.getAnimatedValue();
+                    view.postInvalidate();
+                    setPercent(mAniratio);
+                }
+            });
             mValueAnimator.start();
         }
         return this;

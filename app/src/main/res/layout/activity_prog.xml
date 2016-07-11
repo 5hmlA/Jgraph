@@ -5,7 +5,23 @@
               android:layout_height="match_parent"
               android:layout_margin="5dp"
               android:orientation="vertical">
+    <com.jonas.jdiagram.utils.FlowLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
 
+        <Button
+            android:id="@+id/button4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="showAni"
+            android:text="展现动画"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="lianji"
+            android:text="连击"/>
+    </com.jonas.jdiagram.utils.FlowLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -30,30 +46,9 @@
             android:layout_marginTop="10dp"
             android:layout_width="match_parent"
             android:layout_height="20dp"/>
-        <com.jonas.jdiagram.progress.ChargingView
+        <com.jonas.jdiagram.progress.AniBallProgress
             android:id="@+id/chv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
     </LinearLayout>
-
-    <com.jonas.jdiagram.utils.FlowLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="30dp">
-
-        <Button
-            android:id="@+id/button4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="showAni"
-            android:text="展现动画"/>
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="lianji"
-            android:text="连击"/>
-    </com.jonas.jdiagram.utils.FlowLayout>
-
-
 </LinearLayout>

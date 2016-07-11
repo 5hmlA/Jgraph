@@ -221,7 +221,7 @@ public abstract class BaseGraph extends View {
      * 存储原始数据 /上一次的数据
      */
     protected ArrayList<PointF> mAllLastPoints;
-    protected ValueAnimator mValueAnimator = ValueAnimator.ofFloat(0, 1);
+    protected ValueAnimator mValueAnimator = new ValueAnimator();
 
     /**
      * 越来越快	AccelerateInterpolator()
@@ -698,20 +698,26 @@ public abstract class BaseGraph extends View {
     }
 
 
-    public void aniShowChar(float start, final float end) {
+    public void aniShowChar(float start, float end) {
         aniShowChar(start, end, mInterpolator, ANIDURATION);
     }
 
-    public void aniShowChar(float start, final float end, TimeInterpolator interpolator) {
+    public void aniShowChar(float start, float end, TimeInterpolator interpolator) {
         aniShowChar(start, end, interpolator, 1000);
     }
 
-    public void aniShowChar(float start, final float end, TimeInterpolator interpolator, long duration) {
-        if (mValueAnimator == null) {
-            mValueAnimator = ValueAnimator.ofFloat(start, end);
+    public void aniShowChar(float start, float end, TimeInterpolator interpolator, long duration) {
+        aniShowChar(start, end, interpolator, duration, false);
+    }
+
+    public void aniShowChar(float start, float end, TimeInterpolator interpolator, long duration, boolean intvalue) {
+        mValueAnimator.cancel();
+        if (intvalue) {
+//            mValueAnimator.setIntValues(((int) start), ((int) end));//之后变成整形的valueanimator无法切换到float
+            mValueAnimator = ValueAnimator.ofInt(((int) start), ((int) end));
         } else {
-            mValueAnimator.cancel();
-            mValueAnimator.setFloatValues(start, end);
+//            mValueAnimator.setFloatValues(start, end);
+            mValueAnimator = ValueAnimator.ofFloat(start, end);
         }
         //        if(mLineStyle == LineStyle.LINE_CURVE) {
         //            mLinePath.rewind();//倒序

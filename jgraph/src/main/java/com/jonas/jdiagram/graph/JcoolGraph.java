@@ -228,7 +228,6 @@ public class JcoolGraph extends BaseGraph {
         if (mState == State.aniChange && mAniRatio < 1) {
             barAniChanging(canvas);
             for (Jchart jchart : mJcharts) {
-//                    jchart.draw(canvas, mBarPaint, false);
                 jchart.draw(canvas, mCoordinatePaint, false);
             }
         } else {
@@ -240,7 +239,6 @@ public class JcoolGraph extends BaseGraph {
                 }
             } else if (mBarShowStyle == BarShowStyle.BARSHOW_ASWAVE) {
                 for (Jchart jchart : mJcharts) {
-                    mJcharts.get((int) mAniRatio).aniHeight(this, 0, new AccelerateInterpolator());
                     jchart.draw(canvas, mBarPaint, false);
                 }
             } else if (mBarShowStyle == BarShowStyle.BARSHOW_FROMLINE) {
@@ -433,10 +431,6 @@ public class JcoolGraph extends BaseGraph {
     private void drawLineAsWave(Canvas canvas) {
         mAniShadeAreaPath.reset();
         mAniLinePath.reset();
-        for (Jchart jchart : mJcharts) {
-            mJcharts.get((int) mAniRatio).aniHeight(this);
-//            jchart.draw(canvas, mLinePaint, true);
-        }
         if (mLineStyle == LineStyle.LINE_CURVE) {
             setUpCurveLinePath();
         } else {
@@ -735,7 +729,7 @@ public class JcoolGraph extends BaseGraph {
             } else if (mLineShowStyle == LineShowStyle.LINESHOW_SECTION) {
                 mAniLinePath.reset();
                 mAniShadeAreaPath.reset();
-                aniShowChar(0, mJcharts.size(), new LinearInterpolator(), 3000);
+                aniShowChar(0, mJcharts.size() - 1, new LinearInterpolator(), 3000, true);
             } else if (mLineShowStyle == LineShowStyle.LINESHOW_FROMLINE || mLineShowStyle == LineShowStyle.LINESHOW_FROMCORNER) {
                 if (mShowFromMode == ShowFromMode.SHOWFROMMIDDLE) {
                     aniShowChar(0, 1, new AccelerateInterpolator());
@@ -744,7 +738,7 @@ public class JcoolGraph extends BaseGraph {
                 }
             } else if (mLineShowStyle == LineShowStyle.LINESHOW_ASWAVE) {
                 if (mJcharts.size() > 0) {
-                    aniShowChar(0, mJcharts.size() - 1, new LinearInterpolator(), (mJcharts.size() - 1) * 200);
+                    aniShowChar(0, mJcharts.size() - 1, new LinearInterpolator(), (mJcharts.size() - 1) * 200, true);
                     for (Jchart jchart : mJcharts) {
                         jchart.setAniratio(0);
                     }
@@ -756,10 +750,10 @@ public class JcoolGraph extends BaseGraph {
                     for (Jchart jchart : mJcharts) {
                         jchart.setAniratio(0);
                     }
-                    aniShowChar(0, mJcharts.size() - 1, new LinearInterpolator(), (mJcharts.size() - 1) * 200);
-                } else if(mBarShowStyle == BarShowStyle.BARSHOW_SECTION){
-                    aniShowChar(0, mJcharts.size() - 1, new LinearInterpolator(), (mJcharts.size() - 1) * 200);
-                }else {
+                    aniShowChar(0, mJcharts.size() - 1, new LinearInterpolator(), (mJcharts.size() - 1) * 200, true);
+                } else if (mBarShowStyle == BarShowStyle.BARSHOW_SECTION) {
+                    aniShowChar(0, mJcharts.size() - 1, new LinearInterpolator(), (mJcharts.size() - 1) * 200, true);
+                } else {
                     aniShowChar(0, 1, new LinearInterpolator());
                 }
 
@@ -769,11 +763,23 @@ public class JcoolGraph extends BaseGraph {
 
     @Override
     protected void onAnimationUpdating(ValueAnimator animation) {
-        mAniRatio = (float) animation.getAnimatedValue();
-        if (mGraphStyle == GraphStyle.LINE) {
-            if (mLineShowStyle == JcoolGraph.LineShowStyle.LINESHOW_DRAWING && mState != State.aniChange) {
-                //mCurPosition必须要初始化mCurPosition = new float[2];
-                mPathMeasure.getPosTan(mAniRatio, mCurPosition, null);
+        if (mState == State.aniChange || mLineShowStyle == LineShowStyle.LINESHOW_FROMLINE || mBarShowStyle == BarShowStyle.BARSHOW_EXPAND
+                || mBarShowStyle == BarShowStyle.BARSHOW_FROMLINE || mLineShowStyle == LineShowStyle.LINESHOW_FROMCORNER) {
+            mAniRatio = (float) animation.getAnimatedValue();
+        } else if (mGraphStyle == GraphStyle.BAR && mBarShowStyle == BarShowStyle.BARSHOW_ASWAVE || mBarShowStyle == BarShowStyle.BARSHOW_SECTION) {
+            mAniRatio = (int) animation.getAnimatedValue();
+            mJcharts.get(((int) mAniRatio)).aniHeight(this, 0, new AccelerateInterpolator());
+        } else if (mGraphStyle == GraphStyle.LINE && mLineShowStyle == LineShowStyle.LINESHOW_ASWAVE || mLineShowStyle == LineShowStyle.LINESHOW_SECTION) {
+            int curr = (int) animation.getAnimatedValue();
+            mJcharts.get(curr).aniHeight(this);
+            mAniRatio = curr;
+        } else {
+            mAniRatio = (float) animation.getAnimatedValue();
+            if (mGraphStyle == GraphStyle.LINE) {
+                if (mLineShowStyle == JcoolGraph.LineShowStyle.LINESHOW_DRAWING && mState != State.aniChange) {
+                    //mCurPosition必须要初始化mCurPosition = new float[2];
+                    mPathMeasure.getPosTan(mAniRatio, mCurPosition, null);
+                }
             }
         }
         postInvalidate();
@@ -885,6 +891,9 @@ public class JcoolGraph extends BaseGraph {
      * @param lineShowStyle one of {@link LineShowStyle}
      */
     public void setLineShowStyle(int lineShowStyle) {
+        if (mValueAnimator.isRunning()) {
+            mValueAnimator.cancel();
+        }
         mLineShowStyle = lineShowStyle;
     }
 

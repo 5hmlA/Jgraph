@@ -114,14 +114,6 @@ public class ChargeView extends Progress {
             mCircleStart.y = (float)( mRadius*Math.sin(mSweepHudu) )+mCPoint.y;
             mPaint.setColor(boxColor);
             canvas.drawCircle(mCircleStart.x, mCircleStart.y, boxRadius, mPaint);
-            //            if(Math.abs(mSweepHudu-mSweepHudufinish)>=1) {
-            //                mPaint.setColor(Color.RED);
-            //                float mSweepHudu2 = mSweepHudu-1;
-            //                mCircleFinish.x = (float)( mRadius*Math.cos(mSweepHudu2) )+mCPoint.x;
-            //                mCircleFinish.y = (float)( mRadius*Math.sin(mSweepHudu2) )+mCPoint.y;
-            //                //            mPaint.setColor(boxColor);
-            //                canvas.drawCircle(mCircleFinish.x, mCircleFinish.y, boxRadius, mPaint);
-            //            }
         }
         if(showRing) {
             drawProgress(canvas);
