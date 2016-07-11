@@ -26,7 +26,11 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * Created by Jonas on 2015/10/2.
+ * @author yun.
+ * @date 2016/6/8
+ * @des [一句话描述]
+ * @since [https://github.com/mychoices]
+ * <p><a href="https://github.com/mychoices">github</a>
  */
 public class JProgBall extends View {
 

@@ -15,12 +15,12 @@ import com.jonas.jdiagram.inter.BaseGraph;
 import java.util.List;
 
 /**
- * @author jiangzuyun.
- * @date 2016/6/8
+ * @author yun.
+ * @date 2015/9/2
  * @des [一句话描述]
- * @since [产品/模版版本]
+ * @since [https://github.com/mychoices]
+ * <p><a href="https://github.com/mychoices">github</a>
  */
-
 public class PieGraph extends BaseGraph {
 
     private static final int PIE = 4;

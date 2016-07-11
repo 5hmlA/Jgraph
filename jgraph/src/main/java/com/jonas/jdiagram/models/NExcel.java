@@ -5,7 +5,11 @@ import android.graphics.PointF;
 import android.graphics.RectF;
 
 /**
- * Created by Jonas on 2016/4/10.
+ * @author yun.
+ * @date 2016/6/8
+ * @des [一句话描述]
+ * @since [https://github.com/mychoices]
+ * <p><a href="https://github.com/mychoices">github</a>
  */
 public class NExcel {
     private float mWidth;//柱状 的 宽

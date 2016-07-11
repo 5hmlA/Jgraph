@@ -3,9 +3,11 @@ package com.jonas.jdiagram.models;
 import java.util.Random;
 
 /**
- * Created by jiangzuyun on 2015/8/31.
- *
- * 把每个扇形封装成一个对象 内部封装 改扇形的 描述 大小 颜色 起始角度 扫描角度
+ * @author yun.
+ * @date 2016/6/8
+ * @des [饼图的 数据对象]
+ * @since [https://github.com/mychoices]
+ * <p><a href="https://github.com/mychoices">github</a>
  */
 public class Apiece {
     /**

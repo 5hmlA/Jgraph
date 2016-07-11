@@ -35,10 +35,11 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * @Author jwx338756
- * @Date: 2016
- * @Description: 折线+虚线
- * @Others: {https://github.com/mychoices}
+ * @author yun.
+ * @date 2016/7/11
+ * @des [图表控件的基类  finish 图表区域，横纵轴数据]
+ * @since [https://github.com/mychoices]
+ * <p><a href="https://github.com/mychoices">github</a>
  */
 public abstract class BaseGraph extends View {
     private static final String TAG = BaseGraph.class.getSimpleName();

@@ -3,13 +3,12 @@ package com.jonas.jdiagram.inter;
 import android.graphics.Paint;
 
 /**
- * @author jiangzuyun.
- * @date 2016/7/11
- * @des [一句话描述]
- * @since [产品/模版版本]
+ * @author yun.
+ * @date 2016/6/8
+ * @des [进度控件的基类 封装了一些通用的方法]
+ * @since [https://github.com/mychoices]
+ * <p><a href="https://github.com/mychoices">github</a>
  */
-
-
 public interface IProgress {
 
     IProgress setAniDuration(long duration);

@@ -25,12 +25,11 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- *
- * @Author jwx338756
- * @Date: 2016
- * @Description: 折线+虚线
- * @Others: {https://github.com/mychoices}
- *
+ * @author yun.
+ * @date 2016/7/11
+ * @des [图表中每一个数据封装的对象]
+ * @since [https://github.com/mychoices]
+ * <p><a href="https://github.com/mychoices">github</a>
  */
 public class JChart extends View {
 

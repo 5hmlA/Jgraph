@@ -11,13 +11,12 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import static android.R.attr.radius;
 
 /**
- * @author jiangzuyun.
- * @date 2016/7/11
+ * @author yun.
+ * @date 2016/6/8
  * @des [一句话描述]
- * @since [产品/模版版本]
+ * @since [https://github.com/mychoices]
+ * <p><a href="https://github.com/mychoices">github</a>
  */
-
-
 public class Jball implements ValueAnimator.AnimatorUpdateListener {
 
     private int index;

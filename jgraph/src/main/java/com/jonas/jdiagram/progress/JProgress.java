@@ -21,7 +21,11 @@ import com.jonas.jdiagram.utils.DisplayUtils;
 import java.text.DecimalFormat;
 
 /**
- * Created by jiangzuyun on 2015/9/2.
+ * @author yun.
+ * @date 2015/9/2
+ * @des [一句话描述]
+ * @since [https://github.com/mychoices]
+ * <p><a href="https://github.com/mychoices">github</a>
  */
 public class JProgress extends View {
 

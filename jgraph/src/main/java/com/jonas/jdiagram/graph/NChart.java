@@ -32,9 +32,12 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Created on 2016/1/10.  by Jonas{https://github.com/mychoices} 画线的时候 必须把 画笔的style设置为 Paint.Style.STROKE
+ * @author yun.
+ * @date 2016/7/11
+ * @des [一句话描述  画线的时候 必须把 画笔的style设置为 Paint.Style.STROKE]
+ * @since [https://github.com/mychoices]
+ * <p><a href="https://github.com/mychoices">github</a>
  */
-
 public class NChart extends View implements ValueAnimator.AnimatorUpdateListener, Animator.AnimatorListener {
 
     private int mWidth;

@@ -17,12 +17,12 @@ import com.jonas.jdiagram.models.Jchart;
 import java.util.List;
 
 /**
- * @author jiangzuyun.
+ * @author yun.
  * @date 2016/6/8
  * @des [一句话描述]
- * @since [产品/模版版本]
+ * @since [https://github.com/mychoices]
+ * <p><a href="https://github.com/mychoices">github</a>
  */
-
 public class LineChar extends BaseGraph {
 
     private boolean moved;

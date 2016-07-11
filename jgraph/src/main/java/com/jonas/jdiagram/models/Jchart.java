@@ -14,10 +14,11 @@ import android.view.animation.OvershootInterpolator;
 import java.text.DecimalFormat;
 
 /**
- * @author jwx338756.
- * @date 2016/1/27
- * @des [添加 虚线]
- * @since [产品/模版版本]
+ * @author yun.
+ * @date 2016/6/8
+ * @des [一句话描述]
+ * @since [https://github.com/mychoices]
+ * <p><a href="https://github.com/mychoices">github</a>
  */
 public class Jchart implements Cloneable {
     private String mShowMsg;

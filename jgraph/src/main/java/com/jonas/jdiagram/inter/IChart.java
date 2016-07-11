@@ -5,10 +5,11 @@ import com.jonas.jdiagram.models.Jchart;
 import java.util.List;
 
 /**
- * @Author jwx338756
- * @Date: 2016
- * @Description: 折线+虚线
- * @Others: {https://github.com/mychoices}
+ * @author yun.
+ * @date 2016/6/8
+ * @des [一句话描述]
+ * @since [https://github.com/mychoices]
+ * <p><a href="https://github.com/mychoices">github</a>
  */
 public interface IChart {
 

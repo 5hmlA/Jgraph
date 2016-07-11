@@ -3,7 +3,6 @@ package com.jonas.jdiagram.progress;
 import android.animation.TimeInterpolator;
 import android.animation.ValueAnimator;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -15,7 +14,13 @@ import android.view.animation.BounceInterpolator;
 
 import java.util.Random;
 
-@SuppressLint("DrawAllocation")
+/**
+ * @author yun.
+ * @date 2015/10/7
+ * @des [一句话描述]
+ * @since [https://github.com/mychoices]
+ * <p><a href="https://github.com/mychoices">github</a>
+ */
 public class RoundAniRec extends View {
 
 	private Paint mPaint;

@@ -15,7 +15,11 @@ import android.view.animation.OvershootInterpolator;
 import java.util.Random;
 
 /**
- * Created by jonas on 2015/10/7.
+ * @author yun.
+ * @date 2015/10/7
+ * @des [一句话描述]
+ * @since [https://github.com/mychoices]
+ * <p><a href="https://github.com/mychoices">github</a>
  */
 public class WaveProgress extends View {
 
