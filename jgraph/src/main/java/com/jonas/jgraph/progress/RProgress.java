@@ -1,4 +1,4 @@
-package com.jonas.jdiagram.progress;
+package com.jonas.jgraph.progress;
 
 import android.animation.TimeInterpolator;
 import android.animation.ValueAnimator;
@@ -6,13 +6,12 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PaintFlagsDrawFilter;
 import android.graphics.Path;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.OvershootInterpolator;
-
-import java.util.Random;
 
 /**
  * @author yun.
@@ -21,68 +20,45 @@ import java.util.Random;
  * @since [https://github.com/mychoices]
  * <p><a href="https://github.com/mychoices">github</a>
  */
-public class WaveProgress extends View {
+public class RProgress extends View {
 
-    private Paint wPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Paint background = new Paint(Paint.ANTI_ALIAS_FLAG);
     private float mCenx;
     private float mCeny;
     private int mHeight;
     private int mWidth;
     private Path backPath = new Path();
-    /**
-     * 波浪 路径
-     */
-    private Path wPath = new Path();
+    private Path progressPath = new Path();
+    private float radius = 200;
     private RectF mBackRect = new RectF();
+    private float rx;
+    private float ry;
     private int bgColor = Color.WHITE;
-    /**
-     * 波浪的颜色
-     */
-    private int wColor = Color.RED;
+    private int progColor = Color.RED;
     private int mJust;
-    /**
-     * 当前进度
-     */
-    private float cProgress = 80;
-
-    /**
-     * 水波的速度
-     */
-    private float waveSpeed = 10;
-    private float waveMove = 0;
-    /**
-     * 最大进度
-     */
+    private float cProgress = 10;
+    private float progress = 1;
     private float mProgress = 100;
     private ValueAnimator pAnimation = new ValueAnimator();
     private long ANIDURATION = 1000;
     private TimeInterpolator interpolator = new OvershootInterpolator();
-    /**
-     * 水波球的半径
-     */
-    private float wRadius;
-    /**
-     * 波浪振幅
-     */
-    private float range = 25;
-    private Random mRandom;
+    private boolean showInner = false;
 
     {
         background.setColor(bgColor);
-        wPaint.setColor(wColor);
-        mRandom = new Random();
+        mPaint.setColor(progColor);
     }
 
-    public WaveProgress(Context context){
+    public RProgress(Context context){
         this(context, null);
     }
 
-    public WaveProgress(Context context, AttributeSet attrs){
+    public RProgress(Context context, AttributeSet attrs){
         this(context, attrs, 0);
     }
 
-    public WaveProgress(Context context, AttributeSet attrs, int defStyleAttr){
+    public RProgress(Context context, AttributeSet attrs, int defStyleAttr){
         super(context, attrs, defStyleAttr);
         //        if(attrs != null) {
         //            context.obtainStyledAttributes()
@@ -103,48 +79,49 @@ public class WaveProgress extends View {
         mHeight = getHeight();
         mCenx = mWidth/2f;
         mCeny = mHeight/2f;
-        mJust = mWidth>mHeight ? mHeight : mWidth;
 
-        wRadius = wRadius == 0 ? mJust/2 : wRadius;
-        backPath.addCircle(mCenx, mCeny, wRadius, Path.Direction.CCW);
+        mJust = mWidth>mHeight ? mHeight-getPaddingBottom()-getPaddingTop() : mWidth-getPaddingBottom()-getPaddingTop();
+        rx = ry = ry == 0 || rx == 0 ? mJust/2 : rx;
+        mBackRect.set(getPaddingLeft(), getPaddingTop(), mWidth-getPaddingRight(), mHeight-getPaddingBottom());
+        backPath.addRoundRect(mBackRect, rx, ry, Path.Direction.CCW);
+        if(showInner) {
+            mBackRect.set(0, 0, mWidth, mHeight);
+            backPath.addRect(mBackRect, Path.Direction.CW);
+            backPath.setFillType(Path.FillType.EVEN_ODD);
+        }
 
-//        range = wRadius
     }
 
     @Override
     protected void onDraw(Canvas canvas){
         super.onDraw(canvas);
 
-        canvas.clipPath(backPath);//剪切出圆形画布 画在外面的部分不显示
-        canvas.drawColor(bgColor);
+        if(showInner) {
+            //画进度
+            mBackRect.set(getPaddingLeft(), getPaddingTop(), cProgress*mWidth/mProgress*progress, mHeight-getPaddingBottom());
+            canvas.drawRect(mBackRect, mPaint);
 
-        //mCeny+wRadius-cProgress 为当前进度 所在的y轴坐标
-        float currentY = mCeny+wRadius-cProgress/mProgress*wRadius*2;
-        wPath.reset();
-        wPath.moveTo(0,currentY);//起点
-
-        //波浪进度 的path
-        for(int i = 0; i<=mJust; i++) {
-//            range = mRandom.nextInt(30)+10;
-            //画cos曲线  cos曲线往左或者往右一直移动出现波浪波动效果
-            wPath.lineTo(i, currentY+range*(float)Math.cos(( i+waveMove )*( 480f/mJust )*Math.PI/180f));
+            //画背景  每次都得画   矩形在进度上面画背景 该背景是在矩形上去掉一个内部的圆角矩形（Path.FillType.EVEN_ODD 去掉重复部分)
+            //那么就只能够 透过圆角矩形 看到 下面的进度了
+            canvas.drawPath(backPath, background);
+        }else {
+            canvas.setDrawFilter(new PaintFlagsDrawFilter(0, Paint.FILTER_BITMAP_FLAG|Paint.ANTI_ALIAS_FLAG));
+            canvas.clipPath(backPath);//剪切出 圆角矩形区域 然后再上面画矩形  显示的就是两边为圆角的进度
+//            mPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+            //画进度
+            mBackRect.set(getPaddingLeft(), getPaddingTop(), cProgress*mWidth/mProgress*progress, mHeight-getPaddingBottom());
+            canvas.drawRect(mBackRect, mPaint);
         }
-        wPath.lineTo(mWidth, mHeight);//右下角
-        wPath.lineTo(0, mHeight);//左下角  之后会闭合到起点
-
-        //画波浪进度
-        canvas.drawPath(wPath, wPaint);
-
-        //中间线条
-        canvas.drawLine(0, mCeny, mWidth, mCeny, background);
-        canvas.drawLine(0, currentY, mWidth, currentY, background);
-        waveMove +=waveSpeed+mRandom.nextInt(20);
-        postInvalidate();
+        if(progress<1) {
+            //递归onDraw方法 实现动画效果 缺点是 无法添加速度效果
+            progress += 0.01;
+            postInvalidate();
+        }
     }
 
     public void setCurrentProgress(float currentProgress){
         this.cProgress = currentProgress;
-        waveSpeed = 1;
+        progress = 1;
     }
 
     /**
@@ -155,6 +132,9 @@ public class WaveProgress extends View {
      *         当前进度
      */
     public void setAniCurrentProgress(float currentProgress){
+        //        this.cProgress = currentProgress;
+        //        progress = 0;
+        //        postInvalidate();//无法使用各种加速效果
         pAnimation.cancel();
         pAnimation.setFloatValues(0, currentProgress);
         pAnimation.setDuration(ANIDURATION);

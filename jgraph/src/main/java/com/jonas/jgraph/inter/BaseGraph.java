@@ -1,4 +1,4 @@
-package com.jonas.jdiagram.inter;
+package com.jonas.jgraph.inter;
 
 import android.animation.TimeInterpolator;
 import android.animation.ValueAnimator;
@@ -23,9 +23,9 @@ import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.animation.BounceInterpolator;
 
-import com.jonas.jdiagram.BuildConfig;
-import com.jonas.jdiagram.R;
-import com.jonas.jdiagram.models.Jchart;
+import com.jonas.jgraph.BuildConfig;
+import com.jonas.jgraph.R;
+import com.jonas.jgraph.models.Jchart;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;

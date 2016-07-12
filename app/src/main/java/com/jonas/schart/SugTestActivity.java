@@ -5,9 +5,9 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 
-import com.jonas.jdiagram.graph.JChart;
-import com.jonas.jdiagram.graph.PieGraph;
-import com.jonas.jdiagram.models.Jchart;
+import com.jonas.jgraph.graph.JChart;
+import com.jonas.jgraph.graph.PieGraph;
+import com.jonas.jgraph.models.Jchart;
 
 import java.util.ArrayList;
 import java.util.List;

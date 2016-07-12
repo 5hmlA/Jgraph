@@ -1,4 +1,4 @@
-package com.jonas.jdiagram.graph.pie;
+package com.jonas.jgraph.graph.pie;
 
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
@@ -14,7 +14,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 
-import com.jonas.jdiagram.R;
+import com.jonas.jgraph.R;
 
 import java.util.ArrayList;
 import java.util.List;

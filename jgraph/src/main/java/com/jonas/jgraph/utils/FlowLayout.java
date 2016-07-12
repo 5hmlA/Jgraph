@@ -1,4 +1,4 @@
-package com.jonas.jdiagram.utils;
+package com.jonas.jgraph.utils;
 
 /*
  * File Name: MyFlowLayout.java

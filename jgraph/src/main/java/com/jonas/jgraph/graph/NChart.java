@@ -1,4 +1,4 @@
-package com.jonas.jdiagram.graph;
+package com.jonas.jgraph.graph;
 
 import android.animation.Animator;
 import android.animation.ValueAnimator;
@@ -24,7 +24,7 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 
-import com.jonas.jdiagram.models.NExcel;
+import com.jonas.jgraph.models.NExcel;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package com.jonas.jdiagram.models;
+package com.jonas.jgraph.models;
 
 import java.util.Random;
 

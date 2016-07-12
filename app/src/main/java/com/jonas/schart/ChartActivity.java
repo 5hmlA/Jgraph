@@ -12,8 +12,8 @@ import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.ListView;
 
-import com.jonas.jdiagram.graph.JcoolGraph;
-import com.jonas.jdiagram.models.Jchart;
+import com.jonas.jgraph.graph.JcoolGraph;
+import com.jonas.jgraph.models.Jchart;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;

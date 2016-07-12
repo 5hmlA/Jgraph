@@ -1,7 +1,9 @@
-package com.jonas.jdiagram.progress;
+package com.jonas.jgraph.progress;
 
 import android.animation.ObjectAnimator;
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -13,8 +15,9 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
-import com.jonas.jdiagram.inter.IProgress;
-import com.jonas.jdiagram.models.Jball;
+import com.jonas.jgraph.R;
+import com.jonas.jgraph.inter.IProgress;
+import com.jonas.jgraph.models.Jball;
 
 import java.util.ArrayList;
 
@@ -55,9 +58,11 @@ public class AniBallProgress extends View implements IProgress {
     private float mRingRadius;
     private Jball mHeadBall;
     private Jball mFootBall;
-    private long mAniduration = 2000;
+    private long mAniduration = 3000;
     private float mAniRatio;
-    private long mBallDelay = 120;
+    private long mBallDelay = 200;
+    private int mBallNums = 3;
+    private float mRotate = -90;
 
 
     public AniBallProgress(Context context) {
@@ -67,7 +72,12 @@ public class AniBallProgress extends View implements IProgress {
 
     public AniBallProgress(Context context, AttributeSet attrs) {
         super(context, attrs);
-
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.JProgress);
+        mProgColor = a.getColor(R.styleable.JProgress_progressColor, Color.RED);
+        mMax = a.getFloat(R.styleable.JProgress_max, 100);
+        mProgress = a.getFloat(R.styleable.JProgress_progress, 0);
+        mProgWidth = a.getFloat(R.styleable.JProgress_progwidth, 10);
+        a.recycle();
     }
 
     @Override
@@ -102,19 +112,18 @@ public class AniBallProgress extends View implements IProgress {
         mRingRectf = new RectF(mCenPoint.x - mRingRadius, mCenPoint.y - mRingRadius, mCenPoint.x + mRingRadius,
                 mCenPoint.y + mRingRadius);
         if (mAutoBalls.size() == 0) {
-            int ballNums = 3;
             if (mBallColor != null) {
-                ballNums = mBallColor.length;
+                mBallNums = mBallColor.length;
             }
-            for (int i = 0; i < ballNums; i++) {
+            for (int i = 0; i < mBallNums; i++) {
                 Jball jball = new Jball(mProgWidth / 2);
                 if (mBallColor == null) {
                     jball.setColor(mProgColor);
                 } else {
                     jball.setColor(mBallColor[i]);
                 }
-                jball.setRoteCenter(mCenPoint)
-                        .setRoteRadius(mRingRadius)
+                jball.setRouteCenter(mCenPoint)
+                        .setRouteRadius(mRingRadius)
                         .setIndex(i);
 //                jball.setColor(Color.YELLOW);
                 mAutoBalls.add(jball);
@@ -125,21 +134,23 @@ public class AniBallProgress extends View implements IProgress {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+        canvas.save();
+        canvas.rotate(mRotate, mCenPoint.x, mCenPoint.y);
         //方式一
         drawRing_Balls(canvas);
+        canvas.restore();
 
         if (TextUtils.isEmpty(centerText)) {
             //如过 文字为空的话 就不画
             return;
         }
         // C 语言 的思想
-        Rect bounds = new Rect();
+        @SuppressLint("DrawAllocation") Rect bounds = new Rect();
         mProgPaint.getTextBounds(centerText, 0, centerText.length(), bounds);
         // 获取 所画的字的宽和高
         // mpaint.measureText(text);//返回的是字的宽度
         int textWidth = bounds.width();
         int textHeight = bounds.height();
-
         canvas.drawText(centerText, mCenPoint.x - textWidth / 2, mCenPoint.y + textHeight / 2, mProgPaint);
     }
 
@@ -147,7 +158,7 @@ public class AniBallProgress extends View implements IProgress {
         //小圆球
         for (int i = 0; i < mAutoBalls.size(); i++) {
             Jball autoBall = mAutoBalls.get(i);
-            autoBall.setBallRadius(mProgWidth / 2).setRoteRadius(mRingRadius).drawCircle(canvas, this);
+            autoBall.setBallRadius(mProgWidth / 2).setRouteRadius(mRingRadius).drawCircle(canvas, this);
         }
         //画环形
         drawRing(canvas, mAniRatio * mMax <= mProgress ? mAniRatio * mMax : mProgress);
@@ -175,9 +186,10 @@ public class AniBallProgress extends View implements IProgress {
     }
 
     @Override
-    public void setProgress(float progress) {
+    public IProgress setJProgress(float progress) {
         mProgress = progress;
         mAniRatio = mProgress / mMax;
+        return this;
     }
 
     public float getAniRatio() {

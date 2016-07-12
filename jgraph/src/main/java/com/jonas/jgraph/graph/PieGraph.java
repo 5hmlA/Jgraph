@@ -1,4 +1,4 @@
-package com.jonas.jdiagram.graph;
+package com.jonas.jgraph.graph;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -9,8 +9,8 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 
-import com.jonas.jdiagram.models.Jchart;
-import com.jonas.jdiagram.inter.BaseGraph;
+import com.jonas.jgraph.models.Jchart;
+import com.jonas.jgraph.inter.BaseGraph;
 
 import java.util.List;
 

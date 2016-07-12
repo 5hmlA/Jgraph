@@ -1,4 +1,4 @@
-package com.jonas.jdiagram.models;
+package com.jonas.jgraph.models;
 
 import android.graphics.Color;
 import android.graphics.PointF;

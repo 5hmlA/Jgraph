@@ -1,4 +1,4 @@
-package com.jonas.jdiagram;
+package com.jonas.jgraph;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

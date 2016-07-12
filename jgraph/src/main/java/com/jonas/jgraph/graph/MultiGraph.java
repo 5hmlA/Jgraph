@@ -1,4 +1,4 @@
-package com.jonas.jdiagram.graph;
+package com.jonas.jgraph.graph;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -16,8 +16,8 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.ViewConfiguration;
 
-import com.jonas.jdiagram.inter.BaseGraph;
-import com.jonas.jdiagram.models.Jchart;
+import com.jonas.jgraph.inter.BaseGraph;
+import com.jonas.jgraph.models.Jchart;
 
 import java.util.ArrayList;
 import java.util.Arrays;

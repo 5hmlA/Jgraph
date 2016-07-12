@@ -6,8 +6,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.SeekBar;
 
-import com.jonas.jdiagram.graph.NChart;
-import com.jonas.jdiagram.models.NExcel;
+import com.jonas.jgraph.graph.NChart;
+import com.jonas.jgraph.models.NExcel;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -4,8 +4,9 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:layout_margin="5dp"
+              android:background="#323032"
               android:orientation="vertical">
-    <com.jonas.jdiagram.utils.FlowLayout
+    <com.jonas.jgraph.utils.FlowLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
@@ -21,32 +22,32 @@
             android:layout_height="wrap_content"
             android:onClick="lianji"
             android:text="连击"/>
-    </com.jonas.jdiagram.utils.FlowLayout>
+    </com.jonas.jgraph.utils.FlowLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:orientation="vertical">
 
-        <com.jonas.jdiagram.progress.JProgBall
+        <com.jonas.jgraph.progress.JWaveBallProg
             android:id="@+id/progress"
             android:layout_width="wrap_content"
             android:layout_height="200dp"
             jonas:balltextSize="20sp"
-            jonas:progressMax="400">
-        </com.jonas.jdiagram.progress.JProgBall>
+            jonas:max="100">
+        </com.jonas.jgraph.progress.JWaveBallProg>
 
-        <com.jonas.jdiagram.progress.JProgress
+        <com.jonas.jgraph.progress.JProgress
             android:id="@+id/progress_msg"
             android:layout_width="match_parent"
             android:layout_height="20dp">
 
-        </com.jonas.jdiagram.progress.JProgress>
-        <com.jonas.jdiagram.progress.RProgress
+        </com.jonas.jgraph.progress.JProgress>
+        <com.jonas.jgraph.progress.RProgress
             android:layout_marginTop="10dp"
             android:layout_width="match_parent"
             android:layout_height="20dp"/>
-        <com.jonas.jdiagram.progress.AniBallProgress
+        <com.jonas.jgraph.progress.AniBallProgress
             android:id="@+id/chv"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>

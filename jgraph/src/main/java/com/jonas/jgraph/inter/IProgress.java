@@ -1,4 +1,4 @@
-package com.jonas.jdiagram.inter;
+package com.jonas.jgraph.inter;
 
 import android.graphics.Paint;
 
@@ -21,7 +21,7 @@ public interface IProgress {
      *
      * @param progress
      */
-    void setProgress(float progress);
+    IProgress setJProgress(float progress);
 
     /**
      * 当前进度

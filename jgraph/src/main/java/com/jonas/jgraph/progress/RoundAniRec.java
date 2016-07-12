@@ -1,4 +1,4 @@
-package com.jonas.jdiagram.progress;
+package com.jonas.jgraph.progress;
 
 import android.animation.TimeInterpolator;
 import android.animation.ValueAnimator;

@@ -12,8 +12,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.jonas.jdiagram.graph.pie.JPieView;
-import com.jonas.jdiagram.models.Apiece;
+import com.jonas.jgraph.graph.pie.JPieView;
+import com.jonas.jgraph.models.Apiece;
 
 import java.util.ArrayList;
 import java.util.List;

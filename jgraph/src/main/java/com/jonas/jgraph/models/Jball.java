@@ -1,4 +1,4 @@
-package com.jonas.jdiagram.models;
+package com.jonas.jgraph.models;
 
 import android.animation.ValueAnimator;
 import android.graphics.Canvas;
@@ -24,7 +24,7 @@ public class Jball implements ValueAnimator.AnimatorUpdateListener {
     /**
      * 轨迹半径
      */
-    private float roteRadius;
+    private float mRouteRadius;
     /**
      * 圆球半径
      */
@@ -32,11 +32,11 @@ public class Jball implements ValueAnimator.AnimatorUpdateListener {
     /**
      * 路径的圆心
      */
-    private PointF roteCenter = new PointF();
+    private PointF mRouteCenter = new PointF();
     /**
      * 小球的圆心
      */
-    private PointF ballCenter = new PointF();
+    private PointF ballCenter = new PointF(-100,-100);
     private float aniTime;
     private final Paint mCirclePaint;
     /**
@@ -103,8 +103,8 @@ public class Jball implements ValueAnimator.AnimatorUpdateListener {
 
     private void computeBollCenter(float sweepAngle) {
         double sweepHudu = sweepAngle / 180 * Math.PI;
-        ballCenter.x = (float) (roteRadius * Math.cos(sweepHudu)) + roteCenter.x;
-        ballCenter.y = (float) (roteRadius * Math.sin(sweepHudu)) + roteCenter.y;
+        ballCenter.x = (float) (mRouteRadius * Math.cos(sweepHudu)) + mRouteCenter.x;
+        ballCenter.y = (float) (mRouteRadius * Math.sin(sweepHudu)) + mRouteCenter.y;
     }
 
     public int getColor() {
@@ -123,12 +123,12 @@ public class Jball implements ValueAnimator.AnimatorUpdateListener {
         return radius;
     }
 
-    public PointF getRoteCenter() {
-        return roteCenter;
+    public PointF getRouteCenter() {
+        return mRouteCenter;
     }
 
-    public Jball setRoteCenter(PointF roteCenter) {
-        this.roteCenter = roteCenter;
+    public Jball setRouteCenter(PointF routeCenter) {
+        this.mRouteCenter = routeCenter;
         return this;
     }
 
@@ -158,12 +158,12 @@ public class Jball implements ValueAnimator.AnimatorUpdateListener {
         return this;
     }
 
-    public float getRoteRadius() {
-        return roteRadius;
+    public float getRouteRadius() {
+        return mRouteRadius;
     }
 
-    public Jball setRoteRadius(float roteRadius) {
-        this.roteRadius = roteRadius;
+    public Jball setRouteRadius(float routeRadius) {
+        this.mRouteRadius = routeRadius;
         return this;
     }
 

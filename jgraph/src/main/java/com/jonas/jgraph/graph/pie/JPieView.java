@@ -1,4 +1,4 @@
-package com.jonas.jdiagram.graph.pie;
+package com.jonas.jgraph.graph.pie;
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
@@ -17,9 +17,9 @@ import android.view.MotionEvent;
 import android.view.ViewGroup;
 import android.view.animation.BounceInterpolator;
 
-import com.jonas.jdiagram.R;
-import com.jonas.jdiagram.models.Apiece;
-import com.jonas.jdiagram.utils.Logger;
+import com.jonas.jgraph.R;
+import com.jonas.jgraph.models.Apiece;
+import com.jonas.jgraph.utils.Logger;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;

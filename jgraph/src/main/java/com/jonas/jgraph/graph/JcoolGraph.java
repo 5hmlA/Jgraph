@@ -1,4 +1,4 @@
-package com.jonas.jdiagram.graph;
+package com.jonas.jgraph.graph;
 
 import android.animation.ValueAnimator;
 import android.content.Context;
@@ -15,10 +15,10 @@ import android.util.Log;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.LinearInterpolator;
 
-import com.jonas.jdiagram.BuildConfig;
-import com.jonas.jdiagram.R;
-import com.jonas.jdiagram.inter.BaseGraph;
-import com.jonas.jdiagram.models.Jchart;
+import com.jonas.jgraph.BuildConfig;
+import com.jonas.jgraph.R;
+import com.jonas.jgraph.inter.BaseGraph;
+import com.jonas.jgraph.models.Jchart;
 
 import java.util.List;
 

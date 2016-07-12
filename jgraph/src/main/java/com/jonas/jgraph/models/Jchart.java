@@ -1,4 +1,4 @@
-package com.jonas.jdiagram.models;
+package com.jonas.jgraph.models;
 
 import android.animation.TimeInterpolator;
 import android.animation.ValueAnimator;

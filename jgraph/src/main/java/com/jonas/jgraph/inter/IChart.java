@@ -1,6 +1,6 @@
-package com.jonas.jdiagram.inter;
+package com.jonas.jgraph.inter;
 
-import com.jonas.jdiagram.models.Jchart;
+import com.jonas.jgraph.models.Jchart;
 
 import java.util.List;
 
