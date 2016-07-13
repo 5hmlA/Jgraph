@@ -96,7 +96,7 @@ public class Jchart implements Cloneable {
 
 
     public float getHeight() {
-//        return mHeight;
+        //        return mHeight;
         return mHeight * mHeightRatio;
     }
 
@@ -185,6 +185,9 @@ public class Jchart implements Cloneable {
 
     public void setUpper(float upper) {
         mUpper = upper;
+        if (Float.parseFloat(mXmsg)==mHeight) {
+            this.mXmsg = new DecimalFormat("##").format(mUpper - mLower);
+        }
         mHeight = mUpper - mLower;
         mShowMsg = new DecimalFormat("##.#").format(mUpper);
     }

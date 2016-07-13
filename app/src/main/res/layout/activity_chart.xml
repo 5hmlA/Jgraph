@@ -41,16 +41,34 @@
         android:onClick="changedata"
         android:text="切换数据"/>
 
-    <CheckBox
-        android:id="@+id/graphshader"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="图表渐变"/>
-    <CheckBox
-        android:id="@+id/areashader"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="折线阴影渐变"/>
+    <com.jonas.jgraph.utils.FlowLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <CheckBox
+            android:id="@+id/graphshader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="图表渐变"/>
+
+        <CheckBox
+            android:id="@+id/areashader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="折线阴影渐变"/>
+
+        <CheckBox
+            android:id="@+id/select"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="选中"/>
+
+        <CheckBox
+            android:id="@+id/skep0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="跳过0"/>
+    </com.jonas.jgraph.utils.FlowLayout>
 
     <LinearLayout
         android:layout_width="match_parent"

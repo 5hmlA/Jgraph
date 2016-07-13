@@ -13,6 +13,7 @@ import android.widget.FrameLayout;
 import android.widget.ListView;
 
 import com.jonas.jgraph.graph.JcoolGraph;
+import com.jonas.jgraph.inter.BaseGraph;
 import com.jonas.jgraph.models.Jchart;
 
 import java.security.SecureRandom;
@@ -40,12 +41,18 @@ public class ChartActivity extends AppCompatActivity implements CompoundButton.O
 
             lines.add(new Jchart(new SecureRandom().nextInt(50) + 15, Color.parseColor("#b8e986")));
         }
-//        lines.get(3).setUpper(100);
+        lines.get(new SecureRandom().nextInt(chartNum-1)).setUpper(0);
+        lines.get(new SecureRandom().nextInt(chartNum-1)).setUpper(0);
+        lines.get(1).setUpper(0);
+        lines.get(chartNum-2).setUpper(0);
 //        mLineChar.setScrollAble(true);
         mLineChar.setVisibleNums(10);
+        mLineChar.setLinePointRadio(mLineChar.getLineWidth()*2);
+        mLineChar.setLineMode(JcoolGraph.LineMode.LINE_DASH_0);
+        mLineChar.setLineStyle(JcoolGraph.LineStyle.LINE_BROKEN);
 //        mLineChar.setYaxisValues(20, 80, 5);
 //        mLineChar.setYaxisValues("test","测试","text");
-//        mLineChar.setSelectedMode(BaseGraph.SelectedMode.selecetdMsgShow_Top);
+//        mLineChar.setSelectedMode(BaseGraph.SelectedMode.SELECETD_MSG_SHOW_TOP);
 
 //        mLineChar.setShaderAreaColors(Color.parseColor("#4B494B"),Color.TRANSPARENT);
 //        mLineChar.setPaintShaderColors(Color.parseColor("#80ff3320"), Color.parseColor("#ffbf55"), Color.parseColor("#f7eb57"), Color.parseColor("#b8e986"), Color.parseColor("#73c0fd"));
@@ -63,17 +70,34 @@ public class ChartActivity extends AppCompatActivity implements CompoundButton.O
     private void setupCheckBox() {
         ((CheckBox) findViewById(R.id.graphshader)).setOnCheckedChangeListener(this);
         ((CheckBox) findViewById(R.id.areashader)).setOnCheckedChangeListener(this);
+        ((CheckBox) findViewById(R.id.skep0)).setOnCheckedChangeListener(this);
+        ((CheckBox) findViewById(R.id.select)).setOnCheckedChangeListener(this);
     }
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         switch (buttonView.getId()) {
+            case R.id.skep0:
+                if (isChecked) {
+                    mLineChar.setLineMode(JcoolGraph.LineMode.LINE_DASH_0);
+                } else {
+                    mLineChar.setLineMode(JcoolGraph.LineMode.LINE_EVERYPOINT);
+                }
+                break;
+            case R.id.select:
+                if (isChecked) {
+                    mLineChar.setSelectedMode(BaseGraph.SelectedMode.SELECETD_MSG_SHOW_TOP);
+                } else {
+                    mLineChar.setSelectedMode(BaseGraph.SelectedMode.SELECETD_NULL);
+                }
+                break;
             case R.id.graphshader:
                 if (isChecked) {
                     mLineChar.setPaintShaderColors(Color.parseColor("#80ff3320"), Color.parseColor("#ffbf55"), Color.parseColor("#f7eb57"), Color.parseColor("#b8e986"), Color.parseColor("#73c0fd"));
                 } else {
                     mLineChar.setPaintShaderColors(null);
                 }
+                break;
             case R.id.areashader:
                 if (isChecked) {
                     mLineChar.setShaderAreaColors(Color.parseColor("#4B494B"), Color.TRANSPARENT);

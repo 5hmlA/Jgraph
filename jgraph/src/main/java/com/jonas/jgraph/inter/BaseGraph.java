@@ -141,7 +141,7 @@ public abstract class BaseGraph extends View {
      * 在不可滚动时 最多显示可见个数
      * <p color="red">mVisibleNums>=mExecels.size 否则部分不可见
      */
-//    protected boolean mForceFixNums;
+    //    protected boolean mForceFixNums;
 
     /**
      * 选中模式 为-1 表示不处理点击选中状态
@@ -159,16 +159,19 @@ public abstract class BaseGraph extends View {
      */
     private int mAbscissaMsgSize;
     protected int mState = 0;
+    private int mXNums;
+    private int mXinterval;
 
     public interface SelectedMode {
+        int SELECETD_NULL = -1;
         /**
          * 选中的 颜色变  显示所有柱子 文字
          */
-        int selectedActivated = 0;
+        int SELECTED_ACTIVATED = 0;
         /**
          * 选中的 显示 柱子 文字 其他不显示
          */
-        int selecetdMsgShow_Top = 1;
+        int SELECETD_MSG_SHOW_TOP = 1;
     }
 
     protected interface State {
@@ -323,7 +326,7 @@ public abstract class BaseGraph extends View {
             yMsgLength = mAbscissaPaint.measureText(mYaxismax, 0, mYaxismax.length());
             yMsgLength = bounds.width() < yMsgLength ? bounds.width() : yMsgLength;
         }
-        if (mSelectedMode == SelectedMode.selecetdMsgShow_Top) {
+        if (mSelectedMode == SelectedMode.SELECETD_MSG_SHOW_TOP) {
             yMsgHeight = bounds.height() + 2.5f * mBgTriangleHeight;
         } else {
             yMsgHeight = bounds.height();
@@ -339,7 +342,7 @@ public abstract class BaseGraph extends View {
         if (mGraphStyle == GraphStyle.BAR) {
             //柱状图默认 间隔固定
             mInterval = mInterval >= dip2px(6) ? dip2px(6) : mInterval;
-//            mFixBarWidth = false;
+            //            mFixBarWidth = false;
         } else {
             //折线图 默认柱子宽度固定 小点
             mBarWidth = 3;
@@ -380,14 +383,14 @@ public abstract class BaseGraph extends View {
             Jchart jchart = mJcharts.get(i);
             jchart.setLower(mYaxis_min);
             jchart.setHeightRatio(mHeightRatio);//刷新在画布中的高度比例
-//            jchart.setHeight((jchart.getHeight() - mYaxis_min) * mHeightRatio);//刷新在画布中的高度
+            //            jchart.setHeight((jchart.getHeight() - mYaxis_min) * mHeightRatio);//刷新在画布中的高度
             jchart.setWidth(mBarWidth);
             PointF start = jchart.getStart();
             jchart.setIndex(i);
             //刷新 每个柱子矩阵左下角坐标
             start.x = mChartArea.left + mBarWidth * i + mInterval * i;
             start.y = mChartArea.bottom - mAbove - jchart.getLower();
-//            jchart.setColor(mNormalColor);
+            //            jchart.setColor(mNormalColor);
             refreshOthersWithEveryChart(i, jchart);
         }
         mChartRithtest_x = mJcharts.get(mJcharts.size() - 1).getMidPointF().x;
@@ -420,7 +423,7 @@ public abstract class BaseGraph extends View {
                 drawSugExcel_LINE(canvas);
             }
             //选中模式启用的时候
-            if (mSelectedMode == SelectedMode.selecetdMsgShow_Top && !mValueAnimator.isRunning()) {
+            if (mSelectedMode == SelectedMode.SELECETD_MSG_SHOW_TOP && !mValueAnimator.isRunning()) {
                 if (mSelected > -1) {
                     drawSelectedText(canvas, mJcharts.get(mSelected));
                 } else {
@@ -432,6 +435,7 @@ public abstract class BaseGraph extends View {
             }
         }
         drawCoordinateAxes(canvas);
+        mPhase = ++mPhase % 50;
     }
 
     @Override
@@ -620,31 +624,50 @@ public abstract class BaseGraph extends View {
      * @param excel
      */
     protected void drawAbscissaMsg(Canvas canvas, Jchart excel) {
-        mAbscissaPaint.setTextAlign(Paint.Align.CENTER);
-        float mWidth = this.mWidth + getPaddingLeft() + getPaddingRight();
-        if (null != excel) {
-            PointF midPointF = excel.getMidPointF();
-            if (!TextUtils.isEmpty(excel.getXmsg())) {
-                String xmsg = excel.getXmsg();
-                float w = mAbscissaPaint.measureText(xmsg, 0, xmsg.length());
-                if (!mScrollAble) {
-                    if (midPointF.x - w / 2 < 0) {
-                        //最左边
-                        canvas.drawText(excel.getXmsg(), w / 2, mChartArea.bottom + dip2px(3) + mAbscissaMsgSize,
-                                mAbscissaPaint);
-                    } else if (midPointF.x + w / 2 > mWidth) {
-                        //最右边
-                        canvas.drawText(excel.getXmsg(), mWidth - w / 2, mChartArea.bottom + dip2px(3) + mAbscissaMsgSize,
-                                mAbscissaPaint);
+        if (mXinterval != 0 && mXNums != 0) {
+            drawAbscissaMsg(canvas);
+        } else {
+            mAbscissaPaint.setTextAlign(Paint.Align.CENTER);
+            float mWidth = this.mWidth + getPaddingLeft() + getPaddingRight();
+            if (null != excel) {
+                PointF midPointF = excel.getMidPointF();
+                if (!TextUtils.isEmpty(excel.getXmsg())) {
+                    String xmsg = excel.getXmsg();
+                    float w = mAbscissaPaint.measureText(xmsg, 0, xmsg.length());
+                    if (!mScrollAble) {
+                        if (midPointF.x - w / 2 < 0) {
+                            //最左边
+                            canvas.drawText(excel.getXmsg(), w / 2, mChartArea.bottom + dip2px(3) + mAbscissaMsgSize,
+                                    mAbscissaPaint);
+                        } else if (midPointF.x + w / 2 > mWidth) {
+                            //最右边
+                            canvas.drawText(excel.getXmsg(), mWidth - w / 2, mChartArea.bottom + dip2px(3) + mAbscissaMsgSize,
+                                    mAbscissaPaint);
+                        } else {
+                            canvas.drawText(excel.getXmsg(), midPointF.x, mChartArea.bottom + dip2px(3) + mAbscissaMsgSize,
+                                    mAbscissaPaint);
+                        }
                     } else {
                         canvas.drawText(excel.getXmsg(), midPointF.x, mChartArea.bottom + dip2px(3) + mAbscissaMsgSize,
                                 mAbscissaPaint);
                     }
-                } else {
-                    canvas.drawText(excel.getXmsg(), midPointF.x, mChartArea.bottom + dip2px(3) + mAbscissaMsgSize,
-                            mAbscissaPaint);
                 }
             }
+        }
+    }
+
+    private void drawAbscissaMsg(Canvas canvas) {
+        int mTotalTime = mXinterval * mXNums;
+        String total = String.valueOf(mTotalTime);
+        float xWi = mWidth - mChartArea.left - getPaddingRight() - mAbscissaPaint.measureText(total, 0, total.length());
+        for (int i = 0; i < mXNums + 1; i++) {
+            String xmsg = String.valueOf(mXinterval * i);
+            float w = mAbscissaPaint.measureText(xmsg, 0, xmsg.length());
+            float textX = mChartArea.left + mXinterval * i / mTotalTime * xWi;
+            if (textX + w / 2 > mWidth) {
+                textX = mWidth - w;
+            }
+            canvas.drawText(xmsg, textX, mChartArea.bottom + dip2px(3) + mAbscissaMsgSize, mAbscissaPaint);
         }
     }
 
@@ -665,7 +688,7 @@ public abstract class BaseGraph extends View {
         } else {
             canvas.drawLine(mChartArea.left, mChartArea.bottom, mChartArea.right, mChartArea.bottom, mCoordinatePaint);
         }
-//        canvas.drawRect(mChartArea, mCoordinatePaint);
+        //        canvas.drawRect(mChartArea, mCoordinatePaint);
     }
 
     /**
@@ -714,10 +737,10 @@ public abstract class BaseGraph extends View {
     public void aniShowChar(float start, float end, TimeInterpolator interpolator, long duration, boolean intvalue) {
         mValueAnimator.cancel();
         if (intvalue) {
-//            mValueAnimator.setIntValues(((int) start), ((int) end));//之后变成整形的valueanimator无法切换到float
+            //            mValueAnimator.setIntValues(((int) start), ((int) end));//之后变成整形的valueanimator无法切换到float
             mValueAnimator = ValueAnimator.ofInt(((int) start), ((int) end));
         } else {
-//            mValueAnimator.setFloatValues(start, end);
+            //            mValueAnimator.setFloatValues(start, end);
             mValueAnimator = ValueAnimator.ofFloat(start, end);
         }
         //        if(mLineStyle == LineStyle.LINE_CURVE) {
@@ -870,6 +893,15 @@ public abstract class BaseGraph extends View {
     }
 
     /**
+     * @param xNums      几段
+     * @param xinterval 每段多少
+     */
+    public void setXnums(int xNums, int xinterval) {
+        mXNums = xNums;
+        mXinterval = xinterval;
+    }
+
+    /**
      * 设置y轴 刻度 信息
      *
      * @param showMsg y轴显示 内容
@@ -887,6 +919,18 @@ public abstract class BaseGraph extends View {
      */
     public void setYaxisValues(int max, int showYnum) {
         setYaxisValues(0, max, showYnum);
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        if (mValueAnimator.isRunning()) {
+            mValueAnimator.cancel();
+        }
+        mChartArea = null;
+        mAllLastPoints.clear();
+        mAllPoints.clear();
+        mJcharts.clear();
     }
 
     /**
