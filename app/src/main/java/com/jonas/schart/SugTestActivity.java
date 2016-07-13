@@ -55,7 +55,7 @@ public class SugTestActivity extends Activity {
         if (pieChart != null) {
             pieChart.setPieWidth(35);
 //            pieChart.setInterval(10);
-            pieChart.cmdFill(hotbody, burn, anaerobic, aerobic, limit);
+            pieChart.fedData(hotbody, burn, anaerobic, aerobic, limit);
         }
     }
 

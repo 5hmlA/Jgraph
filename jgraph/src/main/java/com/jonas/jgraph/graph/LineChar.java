@@ -253,7 +253,7 @@ public class LineChar extends BaseGraph {
     /**
      * 传入 数据
      */
-    public void cmdFill(List<Jchart> jchartList) {
+    public void fedData(List<Jchart> jchartList) {
         lineFirstMoved = false;
         mSelected = -1;
         mJcharts.clear();

@@ -58,7 +58,7 @@ public class ChartActivity extends AppCompatActivity implements CompoundButton.O
 //        mLineChar.setPaintShaderColors(Color.parseColor("#80ff3320"), Color.parseColor("#ffbf55"), Color.parseColor("#f7eb57"), Color.parseColor("#b8e986"), Color.parseColor("#73c0fd"));
 //        mLineChar.setNormalColor(Color.parseColor("#676567"));
 //        mLineChar.setShowFromMode(JcoolGraph.ShowFromMode.SHOWFROMBUTTOM);
-        mLineChar.cmdFill(lines);
+        mLineChar.fedData(lines);
         ((FrameLayout) mLineChar.getParent()).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -72,11 +72,20 @@ public class ChartActivity extends AppCompatActivity implements CompoundButton.O
         ((CheckBox) findViewById(R.id.areashader)).setOnCheckedChangeListener(this);
         ((CheckBox) findViewById(R.id.skep0)).setOnCheckedChangeListener(this);
         ((CheckBox) findViewById(R.id.select)).setOnCheckedChangeListener(this);
+        ((CheckBox) findViewById(R.id.scrollable)).setOnCheckedChangeListener(this);
     }
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         switch (buttonView.getId()) {
+            case R.id.scrollable:
+                if (isChecked) {
+                    mLineChar.setScrollAble(true);
+                    mLineChar.setVisibleNums(10);
+                } else {
+                    mLineChar.setScrollAble(false);
+                }
+                break;
             case R.id.skep0:
                 if (isChecked) {
                     mLineChar.setLineMode(JcoolGraph.LineMode.LINE_DASH_0);

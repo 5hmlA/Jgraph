@@ -68,6 +68,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="跳过0"/>
+        <CheckBox
+            android:id="@+id/scrollable"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="滚动"/>
     </com.jonas.jgraph.utils.FlowLayout>
 
     <LinearLayout
