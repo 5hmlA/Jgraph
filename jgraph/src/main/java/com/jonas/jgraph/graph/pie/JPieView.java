@@ -642,42 +642,32 @@ public class JPieView extends WarmLine implements Animator.AnimatorListener {
         return clickAngle;
     }
 
-
-    /**
-     * 设置 饼图数据 解析出角度颜色数据
-     *
-     * @param pieData2
-     */
-    public void setPiedata2(List<Apiece> pieData2){
-        AnalyticData(pieData2);
-    }
-
     /**
      * 设置数据
      * Apiece创建 颜色必备
      *
-     * @param pieData2
+     * @param pieData
      */
-    public void AnalyticData(List<Apiece> pieData2){
-        if(pieData2.size() == 0) {
+    public void feedData(List<Apiece> pieData){
+        if(pieData.size() == 0) {
             throw new RuntimeException("设置的数据错误");
         }
-        pieData.clear();
+        this.pieData.clear();
         float totalData = 0;
-        for(Apiece pie : pieData2) {
+        for(Apiece pie : pieData) {
             totalData += pie.getNum();
         }
-        float totalAngle = 360-0*pieData2.size();
+        float totalAngle = 360-0*pieData.size();
         float startAngle = 0;
         //计算角度
-        for(Apiece pie : pieData2) {
+        for(Apiece pie : pieData) {
             float sweepAngle = pie.getNum()/totalData*totalAngle;
             pie.setStartAngle(startAngle);
             pie.setSweepAngle(sweepAngle);
             startAngle += sweepAngle;
         }
-        this.pieData = pieData2;
-        if(pieData2.get(0).getPieColor() == Integer.MAX_VALUE) {
+        this.pieData = pieData;
+        if(pieData.get(0).getPieColor() == Integer.MAX_VALUE) {
             setEachPieColor();
         }
         extraDataInit();
@@ -687,32 +677,32 @@ public class JPieView extends WarmLine implements Animator.AnimatorListener {
     /**
      * 设置数据
      *
-     * @param pieData2
+     * @param pieData
      */
-    public void setPiedata3(Float[] pieData2){
-        List<Float> floats = Arrays.asList(pieData2);
-        setPiedata(floats);
+    public void feedData(Float[] pieData){
+        List<Float> floats = Arrays.asList(pieData);
+        feedData2(floats);
     }
 
     /**
      * 设置 饼图数据 解析出角度颜色数据
      *
-     * @param pieData2
+     * @param pieData
      */
-    public void setPiedata(List<Float> pieData2){
-        Logger.i("显示控件前设置变量代码执行顺序", "设置数据入口--setPiedata(List<Float> pieData2)");
-        pieData.clear();// 清空原有 数据
-        // pieData.addAll(pieData2);
-        for(Float each : pieData2) {
+    public void feedData2(List<Float> pieData){
+        Logger.i("显示控件前设置变量代码执行顺序", "设置数据入口--feedData(List<Float> pieData)");
+        this.pieData.clear();// 清空原有 数据
+        // pieData.addAll(pieData);
+        for(Float each : pieData) {
             totalPieNum += each;
         }
         float startAngle = 0;
-        for(Float each : pieData2) {
+        for(Float each : pieData) {
             float sweepAngle = each/totalPieNum*360;
             // startAngle = ;
             Apiece pie = new Apiece("", each, 0, startAngle, sweepAngle);
             startAngle += sweepAngle;
-            pieData.add(pie);
+            this.pieData.add(pie);
         }
         extraDataInit();
         // 为每个扇形设置不同颜色
@@ -733,7 +723,7 @@ public class JPieView extends WarmLine implements Animator.AnimatorListener {
 
     /**
      * 设置饼图各扇形的描述
-     * 之前必须设置饼图的 folat数据 setPiedata(List<Float> pieData2)
+     * 之前必须设置饼图的 folat数据 feedData(List<Float> pieData2)
      *
      * @param pieDescData2
      */
@@ -782,7 +772,7 @@ public class JPieView extends WarmLine implements Animator.AnimatorListener {
         switch(pieshowani) {
             case SCANNING:
                 //扫描展现动画
-                // ---够函--setPiedata---到aniShowPie ---onsizechange----ondraw
+                // ---够函--feedData---到aniShowPie ---onsizechange----ondraw
                 mAnimator.setFloatValues(360, 0);
                 mAnimator.start();
                 mAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -795,7 +785,7 @@ public class JPieView extends WarmLine implements Animator.AnimatorListener {
                 break;
             case FILLOUTING:
                 //内往外扩张动画
-                // --setPiedata---到aniShowPie 此时just还没拿到数据(just在onsizechange里面获取值得)
+                // --feedData---到aniShowPie 此时just还没拿到数据(just在onsizechange里面获取值得)
                 mAnimator.setFloatValues(0, pieRadius);
                 mAnimator.start();
                 mAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {

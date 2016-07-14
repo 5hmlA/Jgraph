@@ -59,7 +59,7 @@ public class ChartActivity extends AppCompatActivity implements CompoundButton.O
 //        mLineChar.setPaintShaderColors(Color.parseColor("#80ff3320"), Color.parseColor("#ffbf55"), Color.parseColor("#f7eb57"), Color.parseColor("#b8e986"), Color.parseColor("#73c0fd"));
         mLineChar.setNormalColor(Color.parseColor("#676567"));
 //        mLineChar.setShowFromMode(JcoolGraph.ShowFromMode.SHOWFROMBUTTOM);
-        mLineChar.fedData(lines);
+        mLineChar.feedData(lines);
         ((FrameLayout) mLineChar.getParent()).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

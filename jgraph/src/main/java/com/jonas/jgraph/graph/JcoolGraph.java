@@ -823,8 +823,8 @@ public class JcoolGraph extends BaseGraph {
     }
 
     @Override
-    public void fedData(@NonNull List<Jchart> jchartList) {
-        super.fedData(jchartList);
+    public void feedData(@NonNull List<Jchart> jchartList) {
+        super.feedData(jchartList);
         if (mLineShowStyle != -1) {
             postDelayed(new Runnable() {
                 @Override
@@ -1083,6 +1083,10 @@ public class JcoolGraph extends BaseGraph {
         return mLineMode;
     }
 
+    /**
+     * 当linemode为跳过0时 只有两种动画 aswave和fromline
+     * @param lineMode
+     */
     public void setLineMode(int lineMode) {
         mLineMode = lineMode;
         if (mValueAnimator.isRunning()) {

@@ -121,7 +121,7 @@ public class PieGraph extends BaseGraph {
     }
 
     @Override
-    public void fedData(List<Jchart> jchartList) {
+    public void feedData(List<Jchart> jchartList) {
         mJcharts.clear();
         //sugexcel的lower为0 upper就是数据 height可以用来填充角度信息
         for (Jchart jchart : jchartList) {

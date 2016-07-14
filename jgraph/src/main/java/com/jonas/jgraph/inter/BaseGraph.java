@@ -767,14 +767,14 @@ public abstract class BaseGraph extends View {
     /**
      * 传入 数据
      */
-    public void fedData(@NonNull Jchart... jcharts){
-        fedData(new ArrayList<Jchart>(Arrays.asList(jcharts)));
+    public void feedData(@NonNull Jchart... jcharts){
+        feedData(new ArrayList<Jchart>(Arrays.asList(jcharts)));
     }
 
     /**
      * 传入 数据
      */
-    public void fedData(@NonNull List<Jchart> jchartList){
+    public void feedData(@NonNull List<Jchart> jchartList){
         mSelected = -1;
         mJcharts.clear();
         if(jchartList != null && jchartList.size()>0) {

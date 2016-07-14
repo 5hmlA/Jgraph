@@ -125,7 +125,7 @@ public class PieActivity extends AppCompatActivity implements View.OnClickListen
             piedata.add(pie2);
             piedata.add(pie3);
             piedata.add(pie4);
-            pie.AnalyticData(piedata);
+            pie.feedData(piedata);
         }
     }
 
@@ -136,7 +136,7 @@ public class PieActivity extends AppCompatActivity implements View.OnClickListen
         data.add(42f);
         data.add(15f);
         data.add(35f);
-        pie.setPiedata(data);
+        pie.feedData2(data);
         List<String> desc = new ArrayList<>();
         desc.add("33");
         desc.add("23");

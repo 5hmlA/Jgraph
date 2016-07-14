@@ -764,15 +764,15 @@ public class MultiGraph extends BaseGraph {
     /**
      * 传入 数据
      */
-    public void fedData(Jchart... jcharts) {
-        fedData(Arrays.asList(jcharts));
+    public void feedData(Jchart... jcharts) {
+        feedData(Arrays.asList(jcharts));
     }
 
 
     /**
      * 传入 数据
      */
-    public void fedData(List<Jchart> jchartList) {
+    public void feedData(List<Jchart> jchartList) {
         lineFirstMoved = false;
         mSelected = -1;
         mExcels.clear();
