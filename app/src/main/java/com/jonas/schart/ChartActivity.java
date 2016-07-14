@@ -54,7 +54,6 @@ public class ChartActivity extends AppCompatActivity implements CompoundButton.O
 
 //        mLineChar.setYaxisValues("test","测试","text");
 //        mLineChar.setSelectedMode(BaseGraph.SelectedMode.SELECETD_MSG_SHOW_TOP);
-
 //        mLineChar.setShaderAreaColors(Color.parseColor("#4B494B"),Color.TRANSPARENT);
 //        mLineChar.setPaintShaderColors(Color.parseColor("#80ff3320"), Color.parseColor("#ffbf55"), Color.parseColor("#f7eb57"), Color.parseColor("#b8e986"), Color.parseColor("#73c0fd"));
         mLineChar.setNormalColor(Color.parseColor("#676567"));

@@ -40,8 +40,6 @@
         <attr name="pieInterColor" format="color"/>
         <!--间隔线的宽度-->
         <attr name="pieInterWidth" format="dimension"/>
-        <!--背景颜色-->
-        <attr name="piebackground" format="color"/>
         <!--特殊的角度- 默认0 -->
         <attr name="specialAngle" format="integer"/>
         <!--移动的时候显示突出的扇形还是手指提起的时候才显示-->

@@ -75,10 +75,6 @@ public class JPieView extends WarmLine implements Animator.AnimatorListener {
     private int width;
     private int height;
     /**
-     * 控件的背景色
-     */
-    private int backColor = Color.WHITE;
-    /**
      * 饼图 间隔线的景色
      */
     public int pieInterColor = Color.WHITE;
@@ -261,7 +257,6 @@ public class JPieView extends WarmLine implements Animator.AnimatorListener {
             pieInterColor = typedArray.getColor(R.styleable.MPieView_pieInterColor, Color.WHITE);
             pieInterWidth = (int)typedArray.getDimension(R.styleable.MPieView_pieInterColor, 0);
             pointPieOut = typedArray.getDimension(R.styleable.MPieView_pointPieOut, 0);
-            backColor = typedArray.getColor(R.styleable.MPieView_piebackground, Color.WHITE);
             specialAngle = typedArray.getInt(R.styleable.MPieView_specialAngle, 0);
             outMoving = typedArray.getBoolean(R.styleable.MPieView_outMoving, false);
             PieSelector = typedArray.getBoolean(R.styleable.MPieView_PieSelector, true);
@@ -318,12 +313,10 @@ public class JPieView extends WarmLine implements Animator.AnimatorListener {
         outRectF = new RectF(centX-pieRadius-pointPieOut, centY-pieRadius-pointPieOut, centX+pieRadius+pointPieOut,
                 centY+pieRadius+pointPieOut);
 
-
-        // 当背景为透明的时候 获取布局的背景色
-        if(Integer.MAX_VALUE == backColor) {
-            backColor = getBackColor();// ondraw也无法拿到布局中设置的背景色
-            // backColor = Color.RED;
-        }
+//        // 当背景为透明的时候 获取布局的背景色
+//        if(Integer.MAX_VALUE == backColor) {
+//            backColor = getBackColor();// ondraw也无法拿到布局中设置的背景色
+//        }
 
         //==================================饼图的展现动画=从这里触发====外界无论设置啥变量最后都会走到这======================================
         //内往外 的展现动画 需要在此处出发，，因为这个动画 需要先获取到just
@@ -350,13 +343,6 @@ public class JPieView extends WarmLine implements Animator.AnimatorListener {
 
     @Override
     protected void onDraw(Canvas canvas){
-
-        // 无论控件 那边大 都在中间的正方形画饼图
-
-        // 画背景
-        mPaint.setColor(backColor);
-        RectF back = new RectF(0, 0, width, height);
-        canvas.drawRect(back, mPaint);
 
 //        // 画标题
         //        float measureText = titleP.measureText(pieTiele);
@@ -438,7 +424,8 @@ public class JPieView extends WarmLine implements Animator.AnimatorListener {
             // 则执行扇形扫描动画
             if(!hideAniCircle) {// 扇形动画完后会 变成条线 所以执行完 要去掉这个扇形
                 // 画最顶层的 白色扇形 360度的 用于展现饼图慢慢展开的效果
-                mPaint.setColor(backColor);
+                // TODO: 2016/7/15
+                mPaint.setColor(Color.WHITE);
                 // 画扇形所需要的 矩形
                 RectF oval4 = new RectF(centX-just/2, centY-just/2, centX+just/2, centY+just/2);
                 canvas.drawArc(oval4, start4, sweep4, true, mPaint);
@@ -832,22 +819,6 @@ public class JPieView extends WarmLine implements Animator.AnimatorListener {
     }
 
     /**
-     * 控件的背景颜色
-     */
-    public int getBackColor(){
-        return backColor;
-    }
-
-    /**
-     * 控件的背景颜色
-     *
-     * @param backColor
-     */
-    public void setBackColor(int backColor){
-        this.backColor = backColor;
-    }
-
-    /**
      * 扇形之间的间隔
      */
     public int getPieInterWidth(){
@@ -1098,23 +1069,6 @@ public class JPieView extends WarmLine implements Animator.AnimatorListener {
      */
     public void setClashOuterViewGroup(ViewGroup... clashView){
         this.clashView = clashView;
-    }
-
-
-    /**
-     * 控件的背景颜色
-     */
-    public int getPieBackColor(){
-        return backColor;
-    }
-
-    /**
-     * 控件的背景颜色
-     *
-     * @param backColor
-     */
-    public void setPieBackColor(int backColor){
-        this.backColor = backColor;
     }
 
     //    /**
