@@ -255,7 +255,6 @@ public abstract class WarmLine extends View {
         //设置的testsize并不等于 画出来文字的高度
         //        Rect bouds = new Rect();
         //        textP.getTextBounds("343", 0, "232".length(), bouds);
-        //        System.out.println(bouds.height()+"........."+TtextSize);
 
     }
 

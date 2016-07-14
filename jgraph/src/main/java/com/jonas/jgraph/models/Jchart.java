@@ -8,10 +8,15 @@ import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.RectF;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.OvershootInterpolator;
 
+import com.jonas.jgraph.BuildConfig;
+
 import java.text.DecimalFormat;
+
+import static android.content.ContentValues.TAG;
 
 /**
  * @author yun.
@@ -27,7 +32,7 @@ public class Jchart implements Cloneable {
     private float mHeight;//折线的y 画图的时候会被缩放
     private PointF mStart = new PointF();//矩形左下角起点
     private float mMidX;//中点 折线的x
-    private int mColor;
+    private int mColor = -1;
     private float mNum; //当前数字
     private float mMax; //总数据
     private float percent;//占比
@@ -35,6 +40,7 @@ public class Jchart implements Cloneable {
     private String mXmsg; //横坐标信息
     private float mUpper;
     private float mLower;
+    private float mLowStart;
     private String tag;
     private float mAniratio = 1;
     private ValueAnimator mValueAnimator = ValueAnimator.ofFloat(0, 1);
@@ -48,6 +54,10 @@ public class Jchart implements Cloneable {
         this(0, num, "", color);
     }
 
+    public Jchart(float lower, float num, int color) {
+        this(lower, lower + num, "", color);
+    }
+
     public Jchart(float lower, float upper, String mXmsg) {
         this(lower, upper, mXmsg, Color.GRAY);
     }
@@ -56,14 +66,19 @@ public class Jchart implements Cloneable {
         mUpper = upper;
         mLower = lower;
         mHeight = mNum = upper - lower;
-        mStart.y = mLower;
+        mStart.y = 0;
         this.mColor = color;
         this.mXmsg = TextUtils.isEmpty(mXmsg) ? new DecimalFormat("##").format(mHeight) : mXmsg;
-        mShowMsg = new DecimalFormat("##").format(mNum);
+        mShowMsg = new DecimalFormat("##").format(mUpper);
     }
 
     public RectF getRectF() {
-        return new RectF(mStart.x, mStart.y - mHeight * mHeightRatio * mAniratio, mStart.x + mWidth, mStart.y);
+        float bottom = mStart.y - (mLower - mLowStart) * mHeightRatio * mAniratio;
+        bottom = bottom < mStart.y ? bottom : mStart.y;
+        float top = mStart.y - (mUpper - mLowStart) * mHeightRatio * mAniratio;
+        top = top < mStart.y ? top : mStart.y;
+        return new RectF(mStart.x, top, mStart.x + mWidth, bottom);
+//        return new RectF(mStart.x, mStart.y - (mUpper - mLowStart) * mHeightRatio * mAniratio, mStart.x + mWidth, mStart.y - (mLower - mLowStart) * mHeightRatio * mAniratio);
     }
 
     /**
@@ -72,7 +87,9 @@ public class Jchart implements Cloneable {
      * @return
      */
     public PointF getMidPointF() {
-        return new PointF(getMidX(), mStart.y - mHeight * mHeightRatio * mAniratio);
+        float top = mStart.y - (mUpper - mLowStart) * mHeightRatio * mAniratio;
+        top = top < mStart.y ? top : mStart.y;
+        return new PointF(getMidX(), top);
     }
 
 
@@ -96,7 +113,7 @@ public class Jchart implements Cloneable {
 
 
     public float getHeight() {
-        //        return mHeight;
+        //动画需要
         return mHeight * mHeightRatio;
     }
 
@@ -185,11 +202,19 @@ public class Jchart implements Cloneable {
 
     public void setUpper(float upper) {
         mUpper = upper;
-        if (Float.parseFloat(mXmsg)==mHeight) {
-            this.mXmsg = new DecimalFormat("##").format(mUpper - mLower);
+        if (mUpper < mLower) {
+            if (BuildConfig.DEBUG) {
+                Log.e(TAG, "setUpper error upper must < lower");
+            }
+            return;
         }
-        mHeight = mUpper - mLower;
-        mShowMsg = new DecimalFormat("##.#").format(mUpper);
+        if ("\\d+".matches(mXmsg)) {
+            if (Float.parseFloat(mXmsg) == mHeight) {
+                this.mXmsg = new DecimalFormat("##").format(mUpper - mLower);
+            }
+            mHeight = mUpper - mLower;
+            mShowMsg = new DecimalFormat("##.#").format(mUpper);
+        }
     }
 
 
@@ -250,6 +275,19 @@ public class Jchart implements Cloneable {
     public void setAniratio(float aniratio) {
         mValueAnimator.cancel();
         mAniratio = aniratio;
+    }
+
+    public float getLowStart() {
+        return mLowStart;
+    }
+
+    /**
+     * 起点 默认0
+     *
+     * @param lowStart
+     */
+    public void setLowStart(float lowStart) {
+        mLowStart = lowStart;
     }
 
     public Jchart aniHeight(final View view, float from, TimeInterpolator interpolator) {

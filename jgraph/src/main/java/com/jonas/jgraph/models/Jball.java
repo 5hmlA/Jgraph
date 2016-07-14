@@ -70,7 +70,6 @@ public class Jball implements ValueAnimator.AnimatorUpdateListener {
 
     public Jball setStartAniSweep(float startSweepangle, long aniduration, long startDelay) {
         if (!sweepAni.isRunning() && aniRatio == 1) {
-            System.out.println(index+"==="+startSweepangle+"..."+aniduration+"----"+startDelay);
             this.startSweepangle = startSweepangle;
             sweepAni.setFloatValues(0, 1);
             sweepAni.setDuration(aniduration);

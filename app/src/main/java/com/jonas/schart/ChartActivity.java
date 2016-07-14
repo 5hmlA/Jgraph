@@ -40,23 +40,24 @@ public class ChartActivity extends AppCompatActivity implements CompoundButton.O
         for (int i = 0; i < chartNum; i++) {
 
             lines.add(new Jchart(new SecureRandom().nextInt(50) + 15, Color.parseColor("#b8e986")));
+//            lines.add(new Jchart(10,new SecureRandom().nextInt(50) + 15,"test", Color.parseColor("#b8e986")));
         }
-        lines.get(new SecureRandom().nextInt(chartNum-1)).setUpper(0);
-        lines.get(new SecureRandom().nextInt(chartNum-1)).setUpper(0);
-        lines.get(1).setUpper(0);
-        lines.get(chartNum-2).setUpper(0);
+//        lines.get(new SecureRandom().nextInt(chartNum-1)).setUpper(0);
+//        lines.get(1).setUpper(0);
+//        lines.get(new SecureRandom().nextInt(chartNum-1)).setLower(10);
+//        lines.get(chartNum-2).setUpper(0);
 //        mLineChar.setScrollAble(true);
         mLineChar.setVisibleNums(10);
-        mLineChar.setLinePointRadio(mLineChar.getLineWidth()*2);
+        mLineChar.setLinePointRadio(mLineChar.getLineWidth() * 2);
         mLineChar.setLineMode(JcoolGraph.LineMode.LINE_DASH_0);
         mLineChar.setLineStyle(JcoolGraph.LineStyle.LINE_BROKEN);
-//        mLineChar.setYaxisValues(20, 80, 5);
+
 //        mLineChar.setYaxisValues("test","测试","text");
 //        mLineChar.setSelectedMode(BaseGraph.SelectedMode.SELECETD_MSG_SHOW_TOP);
 
 //        mLineChar.setShaderAreaColors(Color.parseColor("#4B494B"),Color.TRANSPARENT);
 //        mLineChar.setPaintShaderColors(Color.parseColor("#80ff3320"), Color.parseColor("#ffbf55"), Color.parseColor("#f7eb57"), Color.parseColor("#b8e986"), Color.parseColor("#73c0fd"));
-//        mLineChar.setNormalColor(Color.parseColor("#676567"));
+        mLineChar.setNormalColor(Color.parseColor("#676567"));
 //        mLineChar.setShowFromMode(JcoolGraph.ShowFromMode.SHOWFROMBUTTOM);
         mLineChar.fedData(lines);
         ((FrameLayout) mLineChar.getParent()).setOnClickListener(new View.OnClickListener() {
@@ -73,11 +74,19 @@ public class ChartActivity extends AppCompatActivity implements CompoundButton.O
         ((CheckBox) findViewById(R.id.skep0)).setOnCheckedChangeListener(this);
         ((CheckBox) findViewById(R.id.select)).setOnCheckedChangeListener(this);
         ((CheckBox) findViewById(R.id.scrollable)).setOnCheckedChangeListener(this);
+        ((CheckBox) findViewById(R.id.ymsg)).setOnCheckedChangeListener(this);
     }
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         switch (buttonView.getId()) {
+            case R.id.ymsg:
+                if (isChecked) {
+                    mLineChar.setYaxisValues(20, 80, 3);
+                } else {
+                    mLineChar.setYaxisValues(0, 0, 0);
+                }
+                break;
             case R.id.scrollable:
                 if (isChecked) {
                     mLineChar.setScrollAble(true);
@@ -176,7 +185,8 @@ public class ChartActivity extends AppCompatActivity implements CompoundButton.O
     public void changedata(View v) {
         List<Jchart> lines = new ArrayList<>();
         for (int i = 0; i < chartNum; i++) {
-            lines.add(new Jchart(new SecureRandom().nextInt(150) + 15, 0xb8e986));
+            int num = new SecureRandom().nextInt(150) + 15;
+            lines.add(new Jchart(new SecureRandom().nextInt(30), num, 0xb8e986));
         }
         mLineChar.aniChangeData(lines);
     }

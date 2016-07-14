@@ -26,6 +26,7 @@ import android.view.animation.BounceInterpolator;
 import com.jonas.jgraph.BuildConfig;
 import com.jonas.jgraph.R;
 import com.jonas.jgraph.models.Jchart;
+import com.jonas.jgraph.utils.MathHelper;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -224,7 +225,7 @@ public abstract class BaseGraph extends View {
     /**
      * 存储原始数据 /上一次的数据
      */
-    protected ArrayList<PointF> mAllLastPoints;
+    protected ArrayList<PointF> mAllLastPoints = new ArrayList<>();
     protected ValueAnimator mValueAnimator = new ValueAnimator();
 
     /**
@@ -306,7 +307,6 @@ public abstract class BaseGraph extends View {
         mCenterPoint = new PointF(w/2f, h/2f);
         if(mGraphStyle == GraphStyle.BAR || mGraphStyle == GraphStyle.LINE) {
             refreshChartArea();
-            refreshChartSetData();
         }
     }
 
@@ -322,14 +322,17 @@ public abstract class BaseGraph extends View {
             //如果 需要 纵轴坐标的时候
             yMsgLength = mAbscissaPaint.measureText(mYaxismax, 0, mYaxismax.length());
             yMsgLength = bounds.width()<yMsgLength ? bounds.width() : yMsgLength;
+            yMsgLength += 5;
         }
         if(mSelectedMode == SelectedMode.SELECETD_MSG_SHOW_TOP) {
-            yMsgHeight = bounds.height()+2.5f*mBgTriangleHeight;
+            //选中文字的背景的高度
+            yMsgHeight = mSelectedTextPaint.getTextSize()+3f*mBgTriangleHeight;
         }else {
             yMsgHeight = bounds.height();
         }
         mChartArea = new RectF(yMsgLength+getPaddingLeft(), getPaddingTop()+yMsgHeight, mWidth+getPaddingLeft(),
                 getPaddingTop()+mHeight-2*mAbscissaMsgSize);
+        refreshChartSetData();
     }
 
     /**
@@ -378,15 +381,15 @@ public abstract class BaseGraph extends View {
         mHeightRatio = ( mChartArea.bottom-mChartArea.top )/( mYaxis_Max-mYaxis_min );
         for(int i = 0; i<mJcharts.size(); i++) {
             Jchart jchart = mJcharts.get(i);
-            jchart.setLower(mYaxis_min);
+            jchart.setLowStart(mYaxis_min);
             jchart.setHeightRatio(mHeightRatio);//刷新在画布中的高度比例
-            //            jchart.setHeight((jchart.getHeight() - mYaxis_min) * mHeightRatio);//刷新在画布中的高度
             jchart.setWidth(mBarWidth);
             PointF start = jchart.getStart();
             jchart.setIndex(i);
             //刷新 每个柱子矩阵左下角坐标
             start.x = mChartArea.left+mBarWidth*i+mInterval*i;
-            start.y = mChartArea.bottom-mAbove-jchart.getLower();
+            //            start.y = mChartArea.bottom-mAbove-jchart.getLower();
+            start.y = mChartArea.bottom-mAbove;
             //            jchart.setColor(mNormalColor);
             refreshOthersWithEveryChart(i, jchart);
         }
@@ -449,14 +452,13 @@ public abstract class BaseGraph extends View {
                     if(mScrollAble && ( mJcharts.size()>mVisibleNums )) {
                         float moveX = event.getX();
                         float moving = moveX-mDownX;
-                        mSliding += moving;
                         if(Math.abs(moving)>mTouchSlop) {
+                            mSliding += moving;
                             moved = true;
                             mDownX = moveX;
                             if(mJcharts != null && mJcharts.size()>0) {
-                                //防止 图表 滑出界面看不到
-                                mSliding = mSliding+20>=0 ? 0 : mSliding- 20<=-( mChartRithtest_x-mCharAreaWidth ) ?
-                                        -( mChartRithtest_x-mCharAreaWidth ) : mSliding;
+                                //防止 图表 滑出界面看不到  往做移动 小于0
+                                mSliding = mSliding>=0 ? 0 : mSliding<=-( mChartRithtest_x-mCharAreaWidth ) ? -( mChartRithtest_x-mCharAreaWidth ) : mSliding;
                             }else {
                                 mSliding = mSliding>=0 ? 0 : mSliding;
                             }
@@ -550,7 +552,7 @@ public abstract class BaseGraph extends View {
         Rect mBounds = new Rect();
         mSelectedTextPaint.getTextBounds(msg, 0, msg.length(), mBounds);
         Path textBg = new Path();
-
+        //        mSelectedTextPaint.getTextSize() > mBounds.height()
         float bgWidth = dip2px(8);
 
         textBg.moveTo(midPointF.x, midPointF.y-mSelectedTextMarging);
@@ -815,13 +817,20 @@ public abstract class BaseGraph extends View {
             Log.d(TAG, "最大值："+mHeightestChart.getUpper());
         }
         if(mYaxis_msg == null || mYaxis_msg.size() == 0) {
+            mYaxis_Max = MathHelper.getCeil10(mHeightestChart.getUpper());
             //默认 y轴显示两段三个刻度
-            setYaxisValues(getCeil10(mHeightestChart.getUpper()), 3);
+            refreshYaxisValues(3);
         }else {
             if(mYaxis_Max<mHeightestChart.getUpper() || mYaxis_min>mMinestChart.getUpper()) {
-                mYaxis_Max = mYaxis_Max<mHeightestChart.getUpper() ? getCeil10(mHeightestChart.getUpper()) : mYaxis_Max;
-                mYaxis_min = mYaxis_min>mMinestChart.getUpper() ? getCast10(mMinestChart.getUpper()) : mYaxis_min;
-                setYaxisValues((int)mYaxis_min, (int)mYaxis_Max, mYaxis_msg.size());
+                //纵轴的 最大值 要比数据最大还大
+                mYaxis_Max = mYaxis_Max<mHeightestChart.getUpper() ? MathHelper
+                        .getCeil10(mHeightestChart.getUpper()) : mYaxis_Max;
+                if(mYaxis_min>mMinestChart.getUpper()) {
+                    mYaxis_min = MathHelper.getCast10(mMinestChart.getUpper());
+                }
+                //纵轴的 最小值 要比数据最小还小
+                //                mYaxis_min = mYaxis_min>mMinestChart.getLower() ? MathHelper.getCast10(mMinestChart.getLower()) : mYaxis_min;
+                refreshYaxisValues(mYaxis_msg.size());
             }
         }
     }
@@ -862,6 +871,7 @@ public abstract class BaseGraph extends View {
 
     /**
      * 设置y轴 刻度 信息
+     * <p>所有数据设置为0 （showYnum为0）则会根据数据自动计算y轴需要显示的最大值最小值为0
      *
      * @param min
      *         y轴 显示的最小值
@@ -871,15 +881,20 @@ public abstract class BaseGraph extends View {
      *         y轴显示 刻度数量 建议为奇数
      */
     public void setYaxisValues(int min, int max, int showYnum){
-
-        mYaxis_msg = new ArrayList<>(showYnum);
-        float diffLevel = ( max-min )/( (float)showYnum-1 );
-        for(int i = 0; i<showYnum; i++) {
-            mYaxis_msg.add(new DecimalFormat("#").format(min+diffLevel*i));
-        }
         mYaxis_Max = max;
         mYaxismax = new DecimalFormat("##.#").format(mYaxis_Max);
         mYaxis_min = min;
+        mYaxis_msg = mYaxis_msg == null ? new ArrayList<String>(showYnum) : mYaxis_msg;
+        refreshExcels();
+    }
+
+    private void refreshYaxisValues(int showYnum){
+        mYaxis_msg = new ArrayList<>(showYnum);
+        mYaxismax = new DecimalFormat("##.#").format(mYaxis_Max);
+        float diffLevel = ( mYaxis_Max-mYaxis_min )/( (float)showYnum-1 );
+        for(int i = 0; i<showYnum; i++) {
+            mYaxis_msg.add(new DecimalFormat("#").format(mYaxis_min+diffLevel*i));
+        }
     }
 
     /**
@@ -994,6 +1009,7 @@ public abstract class BaseGraph extends View {
      */
     public void setScrollAble(boolean scrollAble){
         mScrollAble = scrollAble;
+        mSliding = 0;//可滚动转不可滚动时移动距离置为0
         if(mWidth>0) {
             refreshChartSetData();
         }
@@ -1084,31 +1100,4 @@ public abstract class BaseGraph extends View {
         return (int)( spValue*fontScale+0.5f );
     }
 
-    /**
-     * @param num
-     * @return 最接近num的数 这个数同时是5的倍数
-     */
-    public int getRound5(float num){
-        return ( (int)( num+2.5 ) )/5*5;
-    }
-
-    /**
-     * @param num
-     * @return 根据num向上取数 这个数同时是5的倍数
-     */
-    public int getCeil5(float num){
-        return ( (int)( num+4.9999999 ) )/5*5;
-    }
-
-    public int getCeil10(float num){
-        return ( (int)( num+9.9999999 ) )/10*10;
-    }
-
-    public int getRound10(float num){
-        return ( (int)( num+5 ) )/10*10;
-    }
-
-    public int getCast10(float num){
-        return ( (int)( num ) )/10*10;
-    }
 }
