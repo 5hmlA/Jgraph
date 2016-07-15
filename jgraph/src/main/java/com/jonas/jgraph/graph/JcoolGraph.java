@@ -1053,7 +1053,6 @@ public class JcoolGraph extends BaseGraph {
                 }
             }
             mAniRatio = 1;
-            postInvalidate();
         }
         mLineShowStyle = lineShowStyle;
     }

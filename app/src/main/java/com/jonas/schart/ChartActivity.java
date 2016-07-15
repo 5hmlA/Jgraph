@@ -26,7 +26,7 @@ public class ChartActivity extends AppCompatActivity implements CompoundButton.O
     private String linestyleItems[] = new String[]{"折线", "曲线"};
     private String showstyleItems[] = new String[]{"DRAWING", "SECTION", "FROMLINE", "FROMCORNER", "ASWAVE"};
     private String barshowstyleItems[] = new String[]{"ASWAVE", "FROMLINE", "EXPAND", "SECTION"};
-    private int chartNum = 15;
+    private int chartNum = 25;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +48,7 @@ public class ChartActivity extends AppCompatActivity implements CompoundButton.O
 //        lines.get(chartNum-2).setUpper(0);
 //        mLineChar.setScrollAble(true);
         mLineChar.setVisibleNums(10);
-        mLineChar.setLinePointRadio(mLineChar.getLineWidth() * 2);
+        mLineChar.setLinePointRadio(mLineChar.getLineWidth());
         mLineChar.setLineMode(JcoolGraph.LineMode.LINE_DASH_0);
         mLineChar.setLineStyle(JcoolGraph.LineStyle.LINE_BROKEN);
 

@@ -18,7 +18,9 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.animation.BounceInterpolator;
@@ -42,7 +44,7 @@ import java.util.List;
  * @since [https://github.com/mychoices]
  * <p><a href="https://github.com/mychoices">github</a>
  */
-public abstract class BaseGraph extends View {
+public abstract class BaseGraph extends View implements GestureDetector.OnGestureListener, ScaleGestureDetector.OnScaleGestureListener {
     private static final String TAG = BaseGraph.class.getSimpleName();
     /**
      * 选中的 柱状图
@@ -93,9 +95,6 @@ public abstract class BaseGraph extends View {
      * 图表显示的区域 x轴起点  左边为刻度
      */
     protected RectF mChartArea;
-
-    protected boolean moved;
-    protected float mDownX;
 
     /**
      * 顶部选中文字 三角尖的高度
@@ -162,6 +161,8 @@ public abstract class BaseGraph extends View {
     protected int mState = 0;
     private int mXNums;
     private int mXinterval;
+    private GestureDetector mGestureDetector;
+    private ScaleGestureDetector mScaleGestureDetector;
 
     public interface SelectedMode {
         int SELECETD_NULL = -1;
@@ -261,12 +262,11 @@ public abstract class BaseGraph extends View {
 
     public BaseGraph(Context context, AttributeSet attrs, int defStyleAttr){
         super(context, attrs, defStyleAttr);
-        init(context);
     }
 
     protected void init(Context context){
         mContext = context;
-        mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
+        mTouchSlop = ViewConfiguration.get(mContext).getScaledTouchSlop();
         mCoordinatePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mCoordinatePaint.setStyle(Paint.Style.STROKE);
         mCoordinatePaint.setColor(Color.parseColor("#AFAFB0"));
@@ -297,6 +297,13 @@ public abstract class BaseGraph extends View {
 
         mBarWidth = dip2px(10);//默认的柱子宽度
         mInterval = dip2px(4);//默认的间隔大小
+    }
+
+    @Override
+    protected void onFinishInflate(){
+        super.onFinishInflate();
+        mGestureDetector = new GestureDetector(mContext, this);
+        mScaleGestureDetector = new ScaleGestureDetector(mContext, this);
     }
 
     @Override
@@ -443,51 +450,79 @@ public abstract class BaseGraph extends View {
         if(mSelectedMode == -1 && !mScrollAble) {
             return false;
         }
-        if(mJcharts.size()>0) {
-            switch(event.getAction()) {
-                case MotionEvent.ACTION_DOWN:
-                    mDownX = event.getX();
-                    break;
-                case MotionEvent.ACTION_MOVE:
-                    if(mScrollAble && ( mJcharts.size()>mVisibleNums )) {
-                        float moveX = event.getX();
-                        float moving = moveX-mDownX;
-                        if(Math.abs(moving)>mTouchSlop) {
-                            mSliding += moving;
-                            moved = true;
-                            mDownX = moveX;
-                            if(mJcharts != null && mJcharts.size()>0) {
-                                //防止 图表 滑出界面看不到  往做移动 小于0
-                                mSliding = mSliding>=0 ? 0 : mSliding<=-( mChartRithtest_x-mCharAreaWidth ) ? -( mChartRithtest_x-mCharAreaWidth ) : mSliding;
-                            }else {
-                                mSliding = mSliding>=0 ? 0 : mSliding;
-                            }
-                            invalidate();
-                        }
-                    }else {
-                        PointF tup = new PointF(event.getX(), event.getY());
-                        mSelected = clickWhere(tup);
-                        if(BuildConfig.DEBUG) {
-                            Log.d(TAG, "selected "+mSelected);
-                        }
-                        invalidate();
-                    }
-                    break;
-                case MotionEvent.ACTION_UP:
-                    if(!moved) {
-                        PointF tup = new PointF(event.getX(), event.getY());
-                        mSelected = clickWhere(tup);
-                        if(BuildConfig.DEBUG) {
-                            Log.d(TAG, "selected "+mSelected);
-                        }
-                        invalidate();
-                    }
-                    moved = false;
-                    break;
-                default:
-                    break;
-            }
+        mScaleGestureDetector.onTouchEvent(event);
+        return mGestureDetector.onTouchEvent(event);
+    }
+
+    @Override
+    public boolean onScale(ScaleGestureDetector detector){
+        System.out.println("onScale");
+        return true;
+    }
+
+    @Override
+    public boolean onScaleBegin(ScaleGestureDetector detector){
+        System.out.println("onScaleBegin");
+        return true;
+    }
+
+    @Override
+    public void onScaleEnd(ScaleGestureDetector detector){
+        System.out.println("onScaleEnd");
+
+    }
+
+    @Override
+    public boolean onDown(MotionEvent e){
+        return true;
+    }
+
+    @Override
+    public void onShowPress(MotionEvent e){
+        if(BuildConfig.DEBUG) {
+            Log.d(TAG, "onShowPress ");
         }
+    }
+
+    @Override
+    public boolean onSingleTapUp(MotionEvent e){
+        PointF tup = new PointF(e.getX(), e.getY());
+        mSelected = clickWhere(tup);
+        if(BuildConfig.DEBUG) {
+            Log.d(TAG, "selected "+mSelected);
+        }
+        invalidate();
+        return true;
+    }
+
+    @Override
+    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY){
+        //        if(Math.abs(distanceX)>mTouchSlop) {
+        mSliding += -distanceX;
+        if(mJcharts != null && mJcharts.size()>0) {
+            //防止 图表 滑出界面看不到  往做移动 小于0
+            mSliding = mSliding>=0 ? 0 : mSliding<=-( mChartRithtest_x-mCharAreaWidth ) ? -( mChartRithtest_x-mCharAreaWidth ) : mSliding;
+        }else {
+            mSliding = mSliding>=0 ? 0 : mSliding;
+        }
+        invalidate();
+        //        }
+        return true;
+    }
+
+    @Override
+    public void onLongPress(MotionEvent e){
+        PointF tup = new PointF(e.getX(), e.getY());
+        mSelected = clickWhere(tup);
+        if(BuildConfig.DEBUG) {
+            Log.d(TAG, "onLongPress selected "+mSelected);
+        }
+        invalidate();
+    }
+
+    @Override
+    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY){
+        System.out.println("onFling "+velocityX);
         return true;
     }
 
