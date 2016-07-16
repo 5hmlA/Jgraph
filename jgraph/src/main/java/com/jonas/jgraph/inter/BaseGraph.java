@@ -20,10 +20,10 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
-import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.animation.BounceInterpolator;
+import android.widget.Scroller;
 
 import com.jonas.jgraph.BuildConfig;
 import com.jonas.jgraph.R;
@@ -44,7 +44,7 @@ import java.util.List;
  * @since [https://github.com/mychoices]
  * <p><a href="https://github.com/mychoices">github</a>
  */
-public abstract class BaseGraph extends View implements GestureDetector.OnGestureListener, ScaleGestureDetector.OnScaleGestureListener {
+public abstract class BaseGraph extends View implements GestureDetector.OnGestureListener {
     private static final String TAG = BaseGraph.class.getSimpleName();
     /**
      * 选中的 柱状图
@@ -162,7 +162,11 @@ public abstract class BaseGraph extends View implements GestureDetector.OnGestur
     private int mXNums;
     private int mXinterval;
     private GestureDetector mGestureDetector;
-    private ScaleGestureDetector mScaleGestureDetector;
+    private Scroller mScroller;
+    private int mMinimumVelocity;
+    private int mMaximumVelocity;
+    private float upPlace;
+    private OnGraphItemListener mListener;
 
     public interface SelectedMode {
         int SELECETD_NULL = -1;
@@ -243,12 +247,11 @@ public abstract class BaseGraph extends View implements GestureDetector.OnGestur
     private static final long ANIDURATION = 1100;
 
     public BaseGraph(Context context){
-        super(context);
-        init(context);
+        this(context, null);
     }
 
     public BaseGraph(Context context, AttributeSet attrs){
-        super(context, attrs);
+        this(context, attrs, 0);
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.AndroidJgraph);
         mGraphStyle = a.getInt(R.styleable.AndroidJgraph_graphstyle, GraphStyle.LINE);
         mScrollAble = a.getBoolean(R.styleable.AndroidJgraph_scrollable, false);
@@ -257,11 +260,11 @@ public abstract class BaseGraph extends View implements GestureDetector.OnGestur
         mActivationColor = a.getColor(R.styleable.AndroidJgraph_activationcolor, Color.RED);
         mVisibleNums = a.getInt(R.styleable.AndroidJgraph_visiblenums, 0);
         a.recycle();
-        init(context);
     }
 
     public BaseGraph(Context context, AttributeSet attrs, int defStyleAttr){
         super(context, attrs, defStyleAttr);
+        init(context);
     }
 
     protected void init(Context context){
@@ -274,7 +277,7 @@ public abstract class BaseGraph extends View implements GestureDetector.OnGestur
 
         mAbscissaPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mAbscissaPaint.setTextAlign(Paint.Align.CENTER);
-        mAbscissaMsgSize = sp2px(12);
+        mAbscissaMsgSize = MathHelper.dip2px(mContext, 12);
         mAbscissaPaint.setTextSize(mAbscissaMsgSize);
         mAbscissaPaint.setColor(Color.parseColor("#556A73"));
 
@@ -287,23 +290,26 @@ public abstract class BaseGraph extends View implements GestureDetector.OnGestur
         mSelectedTextBgPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         //显示在顶部 选中的文字背景
         mSelectedTextBgPaint.setColor(Color.GRAY);
-        mBgTriangleHeight = dip2px(6);
+        mBgTriangleHeight = MathHelper.dip2px(mContext, 6);
 
         mSelectedTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         //顶部选中文字 颜色
         mSelectedTextPaint.setTextAlign(Paint.Align.CENTER);
         mSelectedTextPaint.setColor(Color.WHITE);
-        mSelectedTextPaint.setTextSize(sp2px(12));
+        mSelectedTextPaint.setTextSize(MathHelper.dip2px(mContext, 12));
 
-        mBarWidth = dip2px(10);//默认的柱子宽度
-        mInterval = dip2px(4);//默认的间隔大小
+        mBarWidth = MathHelper.dip2px(mContext, 10);//默认的柱子宽度
+        mInterval = MathHelper.dip2px(mContext, 4);//默认的间隔大小
     }
 
     @Override
     protected void onFinishInflate(){
         super.onFinishInflate();
         mGestureDetector = new GestureDetector(mContext, this);
-        mScaleGestureDetector = new ScaleGestureDetector(mContext, this);
+        mScroller = new Scroller(mContext);
+        ViewConfiguration viewConfiguration = ViewConfiguration.get(mContext);
+        mMinimumVelocity = viewConfiguration.getScaledMinimumFlingVelocity();
+        mMaximumVelocity = viewConfiguration.getScaledMaximumFlingVelocity();
     }
 
     @Override
@@ -348,7 +354,7 @@ public abstract class BaseGraph extends View implements GestureDetector.OnGestur
     protected void refreshChartSetData(){
         if(mGraphStyle == GraphStyle.BAR) {
             //柱状图默认 间隔固定
-            mInterval = mInterval>=dip2px(6) ? dip2px(6) : mInterval;
+            mInterval = mInterval>=MathHelper.dip2px(mContext, 6) ? MathHelper.dip2px(mContext, 6) : mInterval;
             //            mFixBarWidth = false;
         }else {
             //折线图 默认柱子宽度固定 小点
@@ -450,30 +456,12 @@ public abstract class BaseGraph extends View implements GestureDetector.OnGestur
         if(mSelectedMode == -1 && !mScrollAble) {
             return false;
         }
-        mScaleGestureDetector.onTouchEvent(event);
         return mGestureDetector.onTouchEvent(event);
     }
 
     @Override
-    public boolean onScale(ScaleGestureDetector detector){
-        System.out.println("onScale");
-        return true;
-    }
-
-    @Override
-    public boolean onScaleBegin(ScaleGestureDetector detector){
-        System.out.println("onScaleBegin");
-        return true;
-    }
-
-    @Override
-    public void onScaleEnd(ScaleGestureDetector detector){
-        System.out.println("onScaleEnd");
-
-    }
-
-    @Override
     public boolean onDown(MotionEvent e){
+        mScroller.forceFinished(true);
         return true;
     }
 
@@ -488,6 +476,9 @@ public abstract class BaseGraph extends View implements GestureDetector.OnGestur
     public boolean onSingleTapUp(MotionEvent e){
         PointF tup = new PointF(e.getX(), e.getY());
         mSelected = clickWhere(tup);
+        if(mListener != null) {
+            mListener.onItemClick(mSelected);
+        }
         if(BuildConfig.DEBUG) {
             Log.d(TAG, "selected "+mSelected);
         }
@@ -497,23 +488,16 @@ public abstract class BaseGraph extends View implements GestureDetector.OnGestur
 
     @Override
     public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY){
-        //        if(Math.abs(distanceX)>mTouchSlop) {
-        mSliding += -distanceX;
-        if(mJcharts != null && mJcharts.size()>0) {
-            //防止 图表 滑出界面看不到  往做移动 小于0
-            mSliding = mSliding>=0 ? 0 : mSliding<=-( mChartRithtest_x-mCharAreaWidth ) ? -( mChartRithtest_x-mCharAreaWidth ) : mSliding;
-        }else {
-            mSliding = mSliding>=0 ? 0 : mSliding;
-        }
-        invalidate();
-        //        }
-        return true;
+        return judgeSliding(-distanceX);
     }
 
     @Override
     public void onLongPress(MotionEvent e){
         PointF tup = new PointF(e.getX(), e.getY());
         mSelected = clickWhere(tup);
+        if(mListener != null) {
+            mListener.onItemLongClick(mSelected);
+        }
         if(BuildConfig.DEBUG) {
             Log.d(TAG, "onLongPress selected "+mSelected);
         }
@@ -522,8 +506,45 @@ public abstract class BaseGraph extends View implements GestureDetector.OnGestur
 
     @Override
     public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY){
-        System.out.println("onFling "+velocityX);
+        upPlace = e2.getX();
+        mScroller
+                .fling((int)e2.getX(), (int)e2.getY(), (int)velocityX/2, 0, Integer.MIN_VALUE, Integer.MAX_VALUE, 0, 0);
         return true;
+    }
+
+    @Override
+    public void computeScroll(){
+        if(mScroller.computeScrollOffset()) {
+            float vSliding = mScroller.getCurrX()-upPlace;
+            judgeSliding(vSliding);
+        }
+    }
+
+    protected boolean judgeSliding(float tempSlided){
+        mSliding += tempSlided;
+        if(mJcharts != null && mJcharts.size()>0) {
+            if(mSliding>=0 || mSliding<=-( mChartRithtest_x-mCharAreaWidth )) {
+                //跨越两边界了
+                mSliding = mSliding>=0 ? 0 : mSliding<=-( mChartRithtest_x-mCharAreaWidth ) ? -( mChartRithtest_x-mCharAreaWidth ) : mSliding;
+                return false;
+            }else {
+                //正常滑动距离刷新界面
+                invalidate();
+                return true;
+            }
+        }else {
+            mSliding = mSliding>=0 ? 0 : mSliding;
+            return false;
+        }
+
+        //        if(mJcharts != null && mJcharts.size()>0) {
+        //            //防止 图表 滑出界面看不到  往做移动 小于0
+        //            mSliding = mSliding>=0 ? 0 : mSliding<=-( mChartRithtest_x-mCharAreaWidth ) ? -( mChartRithtest_x-mCharAreaWidth ) : mSliding;
+        //            return false;
+        //        }else {
+        //            mSliding = mSliding>=0 ? 0 : mSliding;
+        //            return true;
+        //        }
     }
 
     /**
@@ -588,7 +609,7 @@ public abstract class BaseGraph extends View implements GestureDetector.OnGestur
         mSelectedTextPaint.getTextBounds(msg, 0, msg.length(), mBounds);
         Path textBg = new Path();
         //        mSelectedTextPaint.getTextSize() > mBounds.height()
-        float bgWidth = dip2px(8);
+        float bgWidth = MathHelper.dip2px(mContext, 8);
 
         textBg.moveTo(midPointF.x, midPointF.y-mSelectedTextMarging);
         textBg.lineTo(midPointF.x-bgWidth/2, midPointF.y-mSelectedTextMarging-mBgTriangleHeight-1.5f);
@@ -674,19 +695,19 @@ public abstract class BaseGraph extends View implements GestureDetector.OnGestur
                     if(!mScrollAble) {
                         if(midPointF.x-w/2<0) {
                             //最左边
-                            canvas.drawText(excel.getXmsg(), w/2, mChartArea.bottom+dip2px(3)+mAbscissaMsgSize,
-                                    mAbscissaPaint);
+                            canvas.drawText(excel.getXmsg(), w/2,
+                                    mChartArea.bottom+MathHelper.dip2px(mContext, 3)+mAbscissaMsgSize, mAbscissaPaint);
                         }else if(midPointF.x+w/2>mWidth) {
                             //最右边
-                            canvas.drawText(excel.getXmsg(), mWidth-w/2, mChartArea.bottom+dip2px(3)+mAbscissaMsgSize,
-                                    mAbscissaPaint);
+                            canvas.drawText(excel.getXmsg(), mWidth-w/2,
+                                    mChartArea.bottom+MathHelper.dip2px(mContext, 3)+mAbscissaMsgSize, mAbscissaPaint);
                         }else {
-                            canvas.drawText(excel.getXmsg(), midPointF.x, mChartArea.bottom+dip2px(3)+mAbscissaMsgSize,
-                                    mAbscissaPaint);
+                            canvas.drawText(excel.getXmsg(), midPointF.x,
+                                    mChartArea.bottom+MathHelper.dip2px(mContext, 3)+mAbscissaMsgSize, mAbscissaPaint);
                         }
                     }else {
-                        canvas.drawText(excel.getXmsg(), midPointF.x, mChartArea.bottom+dip2px(3)+mAbscissaMsgSize,
-                                mAbscissaPaint);
+                        canvas.drawText(excel.getXmsg(), midPointF.x,
+                                mChartArea.bottom+MathHelper.dip2px(mContext, 3)+mAbscissaMsgSize, mAbscissaPaint);
                     }
                 }
             }
@@ -704,7 +725,8 @@ public abstract class BaseGraph extends View implements GestureDetector.OnGestur
             if(textX+w/2>mWidth) {
                 textX = mWidth-w;
             }
-            canvas.drawText(xmsg, textX, mChartArea.bottom+dip2px(3)+mAbscissaMsgSize, mAbscissaPaint);
+            canvas.drawText(xmsg, textX, mChartArea.bottom+MathHelper.sp2px(mContext, 3)+mAbscissaMsgSize,
+                    mAbscissaPaint);
         }
     }
 
@@ -868,6 +890,10 @@ public abstract class BaseGraph extends View implements GestureDetector.OnGestur
                 refreshYaxisValues(mYaxis_msg.size());
             }
         }
+    }
+
+    public void setOnGraphItemListener(OnGraphItemListener listener){
+        mListener = listener;
     }
 
     public void setInterpolator(TimeInterpolator interpolator){
@@ -1117,22 +1143,6 @@ public abstract class BaseGraph extends View implements GestureDetector.OnGestur
 
     public Paint getSelectedTextPaint(){
         return mSelectedTextPaint;
-    }
-
-    public int dip2px(float dipValue){
-        final float scale = mContext.getResources().getDisplayMetrics().density;
-        return (int)( dipValue*scale+0.5f );
-    }
-
-    /**
-     * 将sp值转换为px值，保证文字大小不变
-     *
-     * @param spValue
-     *         （DisplayMetrics类中属性scaledDensity）
-     */
-    public int sp2px(float spValue){
-        final float fontScale = mContext.getResources().getDisplayMetrics().scaledDensity;
-        return (int)( spValue*fontScale+0.5f );
     }
 
 }

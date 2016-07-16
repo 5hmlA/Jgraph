@@ -20,6 +20,7 @@ import com.jonas.jgraph.R;
 import com.jonas.jgraph.inter.BaseGraph;
 import com.jonas.jgraph.models.Jchart;
 import com.jonas.jgraph.utils.DrawHelper;
+import com.jonas.jgraph.utils.MathHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -183,7 +184,7 @@ public class JcoolGraph extends BaseGraph {
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.AndroidJgraph);
         mLineStyle = a.getInteger(R.styleable.AndroidJgraph_linestyle, LineStyle.LINE_CURVE);
         mLineMode = a.getInteger(R.styleable.AndroidJgraph_linemode, LineMode.LINE_EVERYPOINT);
-        mLineWidth = a.getDimension(R.styleable.AndroidJgraph_linewidth, dip2px(1.2f));
+        mLineWidth = a.getDimension(R.styleable.AndroidJgraph_linewidth, MathHelper.dip2px(mContext,1.2f));
         mLineShowStyle = a.getInt(R.styleable.AndroidJgraph_lineshowstyle, LineShowStyle.LINESHOW_ASWAVE);
         a.recycle();
         initializeData();
@@ -204,7 +205,7 @@ public class JcoolGraph extends BaseGraph {
     }
 
     private void initializeData() {
-        mLineWidth = mLineWidth == -1 ? dip2px(1.2f) : mLineWidth;
+        mLineWidth = mLineWidth == -1 ? MathHelper.dip2px(mContext,1.2f) : mLineWidth;
         //画线条 不设置 style 不会画线
         mLinePaint.setStyle(Paint.Style.STROKE);
         mDashLinePaint.setStyle(Paint.Style.STROKE);
@@ -337,7 +338,7 @@ public class JcoolGraph extends BaseGraph {
                     canvas.drawCircle(midPointF.x, midPointF.y, mLinePointRadio, mPointPaint);
                     //                    mPointPaint.setColor(Color.parseColor("#ffffffff"));
                     mPointPaint.setColor(0Xffffffff);
-                    mPointPaint.setStrokeWidth(dip2px(2));
+                    mPointPaint.setStrokeWidth(MathHelper.dip2px(mContext,2));
                     canvas.drawCircle(midPointF.x, midPointF.y, mLinePointRadio, mPointPaint);
                 }
             }

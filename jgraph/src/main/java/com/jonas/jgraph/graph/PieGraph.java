@@ -11,6 +11,7 @@ import android.util.AttributeSet;
 
 import com.jonas.jgraph.models.Jchart;
 import com.jonas.jgraph.inter.BaseGraph;
+import com.jonas.jgraph.utils.MathHelper;
 
 import java.util.List;
 
@@ -85,7 +86,7 @@ public class PieGraph extends BaseGraph {
         mInterval = 10;
         mPiePaint.setStrokeWidth(pieWidth);
         mAecRect = new RectF(0, 0, mWidth, mHeight);
-        mIntervalPaint.setStrokeWidth(dip2px(1));
+        mIntervalPaint.setStrokeWidth(MathHelper.dip2px(mContext,1));
         Drawable background = getBackground();
         if (background instanceof ColorDrawable) {
             mIntervalColor = ((ColorDrawable) background).getColor();

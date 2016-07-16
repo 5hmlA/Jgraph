@@ -13,6 +13,7 @@ import android.util.AttributeSet;
 
 import com.jonas.jgraph.inter.BaseGraph;
 import com.jonas.jgraph.models.Jchart;
+import com.jonas.jgraph.utils.MathHelper;
 
 import java.util.List;
 
@@ -111,12 +112,12 @@ public class LineChar extends BaseGraph {
     }
 
     private void initializeData() {
-        mBarWidth = dip2px(16);//默认的柱子宽度
-        mInterval = dip2px(4);//默认的间隔大小
-        mAbscissaMsgSize = sp2px(12);//坐标轴信息
+        mBarWidth = MathHelper.dip2px(mContext,16);//默认的柱子宽度
+        mInterval = MathHelper.dip2px(mContext,4);//默认的间隔大小
+        mAbscissaMsgSize = MathHelper.sp2px(mContext,12);//坐标轴信息
         mAbscissaMsgColor = Color.parseColor("#556A73");
         mLineColor = Color.RED;
-        mLineWidth = dip2px(3);
+        mLineWidth = MathHelper.dip2px(mContext,3);
 
         mLinePaint.setStyle(Paint.Style.STROKE);
         mLinePaint.setColor(mLineColor);

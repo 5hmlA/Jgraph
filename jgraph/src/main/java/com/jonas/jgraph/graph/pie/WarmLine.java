@@ -10,11 +10,14 @@ import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.graphics.RectF;
 import android.util.AttributeSet;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.animation.AccelerateInterpolator;
 
 import com.jonas.jgraph.R;
+import com.jonas.jgraph.utils.MathHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,23 +28,23 @@ import java.util.Map;
  *
  * @author yun
  * @version 1
- * Time 2015/7/4
- * 无论控件是否是正方形 都在中间部分画图
- * 提示线 分为 斜线部分和 横线部分
- * showLine 是否显示 提示线的总开关（默认true 默认显示）
- * TstartAtTouch 设置提示线的起点(true表示从点击的地方开始画提示线(此时nRadius设置效果失效) 默认false)
- * nRadius 设置 提示线的起点(TstartAtTouch为true时无效)(1:表示从外辅助圆(饼图)的一半开始，0表示从圆心开始)原理：该值其实是内辅助圆的半径即提示线的起点
- * AniLine 设置是否展示提示线的显示动画（默认为true显示）
- * ANIDURINGTIME 设置 提示线显示动画的时间
- * movingShowTX 旋转的时候是否显示 提示线(默认为false，当为true的时候AniLine将失效，失去提示线的显示动画)
- * TshLong 设定提示线横线部分的长度 默认一直画到控件两边
- * cleanWire 清除所有的提示线条（外部调用需要调用postInvalidate刷新）
- * lpading 设置外辅助圆的大小 (该值可动态调整饼图的大小)（该值是外圆与控件周边的距离(默认控件较短边的1/4)，其与外圆半径成反比，越小则提示线的转折点越靠外，不建议修改 一般该值要比提示线上文字的长度的最长的那个大一点）
- * TsWidth 提示线的宽度
- * TsColor 提示线的颜色 默认黑色
+ *          Time 2015/7/4
+ *          无论控件是否是正方形 都在中间部分画图
+ *          提示线 分为 斜线部分和 横线部分
+ *          showLine 是否显示 提示线的总开关（默认true 默认显示）
+ *          TstartAtTouch 设置提示线的起点(true表示从点击的地方开始画提示线(此时nRadius设置效果失效) 默认false)
+ *          nRadius 设置 提示线的起点(TstartAtTouch为true时无效)(1:表示从外辅助圆(饼图)的一半开始，0表示从圆心开始)原理：该值其实是内辅助圆的半径即提示线的起点
+ *          AniLine 设置是否展示提示线的显示动画（默认为true显示）
+ *          ANIDURINGTIME 设置 提示线显示动画的时间
+ *          movingShowTX 旋转的时候是否显示 提示线(默认为false，当为true的时候AniLine将失效，失去提示线的显示动画)
+ *          TshLong 设定提示线横线部分的长度 默认一直画到控件两边
+ *          cleanWire 清除所有的提示线条（外部调用需要调用postInvalidate刷新）
+ *          lpading 设置外辅助圆的大小 (该值可动态调整饼图的大小)（该值是外圆与控件周边的距离(默认控件较短边的1/4)，其与外圆半径成反比，越小则提示线的转折点越靠外，不建议修改 一般该值要比提示线上文字的长度的最长的那个大一点）
+ *          TsWidth 提示线的宽度
+ *          TsColor 提示线的颜色 默认黑色
  */
 @SuppressLint("DrawAllocation")
-public abstract class WarmLine extends View {
+public abstract class WarmLine extends View implements GestureDetector.OnGestureListener {
 
     /**
      * 画出圆的时候 显示全部的 提示线
@@ -165,9 +168,6 @@ public abstract class WarmLine extends View {
     private float progress;
     private float b;
     private float k;
-    private float down_y = -1;
-    private float down_x = -1;
-
     private int Lwidth;
     private int Lheight;
     protected int just;
@@ -179,12 +179,12 @@ public abstract class WarmLine extends View {
     protected float Tstarty;
     // 动画展示 提示线 斜线部分
     //    private boolean drawAniLine;
-
-    /**
-     * 判断是否执行过move动作
-     */
-    private boolean ismoving = false;
-    private Paint textP;
+    //
+    //    /**
+    //     * 判断是否执行过move动作
+    //     */
+    //    private boolean ismoving = false;
+    private Paint mTextP;
     private int textMarging = 5;
     /**
      * 提示文字大小
@@ -196,14 +196,24 @@ public abstract class WarmLine extends View {
      */
     private boolean downCleanLine = true;
     private RectF mOval4;
+    protected Context mContext;
+    protected GestureDetector mGestureDetector;
+    protected float down_x = -1;
+    protected float down_y = -1;
+
+    {
+        mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        pLine = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mTextP = new Paint(Paint.ANTI_ALIAS_FLAG);
+    }
 
     public WarmLine(Context context, AttributeSet attrs, int defStyleAttr){
         super(context, attrs, defStyleAttr);
-
+        mContext = context;
         if(attrs != null) {
             TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.MPieView, defStyleAttr, 0);
             TsColor = typedArray.getColor(R.styleable.MPieView_TsColor, Color.BLACK);
-            TtextSize = typedArray.getDimension(R.styleable.MPieView_TtextSize, 30);
+            //            TtextSize = typedArray.getDimension(R.styleable.MPieView_TtextSize, 30);
             TsWidth = typedArray.getDimension(R.styleable.MPieView_TsWidth, 1);
             TshLong = typedArray.getDimension(R.styleable.MPieView_TshLong, 0);
             lpading = typedArray.getDimension(R.styleable.MPieView_lpading, 0);
@@ -213,9 +223,6 @@ public abstract class WarmLine extends View {
             movingShowTX = typedArray.getBoolean(R.styleable.MPieView_movingShowTX, false);
             typedArray.recycle();
         }
-        mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        pLine = new Paint(Paint.ANTI_ALIAS_FLAG);
-        textP = new Paint(Paint.ANTI_ALIAS_FLAG);
     }
 
     public WarmLine(Context context, AttributeSet attrs){
@@ -225,6 +232,14 @@ public abstract class WarmLine extends View {
 
     public WarmLine(Context context){
         this(context, null);
+    }
+
+    @Override
+    protected void onFinishInflate(){
+        super.onFinishInflate();
+        mGestureDetector = new GestureDetector(mContext, this);
+        int touchSlop = ViewConfiguration.get(mContext).getScaledTouchSlop();
+
     }
 
     /**
@@ -250,11 +265,11 @@ public abstract class WarmLine extends View {
         pLine.setStrokeWidth(TsWidth);
         pLine.setColor(TsColor);
 
-        textP.setTextSize(TtextSize);
+        mTextP.setTextSize(MathHelper.sp2px(mContext, TtextSize));
 
         //设置的testsize并不等于 画出来文字的高度
         //        Rect bouds = new Rect();
-        //        textP.getTextBounds("343", 0, "232".length(), bouds);
+        //        mTextP.getTextBounds("343", 0, "232".length(), bouds);
 
     }
 
@@ -320,10 +335,10 @@ public abstract class WarmLine extends View {
                 //直线
                 canvas.drawLine(turnX2, turnY2, endx2, endy2, pLine);
 
-                float textL = textP.measureText(showMsg.get(i));
+                float textL = mTextP.measureText(showMsg.get(i));
                 turnX2 = turnX2<Lwidth/2 ? turnX2-textL-textMarging : turnX2+textMarging;
                 //描述
-                canvas.drawText(showMsg.get(i), turnX2, turnY2>centY ? turnY2+TtextSize : turnY2, textP);
+                canvas.drawText(showMsg.get(i), turnX2, turnY2>centY ? turnY2+TtextSize : turnY2, mTextP);
             }
         }
         //=======================================画提示线(有无动画)============================================
@@ -346,9 +361,9 @@ public abstract class WarmLine extends View {
                 // 画直线
                 endy = turnY;
                 canvas.drawLine(turnX, turnY, endx, endy, pLine);
-                float textL = textP.measureText(showMsg.get(selectedPosition));
+                float textL = mTextP.measureText(showMsg.get(selectedPosition));
                 float turnX2 = turnX<Lwidth/2 ? turnX-textL-textMarging : turnX+textMarging;
-                canvas.drawText(showMsg.get(selectedPosition), turnX2, turnY>centY ? turnY+TtextSize : turnY, textP);
+                canvas.drawText(showMsg.get(selectedPosition), turnX2, turnY>centY ? turnY+TtextSize : turnY, mTextP);
             }
 
             /*//使用递归onDraw动态画直线 2，
@@ -365,80 +380,97 @@ public abstract class WarmLine extends View {
             canvas.drawLine(Tstartx, Tstarty, turnX, turnY, pLine);
             endy = turnY;
             canvas.drawLine(turnX, turnY, endx, endy, pLine);
-            float textL = textP.measureText(showMsg.get(selectedPosition));
+            float textL = mTextP.measureText(showMsg.get(selectedPosition));
             float turnX2 = turnX<Lwidth/2 ? turnX-textL-textMarging : turnX+textMarging;
-            canvas.drawText(showMsg.get(selectedPosition), turnX2, turnY>centY ? turnY+TtextSize : turnY, textP);
+            canvas.drawText(showMsg.get(selectedPosition), turnX2, turnY>centY ? turnY+TtextSize : turnY, mTextP);
         }
         //        PointF turn = new PointF(turnX, turnY);
         //        PointF start = new PointF(Tstartx, Tstarty);
     }
 
     @Override
-    public boolean dispatchTouchEvent(MotionEvent event){
+    public boolean onTouchEvent(MotionEvent event){
+        //        //请求 会产生事件冲突的外部ViewGroup不要拦截事件
+        //        if(clashView != null && clashView.length>0) {
+        //            for(int i = 0; i<clashView.length; i++) {
+        //                clashView[i].requestDisallowInterceptTouchEvent(true);
+        //            }
+        //        }
         if(!showLine) {
             return true;
         }
-        switch(event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
+        return mGestureDetector.onTouchEvent(event);
+    }
 
-                ismoving = false;// 清除move状态
-                if(downCleanLine) {
-                    cleanWire = true;
-                    postInvalidate();
-                }
-                down_x = event.getX();
-                down_y = event.getY();
-                if(movingShowTX) {
-                    AniLine = false;
-                    //TODO 动画画线
-                    if(showInCenAngle) {
-                        showCenterGetPoint();
-                    }else {
-                        showAtTouch(down_x, down_y);
-                    }
-                }else {
-                    cleanWire = true;// down的时候 取消提示线 true不显示提示线
-                }
-                return true; // 当事件被消费之后 后续事件才会被该控件处理
-            case MotionEvent.ACTION_MOVE:
-                float move_x = event.getX();
-                float move_y = event.getY();
-
-                //真机上 很容易出发move 所以给个允许误差0.001
-                if(Math.abs(move_x-down_x)>0.0001 || Math.abs(move_y-down_y)>0.0001) {
-                    ismoving = true;// 记录move状态
-                    AniLine = false;//移动的时候 没有动画
-                }
-
-                if(movingShowTX) {
-                    cleanWire = false;
-                    // 如果 旋转的时候 不允许显示 提示线条的话 结束
-                    //                    return true;// 不可以是false 否则后续事件将会丢失
-                    if(showInCenAngle) {
-                        showCenterGetPoint();
-                    }else {
-                        showAtTouch(move_x, move_y);
-                    }
-                }else {
-                    break;
-                }
-                break; // 当事件被消费之后 后续事件才会被该控件处理
-            case MotionEvent.ACTION_UP:
-                cleanWire = false;
-                AniLine = !movingShowTX;
+    @Override
+    public boolean onDown(MotionEvent e){
+        down_x = e.getX();
+        down_y = e.getY();
+        if(downCleanLine) {
+            cleanWire = true;
+            postInvalidate();
+        }else {
+            if(movingShowTX) {
+                AniLine = false;
+                //TODO 动画画线
                 if(showInCenAngle) {
                     showCenterGetPoint();
                 }else {
-                    showAtTouch(event.getX(), event.getY());
+                    showAtTouch(down_x, down_y);
                 }
-                break;
+            }else {
+                cleanWire = true;// down的时候 取消提示线 true不显示提示线
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public void onShowPress(MotionEvent e){
+
+    }
+
+    @Override
+    public boolean onSingleTapUp(MotionEvent e){
+        cleanWire = false;
+        AniLine = !movingShowTX;
+        if(showInCenAngle) {
+            showCenterGetPoint();
+        }else {
+            showAtTouch(e.getX(), e.getY());
         }
         if(AniLine) {
             drawAniLine(Tstarty, turnY);
         }else {
             postInvalidate();
         }
-        return super.dispatchTouchEvent(event);
+        return true;
+    }
+
+    @Override
+    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY){
+        AniLine = false;//移动的时候 没有动画
+        if(movingShowTX) {
+            cleanWire = false;
+            // 如果 旋转的时候 不允许显示 提示线条的话 结束
+            //                    return true;// 不可以是false 否则后续事件将会丢失
+            if(showInCenAngle) {
+                showCenterGetPoint();
+            }else {
+                showAtTouch(e2.getX(), e2.getY());
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public void onLongPress(MotionEvent e){
+
+    }
+
+    @Override
+    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY){
+        return true;
     }
 
     protected void showAtTouch(float x, float y){
@@ -464,11 +496,9 @@ public abstract class WarmLine extends View {
         // 根据点击的位置判断 提示线的横线 往哪个方向
         if(x>centX) {
             endx = turnX+TshLong;
-            //				Log.d("FreeLine-----横方向", "右边");
         }else {
             // endx = 0;
             endx = turnX-TshLong;
-            //				Log.d("FreeLine-----横方向", "左边");
         }
     }
 
@@ -777,7 +807,7 @@ public abstract class WarmLine extends View {
      */
     public void setTtextSize(float ttextSize){
         TtextSize = ttextSize;
-        textP.setTextSize(ttextSize);
+        mTextP.setTextSize(ttextSize);
     }
 
     public void setTextMarging(int textMarging){

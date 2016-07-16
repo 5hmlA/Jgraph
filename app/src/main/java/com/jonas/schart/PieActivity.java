@@ -50,9 +50,9 @@ public class PieActivity extends AppCompatActivity implements View.OnClickListen
         //        pie.setShowCenterAll(true);
         pie.setShowInCenAngle(true);
         pie.setOutMoving(true);
+        setdata();
         pie.setShowCenterAll(false);
         pie.setTstartAtTouch(true);
-        setdata();
     }
 
     public void refresh(View view) {

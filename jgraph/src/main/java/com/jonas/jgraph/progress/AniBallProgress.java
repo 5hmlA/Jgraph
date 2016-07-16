@@ -18,6 +18,7 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import com.jonas.jgraph.R;
 import com.jonas.jgraph.inter.IProgress;
 import com.jonas.jgraph.models.Jball;
+import com.jonas.jgraph.utils.MathHelper;
 
 import java.util.ArrayList;
 
@@ -63,6 +64,7 @@ public class AniBallProgress extends View implements IProgress {
     private long mBallDelay = 200;
     private int mBallNums = 3;
     private float mRotate = -90;
+    private Context mContext;
 
 
     public AniBallProgress(Context context) {
@@ -72,11 +74,12 @@ public class AniBallProgress extends View implements IProgress {
 
     public AniBallProgress(Context context, AttributeSet attrs) {
         super(context, attrs);
+        mContext = context;
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.JProgress);
         mProgColor = a.getColor(R.styleable.JProgress_progressColor, Color.RED);
         mMax = a.getFloat(R.styleable.JProgress_max, 100);
         mProgress = a.getFloat(R.styleable.JProgress_progress, 0);
-        mProgWidth = a.getFloat(R.styleable.JProgress_progwidth, 10);
+        mProgWidth = a.getFloat(R.styleable.JProgress_progwidth, MathHelper.sp2px(mContext,5));
         a.recycle();
     }
 
