@@ -14,6 +14,7 @@ import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Shader;
+import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.AttributeSet;
@@ -30,12 +31,23 @@ import com.jonas.jgraph.R;
 import com.jonas.jgraph.models.Jchart;
 import com.jonas.jgraph.utils.MathHelper;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
+import static com.jonas.jgraph.inter.BaseGraph.GraphStyle.BAR;
+import static com.jonas.jgraph.inter.BaseGraph.GraphStyle.LINE;
+import static com.jonas.jgraph.inter.BaseGraph.SelectedMode.SELECETD_MSG_SHOW_TOP;
+import static com.jonas.jgraph.inter.BaseGraph.SelectedMode.SELECETD_NULL;
+import static com.jonas.jgraph.inter.BaseGraph.SelectedMode.SELECTED_ACTIVATED;
+import static com.jonas.jgraph.inter.BaseGraph.State.aniChange;
+import static com.jonas.jgraph.inter.BaseGraph.State.aniFinish;
+import static com.jonas.jgraph.inter.BaseGraph.State.aniShow;
 
 /**
  * @author yun.
@@ -168,7 +180,9 @@ public abstract class BaseGraph extends View implements GestureDetector.OnGestur
     private float upPlace;
     private OnGraphItemListener mListener;
 
-    public interface SelectedMode {
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({SELECETD_NULL, SELECTED_ACTIVATED, SELECETD_MSG_SHOW_TOP})
+    public @interface SelectedMode {
         int SELECETD_NULL = -1;
         /**
          * 选中的 颜色变  显示所有柱子 文字
@@ -180,16 +194,19 @@ public abstract class BaseGraph extends View implements GestureDetector.OnGestur
         int SELECETD_MSG_SHOW_TOP = 1;
     }
 
-    protected interface State {
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({aniChange, aniShow, aniFinish})
+    protected @interface State {
         int aniChange = 1;
         int aniShow = 2;
         int aniFinish = 3;
     }
 
-    public interface GraphStyle {
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({BAR, LINE})
+    public @interface GraphStyle {
         int BAR = 0;
         int LINE = 1;
-        int BAR_LINE = 2;
     }
 
     protected Context mContext;
@@ -216,7 +233,7 @@ public abstract class BaseGraph extends View implements GestureDetector.OnGestur
     /**
      * 要画的 图表的 风格
      */
-    protected int mGraphStyle = GraphStyle.LINE;
+    protected int mGraphStyle = LINE;
 
     /**
      * 滑动 距离
@@ -253,7 +270,7 @@ public abstract class BaseGraph extends View implements GestureDetector.OnGestur
     public BaseGraph(Context context, AttributeSet attrs){
         this(context, attrs, 0);
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.AndroidJgraph);
-        mGraphStyle = a.getInt(R.styleable.AndroidJgraph_graphstyle, GraphStyle.LINE);
+        mGraphStyle = a.getInt(R.styleable.AndroidJgraph_graphstyle, LINE);
         mScrollAble = a.getBoolean(R.styleable.AndroidJgraph_scrollable, false);
         mNeedY_abscissMasg = a.getBoolean(R.styleable.AndroidJgraph_showymsg, true);
         mNormalColor = a.getColor(R.styleable.AndroidJgraph_normolcolor, Color.parseColor("#676567"));
@@ -318,7 +335,7 @@ public abstract class BaseGraph extends View implements GestureDetector.OnGestur
         mHeight = h-getPaddingBottom()-getPaddingTop();
         mWidth = w-getPaddingLeft()-getPaddingRight();
         mCenterPoint = new PointF(w/2f, h/2f);
-        if(mGraphStyle == GraphStyle.BAR || mGraphStyle == GraphStyle.LINE) {
+        if(mGraphStyle == BAR || mGraphStyle == LINE) {
             refreshChartArea();
         }
     }
@@ -337,7 +354,7 @@ public abstract class BaseGraph extends View implements GestureDetector.OnGestur
             yMsgLength = bounds.width()<yMsgLength ? bounds.width() : yMsgLength;
             yMsgLength += 5;
         }
-        if(mSelectedMode == SelectedMode.SELECETD_MSG_SHOW_TOP) {
+        if(mSelectedMode == SELECETD_MSG_SHOW_TOP) {
             //选中文字的背景的高度
             yMsgHeight = mSelectedTextPaint.getTextSize()+3f*mBgTriangleHeight;
         }else {
@@ -352,7 +369,7 @@ public abstract class BaseGraph extends View implements GestureDetector.OnGestur
      * 获取屏幕 宽高 后 更新 图表区域 矩阵数据 柱子宽 间隔宽度
      */
     protected void refreshChartSetData(){
-        if(mGraphStyle == GraphStyle.BAR) {
+        if(mGraphStyle == BAR) {
             //柱状图默认 间隔固定
             mInterval = mInterval>=MathHelper.dip2px(mContext, 6) ? MathHelper.dip2px(mContext, 6) : mInterval;
             //            mFixBarWidth = false;
@@ -371,7 +388,7 @@ public abstract class BaseGraph extends View implements GestureDetector.OnGestur
         //画 图表区域的宽度
         mCharAreaWidth = mChartArea.right-mChartArea.left;
         //不可滚动 则必须全部显示在界面上  无视mVisibleNums
-        if(mGraphStyle == GraphStyle.BAR) {
+        if(mGraphStyle == BAR) {
             //间隔 minterval默认 计算柱子宽度
             mBarWidth = ( mCharAreaWidth-mInterval*( mVisibleNums-1 ) )/mVisibleNums;
         }else {
@@ -427,16 +444,16 @@ public abstract class BaseGraph extends View implements GestureDetector.OnGestur
             if(mNeedY_abscissMasg && mYaxis_msg != null) {
                 drawYabscissaMsg(canvas);
             }
-            if(mGraphStyle == GraphStyle.BAR) {
+            if(mGraphStyle == BAR) {
                 drawSugExcel_BAR(canvas);
-            }else if(mGraphStyle == GraphStyle.LINE) {
+            }else if(mGraphStyle == LINE) {
                 drawSugExcel_LINE(canvas);
             }else {
                 drawSugExcel_BAR(canvas);
                 drawSugExcel_LINE(canvas);
             }
             //选中模式启用的时候
-            if(mSelectedMode == SelectedMode.SELECETD_MSG_SHOW_TOP && !mValueAnimator.isRunning()) {
+            if(mSelectedMode == SELECETD_MSG_SHOW_TOP && !mValueAnimator.isRunning()) {
                 if(mSelected>-1) {
                     drawSelectedText(canvas, mJcharts.get(mSelected));
                 }else {
@@ -526,6 +543,7 @@ public abstract class BaseGraph extends View implements GestureDetector.OnGestur
             if(mSliding>=0 || mSliding<=-( mChartRithtest_x-mCharAreaWidth )) {
                 //跨越两边界了
                 mSliding = mSliding>=0 ? 0 : mSliding<=-( mChartRithtest_x-mCharAreaWidth ) ? -( mChartRithtest_x-mCharAreaWidth ) : mSliding;
+                invalidate();
                 return false;
             }else {
                 //正常滑动距离刷新界面
@@ -534,6 +552,7 @@ public abstract class BaseGraph extends View implements GestureDetector.OnGestur
             }
         }else {
             mSliding = mSliding>=0 ? 0 : mSliding;
+            invalidate();
             return false;
         }
 
@@ -1033,7 +1052,7 @@ public abstract class BaseGraph extends View implements GestureDetector.OnGestur
     /**
      * 设置 图表类型  柱状 折线  折线+柱状
      */
-    public void setGraphStyle(int graphStyle){
+    public void setGraphStyle(@GraphStyle int graphStyle){
         mGraphStyle = graphStyle;
         if(mWidth>0) {
             refreshChartSetData();
@@ -1118,7 +1137,7 @@ public abstract class BaseGraph extends View implements GestureDetector.OnGestur
         }
     }
 
-    public void setSelectedMode(int selectedMode){
+    public void setSelectedMode(@SelectedMode int selectedMode){
         mSelectedMode = selectedMode;
     }
 

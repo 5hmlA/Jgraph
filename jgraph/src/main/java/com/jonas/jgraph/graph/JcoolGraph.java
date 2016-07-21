@@ -9,6 +9,9 @@ import android.graphics.Path;
 import android.graphics.PathMeasure;
 import android.graphics.PointF;
 import android.graphics.RectF;
+import android.support.annotation.ColorInt;
+import android.support.annotation.DimenRes;
+import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -22,8 +25,28 @@ import com.jonas.jgraph.models.Jchart;
 import com.jonas.jgraph.utils.DrawHelper;
 import com.jonas.jgraph.utils.MathHelper;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.jonas.jgraph.graph.JcoolGraph.BarShowStyle.BARSHOW_ASWAVE;
+import static com.jonas.jgraph.graph.JcoolGraph.BarShowStyle.BARSHOW_EXPAND;
+import static com.jonas.jgraph.graph.JcoolGraph.BarShowStyle.BARSHOW_FROMLINE;
+import static com.jonas.jgraph.graph.JcoolGraph.BarShowStyle.BARSHOW_SECTION;
+import static com.jonas.jgraph.graph.JcoolGraph.LineMode.LINE_DASH_0;
+import static com.jonas.jgraph.graph.JcoolGraph.LineMode.LINE_EVERYPOINT;
+import static com.jonas.jgraph.graph.JcoolGraph.LineMode.LINE_JUMP0;
+import static com.jonas.jgraph.graph.JcoolGraph.LineShowStyle.LINESHOW_ASWAVE;
+import static com.jonas.jgraph.graph.JcoolGraph.LineShowStyle.LINESHOW_DRAWING;
+import static com.jonas.jgraph.graph.JcoolGraph.LineShowStyle.LINESHOW_FROMCORNER;
+import static com.jonas.jgraph.graph.JcoolGraph.LineShowStyle.LINESHOW_FROMLINE;
+import static com.jonas.jgraph.graph.JcoolGraph.LineShowStyle.LINESHOW_SECTION;
+import static com.jonas.jgraph.graph.JcoolGraph.LineStyle.LINE_BROKEN;
+import static com.jonas.jgraph.graph.JcoolGraph.LineStyle.LINE_CURVE;
+import static com.jonas.jgraph.graph.JcoolGraph.ShowFromMode.SHOWFROMBUTTOM;
+import static com.jonas.jgraph.graph.JcoolGraph.ShowFromMode.SHOWFROMMIDDLE;
+import static com.jonas.jgraph.graph.JcoolGraph.ShowFromMode.SHOWFROMTOP;
 
 /**
  * @author yun.
@@ -43,7 +66,9 @@ public class JcoolGraph extends BaseGraph {
     private Paint mPointPaint;
     private float mLinePointRadio;
 
-    public interface LineStyle {
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({LINE_BROKEN,LINE_CURVE})
+    public @interface LineStyle {
         /**
          * 折线
          */
@@ -55,7 +80,9 @@ public class JcoolGraph extends BaseGraph {
 
     }
 
-    public interface LineShowStyle {
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({LINESHOW_DRAWING,LINESHOW_SECTION,LINESHOW_FROMLINE,LINESHOW_FROMCORNER,LINESHOW_ASWAVE})
+    public @interface LineShowStyle {
         /**
          * 线条从无到有 慢慢出现
          */
@@ -79,7 +106,9 @@ public class JcoolGraph extends BaseGraph {
         int LINESHOW_ASWAVE = 4;
     }
 
-    public interface BarShowStyle {
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({BARSHOW_ASWAVE,BARSHOW_FROMLINE,BARSHOW_EXPAND,BARSHOW_SECTION})
+    public @interface BarShowStyle {
 
         /**
          * 水波 方式展开
@@ -100,15 +129,19 @@ public class JcoolGraph extends BaseGraph {
         int BARSHOW_SECTION = 3;
     }
 
-    private int mBarShowStyle = BarShowStyle.BARSHOW_ASWAVE;
+    private int mBarShowStyle = BARSHOW_ASWAVE;
 
-    public static interface ShowFromMode {
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({SHOWFROMTOP,SHOWFROMBUTTOM,SHOWFROMMIDDLE})
+    public @interface ShowFromMode {
         int SHOWFROMTOP = 0;
         int SHOWFROMBUTTOM = 1;
         int SHOWFROMMIDDLE = 2;
     }
 
-    public interface LineMode {
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({LINE_EVERYPOINT,LINE_JUMP0,LINE_DASH_0})
+    public @interface LineMode {
         /**
          * 连接每一个点
          */
@@ -124,9 +157,9 @@ public class JcoolGraph extends BaseGraph {
         int LINE_DASH_0 = 2;
     }
 
-    private int mLineMode = LineMode.LINE_EVERYPOINT;
-    private int mShowFromMode = ShowFromMode.SHOWFROMMIDDLE;
-    private int mLineStyle = LineStyle.LINE_CURVE;
+    private int mLineMode = LINE_EVERYPOINT;
+    private int mShowFromMode = SHOWFROMMIDDLE;
+    private int mLineStyle = LINE_CURVE;
     /**
      * linepath动画存储点
      */
@@ -149,7 +182,7 @@ public class JcoolGraph extends BaseGraph {
     /**
      * 线条展示的动画风格
      */
-    protected int mLineShowStyle = LineShowStyle.LINESHOW_ASWAVE;
+    protected int mLineShowStyle = LINESHOW_ASWAVE;
 
 
     private Paint mLinePaint;
@@ -182,10 +215,10 @@ public class JcoolGraph extends BaseGraph {
     public JcoolGraph(Context context, AttributeSet attrs) {
         super(context, attrs);
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.AndroidJgraph);
-        mLineStyle = a.getInteger(R.styleable.AndroidJgraph_linestyle, LineStyle.LINE_CURVE);
-        mLineMode = a.getInteger(R.styleable.AndroidJgraph_linemode, LineMode.LINE_EVERYPOINT);
+        mLineStyle = a.getInteger(R.styleable.AndroidJgraph_linestyle, LINE_CURVE);
+        mLineMode = a.getInteger(R.styleable.AndroidJgraph_linemode, LINE_EVERYPOINT);
         mLineWidth = a.getDimension(R.styleable.AndroidJgraph_linewidth, MathHelper.dip2px(mContext,1.2f));
-        mLineShowStyle = a.getInt(R.styleable.AndroidJgraph_lineshowstyle, LineShowStyle.LINESHOW_ASWAVE);
+        mLineShowStyle = a.getInt(R.styleable.AndroidJgraph_lineshowstyle, LINESHOW_ASWAVE);
         a.recycle();
         initializeData();
     }
@@ -253,15 +286,15 @@ public class JcoolGraph extends BaseGraph {
                 for (Jchart jchart : mJcharts) {
                     jchart.draw(canvas, mBarPaint, false);
                 }
-            } else if (mBarShowStyle == BarShowStyle.BARSHOW_ASWAVE) {
+            } else if (mBarShowStyle == BARSHOW_ASWAVE) {
                 for (Jchart jchart : mJcharts) {
                     jchart.draw(canvas, mBarPaint, false);
                 }
-            } else if (mBarShowStyle == BarShowStyle.BARSHOW_FROMLINE) {
+            } else if (mBarShowStyle == BARSHOW_FROMLINE) {
                 barAniChanging(canvas);
-            } else if (mBarShowStyle == BarShowStyle.BARSHOW_EXPAND) {
+            } else if (mBarShowStyle == BARSHOW_EXPAND) {
                 drawBarExpand(canvas);
-            } else if (mBarShowStyle == BarShowStyle.BARSHOW_SECTION) {
+            } else if (mBarShowStyle == BARSHOW_SECTION) {
                 drawBarSection(canvas);
             }
         }
@@ -321,7 +354,7 @@ public class JcoolGraph extends BaseGraph {
 //                    canvas.drawPath(mShadeAreaPath, mShaderAreaPaint);
 //                }
 //            } else {
-            if (mLineMode == LineMode.LINE_EVERYPOINT) {
+            if (mLineMode == LINE_EVERYPOINT) {
                 //不跳过为0的点
                 lineWithEvetyPoint(canvas);
             } else {
@@ -356,8 +389,8 @@ public class JcoolGraph extends BaseGraph {
 
     private void lineWithEvetyPoint(Canvas canvas) {
 
-        if ((mLineShowStyle == LineShowStyle.LINESHOW_FROMCORNER || mLineShowStyle == LineShowStyle.LINESHOW_DRAWING ||
-                mLineShowStyle == LineShowStyle.LINESHOW_SECTION) && !mValueAnimator.isRunning()) {
+        if ((mLineShowStyle == LINESHOW_FROMCORNER || mLineShowStyle == LINESHOW_DRAWING ||
+                mLineShowStyle == LINESHOW_SECTION) && !mValueAnimator.isRunning()) {
             if (BuildConfig.DEBUG) {
                 Log.d(TAG, "drawSugExcel_LINE animationfinish to the initial state");
             }
@@ -368,17 +401,17 @@ public class JcoolGraph extends BaseGraph {
             if (mShaderAreaColors != null) {
                 canvas.drawPath(mShadeAreaPath, mShaderAreaPaint);
             }
-        } else if (mLineShowStyle == LineShowStyle.LINESHOW_DRAWING) {
+        } else if (mLineShowStyle == LINESHOW_DRAWING) {
             drawLineAllpointDrawing(canvas);
-        } else if (mLineShowStyle == LineShowStyle.LINESHOW_SECTION) {
+        } else if (mLineShowStyle == LINESHOW_SECTION) {
             drawLineAllpointSectionMode(canvas);
-        } else if (mLineShowStyle == LineShowStyle.LINESHOW_FROMLINE) {
+        } else if (mLineShowStyle == LINESHOW_FROMLINE) {
             drawLineAllFromLine(canvas);
             drawLeftShaderArea(canvas);
-        } else if (mLineShowStyle == LineShowStyle.LINESHOW_FROMCORNER) {
+        } else if (mLineShowStyle == LINESHOW_FROMCORNER) {
             drawLineAllFromCorner(canvas);
             drawLeftShaderArea(canvas);
-        } else if (mLineShowStyle == LineShowStyle.LINESHOW_ASWAVE) {
+        } else if (mLineShowStyle == LINESHOW_ASWAVE) {
             drawLineAsWave(canvas);
             drawLeftShaderArea(canvas);
         }
@@ -397,7 +430,7 @@ public class JcoolGraph extends BaseGraph {
     private void drawLineAllFromCorner(Canvas canvas) {
         mAniShadeAreaPath.reset();
         mAniLinePath.reset();
-        if (mLineStyle == LineStyle.LINE_CURVE) {
+        if (mLineStyle == LINE_CURVE) {
             for (int i = 0; i < mAllPoints.size() - 1; i++) {
                 PointF midPointF = mAllPoints.get(i);
                 PointF endPointF = mAllPoints.get(i + 1);
@@ -436,7 +469,7 @@ public class JcoolGraph extends BaseGraph {
         if (mAllPoints.size() != mJcharts.size()) {
             throw new RuntimeException("mAllPoints.size() == mJcharts.size()");
         }
-        if (mLineStyle == LineStyle.LINE_CURVE) {
+        if (mLineStyle == LINE_CURVE) {
             for (int i = 0; i < mAllPoints.size() - 1; i++) {
                 PointF midPointF = mAllPoints.get(i);
                 PointF endPointF = mAllPoints.get(i + 1);
@@ -470,7 +503,7 @@ public class JcoolGraph extends BaseGraph {
     private void drawLineAsWave(Canvas canvas) {
         mAniShadeAreaPath.reset();
         mAniLinePath.reset();
-        if (mLineStyle == LineStyle.LINE_CURVE) {
+        if (mLineStyle == LINE_CURVE) {
             setUpCurveLinePath();
         } else {
             setUpBrokenLinePath();
@@ -521,7 +554,7 @@ public class JcoolGraph extends BaseGraph {
             if (mPrePoint == null) {
                 mPrePoint = mJcharts.get(0).getMidPointF();
             }
-            if (mLineStyle == LineStyle.LINE_CURVE) {
+            if (mLineStyle == LINE_CURVE) {
                 float con_X = (mPrePoint.x + mCurPosition[0]) / 2;
                 mAniLinePath.cubicTo(con_X, mPrePoint.y, con_X, mCurPosition[1], mCurPosition[0], mCurPosition[1]);
                 mAniShadeAreaPath.cubicTo(con_X, mPrePoint.y, con_X, mCurPosition[1], mCurPosition[0], mCurPosition[1]);
@@ -549,7 +582,7 @@ public class JcoolGraph extends BaseGraph {
             mAniShadeAreaPath.reset();
         }
         Jchart jchart = mJcharts.get(currPosition);
-        if (mLineStyle == LineStyle.LINE_BROKEN) {
+        if (mLineStyle == LINE_BROKEN) {
             if (currPosition == 0) {
                 mAniLinePath.moveTo(jchart.getMidPointF().x, jchart.getMidPointF().y);
             } else {
@@ -577,7 +610,7 @@ public class JcoolGraph extends BaseGraph {
                 if (i == 0) {
                     mAniShadeAreaPath.moveTo(currPoint.x, currPoint.y);
                 } else {
-                    if (mLineStyle == LineStyle.LINE_BROKEN) {
+                    if (mLineStyle == LINE_BROKEN) {
                         mAniShadeAreaPath.lineTo(currPoint.x, currPoint.y);
                     } else {
                         DrawHelper.pathCubicTo(mAniShadeAreaPath, mAllPoints.get(i - 1), currPoint);
@@ -598,7 +631,7 @@ public class JcoolGraph extends BaseGraph {
      */
     private void lineSkip0Point(Canvas canvas) {
         arrangeLineDate(canvas);
-        if (mLineMode == LineMode.LINE_DASH_0) {
+        if (mLineMode == LINE_DASH_0) {
             //虚线连接
             arrangeDashLineDate(canvas);
             if (mDashPathList.size() > 0) {
@@ -640,7 +673,7 @@ public class JcoolGraph extends BaseGraph {
                 PathMeasure pathMeasuredotted = new PathMeasure(mLinePathList.get(i + 1), false);
                 pathMeasuredotted.getPosTan(0, post, null);
 
-                if (mLineStyle == LineStyle.LINE_BROKEN) {
+                if (mLineStyle == LINE_BROKEN) {
                     path.lineTo(post[0], post[1]);
                 } else {
                     DrawHelper.pathCubicTo(path, new PointF(post_end[0], post_end[1]), new PointF(post[0], post[1]));
@@ -667,8 +700,8 @@ public class JcoolGraph extends BaseGraph {
                         pathline.moveTo(midPointF.x, midPointF.y);
                         lineStarted = true;
                     } else {
-                        if (mLineStyle == LineStyle.LINE_BROKEN) {
-                            if (mLineShowStyle == LineShowStyle.LINESHOW_ASWAVE) {
+                        if (mLineStyle == LINE_BROKEN) {
+                            if (mLineShowStyle == LINESHOW_ASWAVE) {
                                 pathline.lineTo(midPointF.x, midPointF.y);
                             } else {
                                 PointF lastP = mAllLastPoints.get(i);
@@ -676,7 +709,7 @@ public class JcoolGraph extends BaseGraph {
 
                             }
                         } else {
-                            if (mLineShowStyle == LineShowStyle.LINESHOW_ASWAVE) {
+                            if (mLineShowStyle == LINESHOW_ASWAVE) {
                                 DrawHelper.pathCubicTo(pathline, mPrePoint, midPointF);
                             } else {
                                 PointF laste = mAllLastPoints.get(i);
@@ -757,11 +790,11 @@ public class JcoolGraph extends BaseGraph {
             mAllPoints.add(jchart.getMidPointF());
             //aniChangeData之后会刷新数据 mAllLastPoints的y不等于0 mAllLastPoints.get(i).y == 0
             if (mAllLastPoints.get(i).y == -1) {
-                if (mShowFromMode == JcoolGraph.ShowFromMode.SHOWFROMBUTTOM) {
+                if (mShowFromMode == SHOWFROMBUTTOM) {
                     mAllLastPoints.get(i).y = mChartArea.bottom;//0转为横轴纵坐标
-                } else if (mShowFromMode == JcoolGraph.ShowFromMode.SHOWFROMTOP) {
+                } else if (mShowFromMode == SHOWFROMTOP) {
                     mAllLastPoints.get(i).y = mChartArea.top;//0转为横轴纵坐标
-                } else if (mShowFromMode == JcoolGraph.ShowFromMode.SHOWFROMMIDDLE) {
+                } else if (mShowFromMode == SHOWFROMMIDDLE) {
                     mAllLastPoints.get(i).y = (mChartArea.bottom + mChartArea.top) / 2;//0转为横轴纵坐标
                 }
             }
@@ -796,7 +829,7 @@ public class JcoolGraph extends BaseGraph {
         mLinePath.reset();
         mShadeAreaPath.reset();
         //曲线
-        if (mLineStyle == LineStyle.LINE_CURVE) {
+        if (mLineStyle == LINE_CURVE) {
             for (int i = 0; i < mAllPoints.size() - 1; i++) {
                 PointF startPoint = mAllPoints.get(i);
                 PointF endPoint = mAllPoints.get(i + 1);//下一个点
@@ -826,14 +859,23 @@ public class JcoolGraph extends BaseGraph {
     @Override
     public void feedData(@NonNull List<Jchart> jchartList) {
         super.feedData(jchartList);
-        if (mLineShowStyle != -1) {
-            postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    aniShow_growing();
-                }
-            }, 1000);
+//        if (mLineShowStyle != -1) {
+//            postDelayed(new Runnable() {
+//                @Override
+//                public void run() {
+//                    aniShow_growing();
+//                }
+//            }, 1000);
+//        }
+    }
+
+    public void feedData(float... data) {
+        ArrayList<Jchart> jchartList = new ArrayList<>(data.length);
+        for (float v : data) {
+            Jchart jchart = new Jchart(v, mNormalColor);
+            jchartList.add(jchart);
         }
+        super.feedData(jchartList);
     }
 
     public void aniShow_growing() {
@@ -845,27 +887,27 @@ public class JcoolGraph extends BaseGraph {
         }
         mState = -1;
         if (mGraphStyle == GraphStyle.LINE) {
-            if (mLineShowStyle == LineShowStyle.LINESHOW_ASWAVE) {
+            if (mLineShowStyle == LINESHOW_ASWAVE) {
                 aswaveAniTrigger();
-            } else if (mLineMode == LineMode.LINE_DASH_0 || mLineMode == LineMode.LINE_JUMP0 ||
-                    mLineShowStyle == LineShowStyle.LINESHOW_FROMLINE || mLineShowStyle == LineShowStyle.LINESHOW_FROMCORNER) {
-                if (mLineMode == LineMode.LINE_DASH_0 || mLineMode == LineMode.LINE_JUMP0) {
+            } else if (mLineMode == LINE_DASH_0 || mLineMode == LINE_JUMP0 ||
+                    mLineShowStyle == LINESHOW_FROMLINE || mLineShowStyle == LINESHOW_FROMCORNER) {
+                if (mLineMode == LINE_DASH_0 || mLineMode == LINE_JUMP0) {
                     //跳过0的线只有两种动画 ASWAVE FROMLINE
-                    mLineShowStyle = LineShowStyle.LINESHOW_FROMLINE;
+                    mLineShowStyle = LINESHOW_FROMLINE;
                     if (BuildConfig.DEBUG) {
                         Log.d(TAG, "aniShow_growing change showstyle 2 fromline");
                     }
                 }
-                if (mShowFromMode == ShowFromMode.SHOWFROMMIDDLE) {
+                if (mShowFromMode == SHOWFROMMIDDLE) {
                     aniShowChar(0, 1, new AccelerateInterpolator());
                 } else {
                     aniShowChar(0, 1);
                 }
-            } else if (mLineShowStyle == LineShowStyle.LINESHOW_SECTION) {
+            } else if (mLineShowStyle == LINESHOW_SECTION) {
                 mAniLinePath.reset();
                 mAniShadeAreaPath.reset();
                 aniShowChar(0, mJcharts.size() - 1, new LinearInterpolator(), 5000, true);
-            } else if (mLineShowStyle == LineShowStyle.LINESHOW_DRAWING) {
+            } else if (mLineShowStyle == LINESHOW_DRAWING) {
                 mAniLinePath.reset();
                 mAniShadeAreaPath.reset();
                 mPathMeasure = new PathMeasure(mLinePath, false);
@@ -874,10 +916,10 @@ public class JcoolGraph extends BaseGraph {
             }
         } else {
             if (mJcharts.size() > 0) {
-                if (mBarShowStyle == BarShowStyle.BARSHOW_ASWAVE) {
+                if (mBarShowStyle == BARSHOW_ASWAVE) {
                     aswaveAniTrigger();
-                } else if (mBarShowStyle == BarShowStyle.BARSHOW_SECTION) {
-                    aniShowChar(0, mJcharts.size() - 1, new LinearInterpolator(), (mJcharts.size() - 1) * 200, true);
+                } else if (mBarShowStyle == BARSHOW_SECTION) {
+                    aniShowChar(0, mJcharts.size() - 1, new LinearInterpolator(), (mJcharts.size() - 1) * 300, true);
                 } else {
                     aniShowChar(0, 1, new LinearInterpolator());
                 }
@@ -889,7 +931,7 @@ public class JcoolGraph extends BaseGraph {
         for (Jchart jchart : mJcharts) {
             jchart.setAniratio(0);
         }
-        aniShowChar(0, mJcharts.size() - 1, new LinearInterpolator(), (mJcharts.size() - 1) * 200, true);
+        aniShowChar(0, mJcharts.size() - 1, new LinearInterpolator(), (mJcharts.size() - 1) * 250, true);
     }
 
     @Override
@@ -897,7 +939,7 @@ public class JcoolGraph extends BaseGraph {
         if (mState == State.aniChange) {
             floatChangeAni(animation);
         } else if (mGraphStyle == GraphStyle.BAR) {
-            if (mBarShowStyle == BarShowStyle.BARSHOW_ASWAVE || mBarShowStyle == BarShowStyle.BARSHOW_SECTION) {
+            if (mBarShowStyle == BARSHOW_ASWAVE || mBarShowStyle == BARSHOW_SECTION) {
                 if (animation.getAnimatedValue() instanceof Integer) {
                     mAniRatio = (int) animation.getAnimatedValue();
                     mJcharts.get(((int) mAniRatio)).aniHeight(this, 0, new AccelerateInterpolator());
@@ -907,16 +949,16 @@ public class JcoolGraph extends BaseGraph {
                 floatChangeAni(animation);
             }
         } else {
-            if (mLineMode == LineMode.LINE_EVERYPOINT) {
-                if (mLineShowStyle == LineShowStyle.LINESHOW_FROMLINE || mLineShowStyle == LineShowStyle.LINESHOW_FROMCORNER) {
+            if (mLineMode == LINE_EVERYPOINT) {
+                if (mLineShowStyle == LINESHOW_FROMLINE || mLineShowStyle == LINESHOW_FROMCORNER) {
                     floatChangeAni(animation);
-                } else if (mLineShowStyle == LineShowStyle.LINESHOW_ASWAVE || mLineShowStyle == LineShowStyle.LINESHOW_SECTION) {
+                } else if (mLineShowStyle == LINESHOW_ASWAVE || mLineShowStyle == LINESHOW_SECTION) {
                     intChangeAni(animation);
                 } else {
                     if (animation.getAnimatedValue() instanceof Float) {
                         mAniRatio = (float) animation.getAnimatedValue();
                         if (mGraphStyle == GraphStyle.LINE) {
-                            if (mLineShowStyle == LineShowStyle.LINESHOW_DRAWING && mState != State.aniChange) {
+                            if (mLineShowStyle == LINESHOW_DRAWING && mState != State.aniChange) {
                                 //mCurPosition必须要初始化mCurPosition = new float[2];
                                 mPathMeasure.getPosTan(mAniRatio, mCurPosition, null);
                             }
@@ -924,7 +966,7 @@ public class JcoolGraph extends BaseGraph {
                     }
                 }
             } else {
-                if (mLineShowStyle == LineShowStyle.LINESHOW_FROMLINE) {
+                if (mLineShowStyle == LINESHOW_FROMLINE) {
                     floatChangeAni(animation);
                 } else {
                     //波浪
@@ -984,7 +1026,7 @@ public class JcoolGraph extends BaseGraph {
      *
      * @param colors
      */
-    public void setPaintShaderColors(int... colors) {
+    public void setPaintShaderColors(@ColorInt int... colors) {
         mShaderColors = colors;
         if (mWidth > 0) {
             paintSetShader(mLinePaint, mShaderColors);
@@ -992,7 +1034,7 @@ public class JcoolGraph extends BaseGraph {
         }
     }
 
-    public void setShaderAreaColors(int... colors) {
+    public void setShaderAreaColors(@ColorInt int... colors) {
         mShaderAreaColors = colors;
         if (mWidth > 0) {
             paintSetShader(mShaderAreaPaint, mShaderAreaColors);
@@ -1025,7 +1067,7 @@ public class JcoolGraph extends BaseGraph {
     }
 
     @Override
-    public void setSelectedMode(int selectedMode) {
+    public void setSelectedMode(@SelectedMode int selectedMode) {
         //        if (mSelectedMode != SelectedMode.SELECETD_MSG_SHOW_TOP) {
         mSelectedMode = selectedMode;
         if (mWidth > 0) {
@@ -1033,7 +1075,7 @@ public class JcoolGraph extends BaseGraph {
         }
     }
 
-    public void setLineStyle(int lineStyle) {
+    public void setLineStyle(@LineStyle int lineStyle) {
         mLineStyle = lineStyle;
         if (mWidth > 0) {
             refreshLinepath();
@@ -1045,10 +1087,10 @@ public class JcoolGraph extends BaseGraph {
      *
      * @param lineShowStyle one of {@link LineShowStyle}
      */
-    public void setLineShowStyle(int lineShowStyle) {
+    public void setLineShowStyle(@LineShowStyle int lineShowStyle) {
         if (mValueAnimator.isRunning()) {
             mValueAnimator.cancel();
-            if (mLineShowStyle == LineShowStyle.LINESHOW_ASWAVE) {
+            if (mLineShowStyle == LINESHOW_ASWAVE) {
                 for (Jchart jchart : mJcharts) {
                     jchart.setAniratio(1);
                 }
@@ -1058,10 +1100,10 @@ public class JcoolGraph extends BaseGraph {
         mLineShowStyle = lineShowStyle;
     }
 
-    public void setBarShowStyle(int barShowStyle) {
+    public void setBarShowStyle(@BarShowStyle int barShowStyle) {
         if (mValueAnimator.isRunning()) {
             mValueAnimator.cancel();
-            if (mBarShowStyle == BarShowStyle.BARSHOW_ASWAVE) {
+            if (mBarShowStyle == BARSHOW_ASWAVE) {
                 for (Jchart jchart : mJcharts) {
                     jchart.setAniratio(1);
                 }
@@ -1075,7 +1117,7 @@ public class JcoolGraph extends BaseGraph {
      *
      * @param showFromMode one of {@link ShowFromMode}
      */
-    public void setShowFromMode(int showFromMode) {
+    public void setShowFromMode(@ShowFromMode int showFromMode) {
         mShowFromMode = showFromMode;
     }
 
@@ -1087,7 +1129,7 @@ public class JcoolGraph extends BaseGraph {
      * 当linemode为跳过0时 只有两种动画 aswave和fromline
      * @param lineMode
      */
-    public void setLineMode(int lineMode) {
+    public void setLineMode(@LineMode int lineMode) {
         mLineMode = lineMode;
         if (mValueAnimator.isRunning()) {
             mValueAnimator.cancel();
@@ -1098,7 +1140,7 @@ public class JcoolGraph extends BaseGraph {
         return mLinePointRadio;
     }
 
-    public void setLinePointRadio(float linePointRadio) {
+    public void setLinePointRadio(@DimenRes int linePointRadio) {
         mLinePointRadio = linePointRadio;
     }
 
@@ -1107,7 +1149,7 @@ public class JcoolGraph extends BaseGraph {
     }
 
     @Override
-    public void setNormalColor(int normalColor) {
+    public void setNormalColor(@ColorInt int normalColor) {
         super.setNormalColor(normalColor);
         mLinePaint.setColor(mNormalColor);
     }
