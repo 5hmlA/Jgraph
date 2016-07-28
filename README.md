@@ -17,6 +17,8 @@
     4. [线-风格](https://github.com/mychoices/Jgraph/blob/master/README.md#LineStyle)
     5. [线-断0](https://github.com/mychoices/Jgraph/blob/master/README.md#LineMode)
     7. [线-颜色](https://github.com/mychoices/Jgraph/blob/master/README.md#linecolor)
+    8. [选中](https://github.com/mychoices/Jgraph/blob/master/README.md#select)
+    9. [切换数据](https://github.com/mychoices/Jgraph/blob/master/README.md#datachange)
 5. [Versions](https://github.com/mychoices/Jgraph/blob/master/README.md#versions)
 6. [Todo](https://github.com/mychoices/Jgraph/blob/master/README.md#todo)
 7. [License](https://github.com/mychoices/Jgraph/blob/master/README.md#license)
@@ -34,24 +36,28 @@ demo下载地址
 ---
 
 
-##GraphStyle
+## GraphStyle
 
-##Scrollable
+## Scrollable
 
-##纵轴
+## 纵轴
 
-##BarShowStyle
+## BarShowStyle
 
-##barcolor
+## barcolor
 
 
-##LineShowStyle
+## LineShowStyle
 
-##LineStyle
+## LineStyle
 
-##LineMode
+## LineMode
 
-##linecolor
+## linecolor
+
+## select
+
+# datachange
 
 
 # Versions
