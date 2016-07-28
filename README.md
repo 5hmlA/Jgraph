@@ -2,3 +2,80 @@
 [![License](https://img.shields.io/badge/license-Apache%202-green.svg?style=flat-square)](https://www.apache.org/licenses/LICENSE-2.0)
 ![](https://img.shields.io/badge/Jgraph-download-brightgreen.svg?style=flat-square)
 [![Release](https://jitpack.io/v/org.bitbucket.User/Repo.svg?style=flat-square)](https://jitpack.io/#org.bitbucket.User/Repo)
+
+
+
+2. [Gradle](https://github.com/mychoices/Jgraph/blob/master/README.md#gradle)
+3. [Demo](https://github.com/mychoices/Jgraph/blob/master/README.md#demo)
+4. [Use Guide](https://github.com/mychoices/Jgraph/blob/master/README.md#Use Guide)
+    1. [图表风格](https://github.com/mychoices/Jgraph/blob/master/README.md#GraphStyle)
+    2. [滚动](https://github.com/mychoices/Jgraph/blob/master/README.md#Scrollable)
+    2. [纵轴](https://github.com/mychoices/Jgraph/blob/master/README.md#纵轴)
+    3. [柱-动画](https://github.com/mychoices/Jgraph/blob/master/README.md#BarShowStyle)
+    4. [柱-颜色](https://github.com/mychoices/Jgraph/blob/master/README.md#barcolor)
+    4. [线-动画](https://github.com/mychoices/Jgraph/blob/master/README.md#LineShowStyle)
+    4. [线-风格](https://github.com/mychoices/Jgraph/blob/master/README.md#LineStyle)
+    5. [线-断0](https://github.com/mychoices/Jgraph/blob/master/README.md#LineMode)
+    7. [线-颜色](https://github.com/mychoices/Jgraph/blob/master/README.md#linecolor)
+    8. [Draggable](https://github.com/mychoices/Jgraph/blob/master/README.md#draggable)
+    9. [Listener](https://github.com/mychoices/Jgraph/blob/master/README.md#listener)
+    10. [Other Methods](https://github.com/mychoices/Jgraph/blob/master/README.md#other-methods)
+5. [Versions](https://github.com/mychoices/Jgraph/blob/master/README.md#versions)
+6. [Todo](https://github.com/mychoices/Jgraph/blob/master/README.md#todo)
+7. [License](https://github.com/mychoices/Jgraph/blob/master/README.md#license)
+
+#Gradle
+	dependencies {
+	    compile 'yun.jonas.jang:mchart:1.1.1'
+	}
+
+#DEMO
+
+demo下载地址
+
+#Use Guide
+---
+
+
+##GraphStyle
+
+##Scrollable
+
+##纵轴
+
+##BarShowStyle
+
+##barcolor
+
+
+##LineShowStyle
+
+##LineStyle
+
+##LineMode
+
+##linecolor
+
+
+# Versions
+
+
+
+# Todo
+Todo
+
+# License
+
+    Copyright 2016 Yun
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
