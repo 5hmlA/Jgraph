@@ -2,10 +2,6 @@ package com.jonas.jgraph.utils;
 
 import android.content.Context;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 /**
  * @author jiangzuyun.
  * @date 2016/7/14
@@ -90,84 +86,12 @@ public class MathHelper {
     /**
      * 将sp值转换为px值，保证文字大小不变
      *
-     * @param spValue
+     * @param sp
      *         （DisplayMetrics类中属性scaledDensity）
      */
-    public static int sp2px(Context context, float spValue){
+    public static int sp2px(Context context, float sp){
         final float fontScale = context.getResources().getDisplayMetrics().scaledDensity;
-        return (int)( spValue*fontScale+0.5f );
+        return (int)( sp*fontScale+0.5f );
     }
 
-    /**
-     * 根据时间 判断显示多少段,
-     */
-    private void analyzeStep(List data, int allow){
-        ArrayList<Float> remainds = new ArrayList<>(); //5,4,3
-        float total = data.size();
-        if(total> allow) {
-            float _5 = total/5;
-            if(total%5 == 0) {
-                arrangeData(data,5, (int)_5,allow);
-                return;
-            }
-            float _4 = total/4;
-            if(total%5 == 0) {
-                arrangeData(data,4, (int)_4,allow);
-                return;
-            }
-            float _3 = total/3;
-            if(total%5 == 0) {
-                arrangeData(data,3, (int)_3,allow);
-                return;
-            }
-            remainds.add(Math.abs(_5-getRound5(_5)));
-            remainds.add(Math.abs(_4-getRound5(_4)));
-            remainds.add(Math.abs(_3-getRound5(_3)));
-
-            Float min = Collections.min(remainds);
-            for(int i = 0; i<remainds.size(); i++) {
-                if(min == remainds.get(i)) {
-                    arrangeData(data,5-i, getRound5(total/( 5-i )),allow);
-                }
-            }
-        }
-    }
-
-    /**
-     * @param graph
-     *         多少段
-     * @param interval
-     *         每段多上时间 分钟
-     */
-    private void arrangeData(List data,int graph, int interval, float allow){
-        interval = interval>0 ? interval : 1;
-        //曲数据的间隔
-        float step = data.size()/allow;
-        int showInterval = 0;
-        System.out.println("取数间隔："+step+"======分几组："+graph+"---每组时间"+interval);
-
-//        int pointInterval = allow/graph;
-//
-//
-//        mHeartSugExcels = new ArrayList<>();
-//        for(int i = 0; i<mTotaldate.size(); i++) {
-//            if(i%step == 0 && mHeartSugExcels.size()<allow) {
-//                SugChart.SugExcel sugExcel = new SugChart.SugExcel(mTotaldate.get(i), "");
-//                mHeartSugExcels.add(sugExcel);
-//            }
-//        }
-//
-//        int lastSec = 1;
-//        for(int i = 0; i<mHeartSugExcels.size(); i++) {
-//            int sec = i*step*60%( interval*60 );
-//            if(lastSec>sec) {
-//                mHeartSugExcels.get(i).setXmsg(showInterval+"");
-//                showInterval += interval;
-//            }
-//            lastSec = sec;
-//        }
-//
-//        mSugScJHeart.cmdFill(mHeartSugExcels);
-
-    }
 }

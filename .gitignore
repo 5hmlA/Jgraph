@@ -1,8 +1,7 @@
 *.iml
 .gradle
 /local.properties
-/.idea/workspace.xml
-.idea/libraries
+.idea/*
 .DS_Store
 /build
 /captures
@@ -10,4 +9,5 @@ gradle.properties
 gradlew
 gradlew.bat
 test
+*/.idea/*
 gradle

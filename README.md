@@ -3,7 +3,12 @@
 ![](https://img.shields.io/badge/Jgraph-download-brightgreen.svg?style=flat-square)
 [![Release](https://jitpack.io/v/org.bitbucket.User/Repo.svg?style=flat-square)](https://jitpack.io/#org.bitbucket.User/Repo)
 
-
+![](https://raw.githubusercontent.com/mychoices/Jgraph/master/gif/2.gif)
+![](https://raw.githubusercontent.com/mychoices/Jgraph/master/gif/4.gif)
+![](https://raw.githubusercontent.com/mychoices/Jgraph/master/gif/6.gif)
+![](https://raw.githubusercontent.com/mychoices/Jgraph/master/gif/13.gif)
+![](https://raw.githubusercontent.com/mychoices/Jgraph/master/gif/15.gif)
+![](https://raw.githubusercontent.com/mychoices/Jgraph/master/gif/22.gif)
 
 2. [Gradle](https://github.com/mychoices/Jgraph/blob/master/README.md#gradle)
 3. [Demo](https://github.com/mychoices/Jgraph/blob/master/README.md#demo)
@@ -38,27 +43,131 @@ demo下载地址
 
 ## GraphStyle
 
+```
+setGraphStyle(@GraphStyle int graphStyle) //柱状图 和 折线图
+```
+![](https://raw.githubusercontent.com/mychoices/Jgraph/master/gif/01.gif)
 ## Scrollable
-
+```
+setScrollAble(boolean )
+```
+![](https://raw.githubusercontent.com/mychoices/Jgraph/master/gif/02.gif)
 ## 纵轴
 
+```
+setYaxisValues(@NonNull String... showMsg)
+setYaxisValues(int max, int showYnum)
+setYaxisValues(int min, int max, int showYnum)
+```
+![](https://raw.githubusercontent.com/mychoices/Jgraph/master/gif/03.gif)
+
 ## BarShowStyle
+```
+setBarShowStyle(@BarShowStyle int barShowStyle)
+/**
+ * 水波 方式生长
+ */
+int BARSHOW_ASWAVE 
+/**
+ * 线条 一从直线慢慢变成折线/曲线
+ */
+int BARSHOW_FROMLINE 
+/**
+ * 柱形条 由某个往外扩散
+ */
+int BARSHOW_EXPAND 
+
+/**
+ * 一段一段显示
+ */
+int BARSHOW_SECTION 
+```
+![](https://raw.githubusercontent.com/mychoices/Jgraph/master/gif/04.gif)
 
 ## barcolor
-
-
-## LineShowStyle
-
+```
+setNormalColor(@ColorInt int normalColor)
+setPaintShaderColors(@ColorInt int... colors)
+```
+![](https://raw.githubusercontent.com/mychoices/Jgraph/master/gif/05.gif)
 ## LineStyle
+```
+setLineStyle(@LineStyle int lineStyle)
+/**
+ * 折线
+ */
+int LINE_BROKEN = 0;
+/**
+ * 曲线
+ */
+int LINE_CURVE = 1;
+```
+![](https://raw.githubusercontent.com/mychoices/Jgraph/master/gif/06.gif)
+## LineShowStyle
+```
+setLineShowStyle(@LineShowStyle int lineShowStyle)
 
+/**
+ * 线条从无到有 慢慢出现
+ */
+int LINESHOW_DRAWING 
+/**
+ * 线条 一段一段显示
+ */
+int LINESHOW_SECTION 
+/**
+ * 线条 一从直线慢慢变成折线/曲线
+ */
+int LINESHOW_FROMLINE 
+
+/**
+ * 从左上角 放大
+ */
+int LINESHOW_FROMCORNER 
+/**
+ * 水波 方式展开
+ */
+int LINESHOW_ASWAVE 
+```
+![](https://raw.githubusercontent.com/mychoices/Jgraph/master/gif/07.gif)
 ## LineMode
+```
+setLineMode(@LineMode int lineMode)
+/**
+ * 连接每一个点
+ */
+int LINE_EVERYPOINT 
+/**
+ * 跳过0  断开
+ */
+int LINE_JUMP0 
+
+/**
+ * 跳过0 用虚线链接
+ */
+int LINE_DASH_0 
+```
+![](https://raw.githubusercontent.com/mychoices/Jgraph/master/gif/08.gif)
 
 ## linecolor
-
+```
+setNormalColor(@ColorInt int normalColor)
+setPaintShaderColors(@ColorInt int... colors)
+setShaderAreaColors(@ColorInt int... colors)
+```
+![](https://raw.githubusercontent.com/mychoices/Jgraph/master/gif/09.gif)
 ## select
+```
+setSelected(int selected)
+setSelectedMode(@SelectedMode int selectedMode)
+```
+![](https://raw.githubusercontent.com/mychoices/Jgraph/master/gif/010.gif)
 
 # datachange
-
+```
+aniChangeData(List<Jchart> jchartList)
+```
+![](https://raw.githubusercontent.com/mychoices/Jgraph/master/gif/011.gif)
 
 # Versions
 

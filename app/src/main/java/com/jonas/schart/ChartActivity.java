@@ -43,18 +43,18 @@ public class ChartActivity extends AppCompatActivity implements CompoundButton.O
             //            lines.add(new Jchart(10,new SecureRandom().nextInt(50) + 15,"test", Color.parseColor("#b8e986")));
         }
         //        lines.get(new SecureRandom().nextInt(chartNum-1)).setUpper(0);
-        //        lines.get(1).setUpper(0);
-        //        lines.get(new SecureRandom().nextInt(chartNum-1)).setLower(10);
-        //        lines.get(chartNum-2).setUpper(0);
+                lines.get(1).setUpper(0);
+                lines.get(new SecureRandom().nextInt(chartNum-1)).setLower(10);
+                lines.get(chartNum-2).setUpper(0);
         //        mLineChar.setScrollAble(true);
-        mLineChar.setVisibleNums(10);
+//        mLineChar.setLineMode();
         mLineChar.setLinePointRadio((int)mLineChar.getLineWidth());
 //        mLineChar.setLineMode(JcoolGraph.LineMode.LINE_DASH_0);
 //        mLineChar.setLineStyle(JcoolGraph.LineStyle.LINE_BROKEN);
 
         //        mLineChar.setYaxisValues("test","测试","text");
         //        mLineChar.setSelectedMode(BaseGraph.SelectedMode.SELECETD_MSG_SHOW_TOP);
-        //        mLineChar.setShaderAreaColors(Color.parseColor("#4B494B"),Color.TRANSPARENT);
+//                mLineChar.setShaderAreaColors(Color.parseColor("#4B494B"),Color.TRANSPARENT);
         //        mLineChar.setPaintShaderColors(Color.parseColor("#80ff3320"), Color.parseColor("#ffbf55"), Color.parseColor("#f7eb57"), Color.parseColor("#b8e986"), Color.parseColor("#73c0fd"));
         mLineChar.setNormalColor(Color.parseColor("#676567"));
         //        mLineChar.setShowFromMode(JcoolGraph.ShowFromMode.SHOWFROMBUTTOM);
@@ -98,7 +98,7 @@ public class ChartActivity extends AppCompatActivity implements CompoundButton.O
                 if(isChecked) {
                     mLineChar.setLineMode(JcoolGraph.LineMode.LINE_DASH_0);
                 }else {
-                    mLineChar.setLineMode(JcoolGraph.LineMode.LINE_EVERYPOINT);
+                    mLineChar.setLineMode(JcoolGraph.LineMode.LINE_JUMP0);
                 }
                 break;
             case R.id.select:

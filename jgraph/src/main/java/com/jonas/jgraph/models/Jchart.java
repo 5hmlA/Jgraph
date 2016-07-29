@@ -50,35 +50,35 @@ public class Jchart implements Cloneable {
     private TimeInterpolator INTERPOLATOR = new OvershootInterpolator(3);
     private float mHeightRatio = 1;
 
-    public Jchart(float num, int color) {
+    public Jchart(float num, int color){
         this(0, num, "", color);
     }
 
-    public Jchart(float lower, float num, int color) {
-        this(lower, lower + num, "", color);
+    public Jchart(float lower, float num, int color){
+        this(lower, lower+num, "", color);
     }
 
-    public Jchart(float lower, float upper, String mXmsg) {
+    public Jchart(float lower, float upper, String mXmsg){
         this(lower, upper, mXmsg, Color.GRAY);
     }
 
-    public Jchart(float lower, float upper, String mXmsg, int color) {
+    public Jchart(float lower, float upper, String mXmsg, int color){
         mUpper = upper;
         mLower = lower;
-        mHeight = mNum = upper - lower;
+        mHeight = mNum = upper-lower;
         mStart.y = 0;
         this.mColor = color;
         this.mXmsg = TextUtils.isEmpty(mXmsg) ? new DecimalFormat("##").format(mHeight) : mXmsg;
         mShowMsg = new DecimalFormat("##").format(mUpper);
     }
 
-    public RectF getRectF() {
-        float bottom = mStart.y - (mLower - mLowStart) * mHeightRatio * mAniratio;
-        bottom = bottom < mStart.y ? bottom : mStart.y;
-        float top = mStart.y - (mUpper - mLowStart) * mHeightRatio * mAniratio;
-        top = top < mStart.y ? top : mStart.y;
-        return new RectF(mStart.x, top, mStart.x + mWidth, bottom);
-//        return new RectF(mStart.x, mStart.y - (mUpper - mLowStart) * mHeightRatio * mAniratio, mStart.x + mWidth, mStart.y - (mLower - mLowStart) * mHeightRatio * mAniratio);
+    public RectF getRectF(){
+        float bottom = mStart.y-( mLower-mLowStart )*mHeightRatio*mAniratio;
+        bottom = bottom<mStart.y ? bottom : mStart.y;
+        float top = mStart.y-( mUpper-mLowStart )*mHeightRatio*mAniratio;
+        top = top<mStart.y ? top : mStart.y;
+        return new RectF(mStart.x, top, mStart.x+mWidth, bottom);
+        //        return new RectF(mStart.x, mStart.y - (mUpper - mLowStart) * mHeightRatio * mAniratio, mStart.x + mWidth, mStart.y - (mLower - mLowStart) * mHeightRatio * mAniratio);
     }
 
     /**
@@ -86,198 +86,198 @@ public class Jchart implements Cloneable {
      *
      * @return
      */
-    public PointF getMidPointF() {
-        float top = mStart.y - (mUpper - mLowStart) * mHeightRatio * mAniratio;
-        top = top < mStart.y ? top : mStart.y;
+    public PointF getMidPointF(){
+        float top = mStart.y-( mUpper-mLowStart )*mHeightRatio*mAniratio;
+        top = top<mStart.y ? top : mStart.y;
         return new PointF(getMidX(), top);
     }
 
 
-    public String getTextMsg() {
+    public String getTextMsg(){
         return textMsg;
     }
 
-    public void setTextMsg(String textMsg) {
+    public void setTextMsg(String textMsg){
         this.textMsg = textMsg;
     }
 
 
-    public float getWidth() {
+    public float getWidth(){
         return mWidth;
     }
 
 
-    public void setWidth(float width) {
+    public void setWidth(float width){
         this.mWidth = width;
     }
 
 
-    public float getHeight() {
+    public float getHeight(){
         //动画需要
-        return mHeight * mHeightRatio;
+        return mHeight*mHeightRatio;
     }
 
 
-    public void setHeight(float height) {
+    public void setHeight(float height){
         this.mHeight = height;
     }
 
-    public float getHeightRatio() {
+    public float getHeightRatio(){
         return mHeightRatio;
     }
 
-    public void setHeightRatio(float heightRatio) {
+    public void setHeightRatio(float heightRatio){
         mHeightRatio = heightRatio;
     }
 
-    public PointF getStart() {
+    public PointF getStart(){
         return mStart;
     }
 
 
-    public void setStart(PointF start) {
+    public void setStart(PointF start){
         this.mStart = start;
     }
 
 
-    public float getMidX() {
-        if (null != mStart) {
-            mMidX = mStart.x + mWidth / 2;
-        } else {
+    public float getMidX(){
+        if(null != mStart) {
+            mMidX = mStart.x+mWidth/2;
+        }else {
             throw new RuntimeException("mStart 不能为空");
         }
         return mMidX;
     }
 
 
-    public void setMidX(float midX) {
+    public void setMidX(float midX){
         this.mMidX = midX;
     }
 
 
-    public int getColor() {
+    public int getColor(){
         return mColor;
     }
 
 
-    public void setColor(int color) {
+    public void setColor(int color){
         mColor = color;
     }
 
 
-    public float getNum() {
+    public float getNum(){
         return mNum;
     }
 
 
-    public void setNum(float num) {
+    public void setNum(float num){
         this.mNum = num;
     }
 
 
-    public float getMax() {
+    public float getMax(){
         return mMax;
     }
 
 
-    public void setMax(float max) {
+    public void setMax(float max){
         this.mMax = max;
     }
 
 
-    public String getXmsg() {
+    public String getXmsg(){
         return mXmsg;
     }
 
 
-    public void setXmsg(String xmsg) {
+    public void setXmsg(String xmsg){
         this.mXmsg = xmsg;
     }
 
 
-    public float getUpper() {
+    public float getUpper(){
         return mUpper;
     }
 
 
-    public void setUpper(float upper) {
+    public void setUpper(float upper){
         mUpper = upper;
-        if (mUpper < mLower) {
-            if (BuildConfig.DEBUG) {
+        mHeight = mUpper-mLower;
+        if(mUpper<mLower) {
+            if(BuildConfig.DEBUG) {
                 Log.e(TAG, "setUpper error upper must < lower");
             }
             return;
         }
-        if ("\\d+".matches(mXmsg)) {
-            if (Float.parseFloat(mXmsg) == mHeight) {
-                this.mXmsg = new DecimalFormat("##").format(mUpper - mLower);
+        if("\\d+".matches(mXmsg)) {
+            if(Float.parseFloat(mXmsg) == mHeight) {
+                this.mXmsg = new DecimalFormat("##").format(mUpper-mLower);
             }
-            mHeight = mUpper - mLower;
             mShowMsg = new DecimalFormat("##.#").format(mUpper);
         }
     }
 
 
-    public float getLower() {
+    public float getLower(){
         return mLower;
     }
 
 
-    public void setLower(float lower) {
-        if (mLower == lower) {
+    public void setLower(float lower){
+        if(mLower == lower) {
             return;
         }
         mLower = lower;
-        mHeight = mUpper - mLower;
+        mHeight = mUpper-mLower;
     }
 
-    public int getIndex() {
+    public int getIndex(){
         return index;
     }
 
-    public void setIndex(int index) {
+    public void setIndex(int index){
         this.index = index;
     }
 
-    public String getShowMsg() {
+    public String getShowMsg(){
         return mShowMsg;
     }
 
-    public void setShowMsg(String showMsg) {
+    public void setShowMsg(String showMsg){
         mShowMsg = showMsg;
     }
 
     @Override
-    protected Object clone() throws CloneNotSupportedException {
+    protected Object clone() throws CloneNotSupportedException{
         return super.clone();
     }
 
-    public String getTag() {
+    public String getTag(){
         return tag;
     }
 
-    public void setTag(String tag) {
+    public void setTag(String tag){
         this.tag = tag;
     }
 
-    public float getPercent() {
+    public float getPercent(){
         return percent;
     }
 
-    public void setPercent(float percent) {
+    public void setPercent(float percent){
         this.percent = percent;
     }
 
-    public float getAniratio() {
+    public float getAniratio(){
         return mAniratio;
     }
 
-    public void setAniratio(float aniratio) {
+    public void setAniratio(float aniratio){
         mValueAnimator.cancel();
         mAniratio = aniratio;
     }
 
-    public float getLowStart() {
+    public float getLowStart(){
         return mLowStart;
     }
 
@@ -286,19 +286,19 @@ public class Jchart implements Cloneable {
      *
      * @param lowStart
      */
-    public void setLowStart(float lowStart) {
+    public void setLowStart(float lowStart){
         mLowStart = lowStart;
     }
 
-    public Jchart aniHeight(final View view, float from, TimeInterpolator interpolator) {
-        if (!mValueAnimator.isRunning() && mAniratio < 0.8) {
+    public Jchart aniHeight(final View view, float from, TimeInterpolator interpolator){
+        if(!mValueAnimator.isRunning() && mAniratio<0.8) {
             mValueAnimator.setFloatValues(from, 1);
             mValueAnimator.setDuration(DURATION);
             mValueAnimator.setInterpolator(interpolator);
             mValueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                 @Override
-                public void onAnimationUpdate(ValueAnimator animation) {
-                    mAniratio = (float) animation.getAnimatedValue();
+                public void onAnimationUpdate(ValueAnimator animation){
+                    mAniratio = (float)animation.getAnimatedValue();
                     view.postInvalidate();
                     setPercent(mAniratio);
                 }
@@ -308,19 +308,19 @@ public class Jchart implements Cloneable {
         return this;
     }
 
-    public Jchart aniHeight(View view) {
+    public Jchart aniHeight(View view){
         return aniHeight(view, 0, INTERPOLATOR);
     }
 
-    public void draw(Canvas canvas, Paint paint, boolean point) {
-        if (point) {
+    public void draw(Canvas canvas, Paint paint, boolean point){
+        if(point) {
             canvas.drawPoint(getMidPointF().x, getMidPointF().y, paint);
-        } else {
+        }else {
             canvas.drawRect(getRectF(), paint);
         }
     }
 
-    public void draw(Canvas canvas, Paint paint, int radius) {
+    public void draw(Canvas canvas, Paint paint, int radius){
         canvas.drawRoundRect(getRectF(), radius, radius, paint);
     }
 }

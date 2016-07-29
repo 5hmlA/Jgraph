@@ -1038,6 +1038,7 @@ public class JcoolGraph extends BaseGraph {
         mShaderAreaColors = colors;
         if (mWidth > 0) {
             paintSetShader(mShaderAreaPaint, mShaderAreaColors);
+            postInvalidate();
         }
     }
 
