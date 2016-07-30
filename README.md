@@ -29,8 +29,15 @@
 7. [License](https://github.com/mychoices/Jgraph/blob/master/README.md#license)
 
 #Gradle
+
+	allprojects {
+	        repositories {
+			...
+			maven { url "https://jitpack.io" }
+		}
+	}
 	dependencies {
-	    compile 'yun.jonas.jang:mchart:1.1.1'
+	    compile 'com.github.mychoices:Jgraph:16.07.30'
 	}
 
 #DEMO
