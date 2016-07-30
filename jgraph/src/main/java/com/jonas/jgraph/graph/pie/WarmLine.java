@@ -24,24 +24,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 数学方程的y和安卓坐标的y相反
- *
- * @author yun
- * @version 1
- *          Time 2015/7/4
- *          无论控件是否是正方形 都在中间部分画图
- *          提示线 分为 斜线部分和 横线部分
- *          showLine 是否显示 提示线的总开关（默认true 默认显示）
- *          TstartAtTouch 设置提示线的起点(true表示从点击的地方开始画提示线(此时nRadius设置效果失效) 默认false)
- *          nRadius 设置 提示线的起点(TstartAtTouch为true时无效)(1:表示从外辅助圆(饼图)的一半开始，0表示从圆心开始)原理：该值其实是内辅助圆的半径即提示线的起点
- *          AniLine 设置是否展示提示线的显示动画（默认为true显示）
- *          ANIDURINGTIME 设置 提示线显示动画的时间
- *          movingShowTX 旋转的时候是否显示 提示线(默认为false，当为true的时候AniLine将失效，失去提示线的显示动画)
- *          TshLong 设定提示线横线部分的长度 默认一直画到控件两边
- *          cleanWire 清除所有的提示线条（外部调用需要调用postInvalidate刷新）
- *          lpading 设置外辅助圆的大小 (该值可动态调整饼图的大小)（该值是外圆与控件周边的距离(默认控件较短边的1/4)，其与外圆半径成反比，越小则提示线的转折点越靠外，不建议修改 一般该值要比提示线上文字的长度的最长的那个大一点）
- *          TsWidth 提示线的宽度
- *          TsColor 提示线的颜色 默认黑色
+ * @author yun.
+ * @date 2016/6/8
+ * @des [一句话描述]
+ * @since [https://github.com/mychoices]
+ * <p><a href="https://github.com/mychoices">github</a>
  */
 @SuppressLint("DrawAllocation")
 public abstract class WarmLine extends View implements GestureDetector.OnGestureListener {

@@ -33,40 +33,11 @@ import java.util.Random;
 import static android.R.attr.action;
 
 /**
- * 在控件显示前 设置变量 代码执行顺序（构函---设置变量的方法(set)----onSizeChange-----onDraw）
- * 在空间显示之后  设置变量值 那么代码值执行设置变量的那个方法
- * 控件的onSizeChange方法只执行一次  构函(一次) （是否有设置变量(一次)）onSizeChange(一次)之后执行onDraw(多次)
- * 当onSizeChange执行完之后  在（控件的非onDraw方法中）可以认为该控件已显示
- * Created by jiangzuyun on 2015/8/31.
- * 无论控件是否是正方形 都在中间部分画图
- * 提示线 分为 斜线部分和 横线部分 背景是透明的
- * showLine 是否显示 提示线的总开关（默认true 默认显示）
- * TstartAtTouch 设置提示线的起点(true表示从点击的地方开始画提示线(此时nRadius设置效果失效) 默认false)
- * nRadius 设置 提示线的起点(TstartAtTouch为true时无效)(1:表示从外辅助圆(饼图)的一半开始，0表示从圆心开始)原理：该值其实是内辅助圆的半径即提示线的起点
- * AniLine 设置是否展示提示线的显示动画（默认为true显示）
- * ANIDURINGTIME 设置 提示线显示动画的时间
- * movingShowTX 旋转的时候是否显示 提示线(默认为false，当为true的时候AniLine将失效，失去提示线的显示动画)
- * TshLong 设定提示线横线部分的长度 默认一直画到控件两边
- * cleanWire 清除所有的提示线条（外部调用需要调用postInvalidate刷新）
- * lpading 设置外辅助圆的大小 (该值可动态调整饼图的大小)（该值是外圆与控件周边的距离(默认控件较短边的1/4)，其与外圆半径成反比，越小则提示线的转折点越靠外，不建议修改 一般该值要比提示线上文字的长度的最长的那个大一点）
- * TsWidth 提示线的宽度
- * TsColor 提示线的颜色 默认黑色
- * 饼图（在控件的中心部分显示 只点击饼图内部有效）
- * PieSelector 设置是否显示 点击效果(默认true 显示 当其为true 那么特殊角的突出效果就失效)
- * specialAngle 设置特殊角度 当饼图的某个扇形包含该特殊角度的时候 就突出显示（当值为0的时候无效 同时当PieSelector为true的时候无效）
- * pieRotateable 设置当前饼图是否支持旋转 默认false 不可旋转
- * setOnItemPieClickListener 饼图点击监听器  点中了哪个扇形
- * setOnRotatingPieListener 旋转监听器 获取旋转角度
- * setOnSpecialPieListener  特殊角度监听器 获取特殊角度所在的扇形位置
- * pieInterWidth 饼图间隔线的宽度
- * backColor 饼图背景色 布局中设置的背景色无效（ondraw无法拿到布局中的背景色？？）默认白色
- * interColor 饼图间隔线的颜色 默认白色
- * getPieRadius 获取饼图半径（饼图的半径可以通过lpading 设置）
- * getClickPosition 可以获取点击的位置
- * getSpecialPosition  获取特殊角度对于的扇形位置
- * pointPieOut 设置突出扇形的 突出大小 setPointPieOut提供set方法设置  内部有处理 该值过大的情况（一般不修改）
- * TsOut 设置提示线突出饼图的部分长度（一般不修改）最好先于setPointPieOut调用
- * 2015/8/31.
+ * @author yun.
+ * @date 2016/6/8
+ * @des [一句话描述]
+ * @since [https://github.com/mychoices]
+ * <p><a href="https://github.com/mychoices">github</a>
  */
 public class JPieView extends WarmLine implements Animator.AnimatorListener {
     /**
