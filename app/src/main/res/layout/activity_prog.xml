@@ -43,10 +43,7 @@
             android:layout_height="20dp">
 
         </com.jonas.jgraph.progress.JProgress>
-        <com.jonas.jgraph.progress.RProgress
-            android:layout_marginTop="10dp"
-            android:layout_width="match_parent"
-            android:layout_height="20dp"/>
+
         <com.jonas.jgraph.progress.AniBallProgress
             android:id="@+id/chv"
             android:layout_width="match_parent"

@@ -13,7 +13,8 @@ import android.widget.FrameLayout;
 import android.widget.ListView;
 
 import com.jonas.jgraph.graph.JcoolGraph;
-import com.jonas.jgraph.inter.BaseGraph;
+import com.jonas.jgraph.graph.JcoolGraph.LineMode;
+import com.jonas.jgraph.inter.BaseGraph.SelectedMode;
 import com.jonas.jgraph.models.Jchart;
 
 import java.security.SecureRandom;
@@ -96,16 +97,16 @@ public class ChartActivity extends AppCompatActivity implements CompoundButton.O
                 break;
             case R.id.skep0:
                 if(isChecked) {
-                    mLineChar.setLineMode(JcoolGraph.LineMode.LINE_DASH_0);
+                    mLineChar.setLineMode(LineMode.LINE_DASH_0);
                 }else {
-                    mLineChar.setLineMode(JcoolGraph.LineMode.LINE_JUMP0);
+                    mLineChar.setLineMode(LineMode.LINE_JUMP0);
                 }
                 break;
             case R.id.select:
                 if(isChecked) {
-                    mLineChar.setSelectedMode(BaseGraph.SelectedMode.SELECETD_MSG_SHOW_TOP);
+                    mLineChar.setSelectedMode(SelectedMode.SELECETD_MSG_SHOW_TOP);
                 }else {
-                    mLineChar.setSelectedMode(BaseGraph.SelectedMode.SELECETD_NULL);
+                    mLineChar.setSelectedMode(SelectedMode.SELECETD_NULL);
                 }
                 break;
             case R.id.graphshader:

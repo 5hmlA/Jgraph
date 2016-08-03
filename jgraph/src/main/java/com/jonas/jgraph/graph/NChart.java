@@ -518,7 +518,7 @@ public class NChart extends View implements ValueAnimator.AnimatorUpdateListener
 //        textBg.lineTo(midPointF.x + bgWidth/2, midPointF.y - mTextMarging - bgHeight);
 //        textBg.close();
 
-        if (mChartStyle == JChart.ChartStyle.LINE) {
+        if (mChartStyle == ChartStyle.LINE) {
             mTextMarging = tempTextMargin + mLinePointRadio;
         } else {
             mTextMarging = tempTextMargin;
@@ -563,7 +563,7 @@ public class NChart extends View implements ValueAnimator.AnimatorUpdateListener
         }
 
         float textMarging = mTextMarging;
-        if (mChartStyle == JChart.ChartStyle.LINE) {
+        if (mChartStyle == ChartStyle.LINE) {
             textMarging = mTextMarging + mLinePointRadio;
         }
 

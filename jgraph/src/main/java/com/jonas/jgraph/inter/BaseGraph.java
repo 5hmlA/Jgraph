@@ -182,7 +182,7 @@ public abstract class BaseGraph extends View implements GestureDetector.OnGestur
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({SELECETD_NULL, SELECTED_ACTIVATED, SELECETD_MSG_SHOW_TOP})
-    public @interface SelectedMode {
+    public static @interface SelectedMode {
         int SELECETD_NULL = -1;
         /**
          * 选中的 颜色变  显示所有柱子 文字
