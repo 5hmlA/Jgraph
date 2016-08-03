@@ -1,6 +1,6 @@
 # Jgraph
 [![License](https://img.shields.io/badge/license-Apache%202-green.svg?style=flat-square)](https://www.apache.org/licenses/LICENSE-2.0)
-[![](https://img.shields.io/badge/Jgraph-download-brightgreen.svg?style=flat-square)](http://fir.im/y57x)
+[![](https://img.shields.io/badge/Jgraph-download-brightgreen.svg?style=flat-square)](http://pkg3.fir.im/c057abbf2f19de03cd602953b1a691379643faa0.apk?filename=app-debug.apk_1.0.apk)
 [![](https://jitpack.io/v/mychoices/Jgraph.svg)](https://jitpack.io/#mychoices/Jgraph)
 
 ![](https://raw.githubusercontent.com/mychoices/Jgraph/master/gif/2.gif)
