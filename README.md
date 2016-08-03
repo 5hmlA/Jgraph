@@ -9,6 +9,8 @@
 ![](https://raw.githubusercontent.com/mychoices/Jgraph/master/gif/13.gif)
 ![](https://raw.githubusercontent.com/mychoices/Jgraph/master/gif/15.gif)
 ![](https://raw.githubusercontent.com/mychoices/Jgraph/master/gif/22.gif)
+![](https://raw.githubusercontent.com/mychoices/Jgraph/master/gif/020.gif)
+![](https://raw.githubusercontent.com/mychoices/Jgraph/master/gif/021.gif)
 
 2. [Gradle](https://github.com/mychoices/Jgraph/blob/master/README.md#gradle)
 3. [Demo](https://github.com/mychoices/Jgraph/blob/master/README.md#demo)
@@ -46,7 +48,40 @@ demo下载地址
 
 #Use Guide
 ---
-
+###*自定义属性*
+```
+<attr name="graphstyle" format="enum">
+    <enum name="bar" value="0"/>
+    <enum name="line" value="1"/>
+</attr>
+<attr name="scrollable" format="boolean"/>  
+<attr name="visiblenums" format="integer"/>
+<attr name="showymsg" format="boolean"/>
+<attr name="normolcolor" format="color"/>
+<attr name="activationcolor" format="color"/>
+<attr name="linestyle" format="enum">
+    <!--折线-->
+    <enum name="broken" value="0"/>
+    <!--曲线-->
+    <enum name="curve" value="1"/>
+</attr>
+<attr name="linemode" format="enum">
+    <!--链接每一个点-->
+    <enum name="everypoint" value="1"/>
+    <!--跳过0的点-->
+    <enum name="jump0" value="2"/>
+    <!--跳过的0点用虚线链接-->
+    <enum name="dash0" value="3"/>
+</attr>
+<attr name="linewidth" format="dimension"/>
+<attr name="lineshowstyle" format="enum">
+    <enum name="drawing" value="0"/>
+    <enum name="section" value="1"/>
+    <enum name="fromline" value="2"/>
+    <enum name="fromcorner" value="3"/>
+    <enum name="aswave" value="4"/>
+</attr>
+```
 
 ## GraphStyle
 
