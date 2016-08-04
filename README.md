@@ -10,7 +10,6 @@
 ![](https://raw.githubusercontent.com/mychoices/Jgraph/master/gif/15.gif)
 ![](https://raw.githubusercontent.com/mychoices/Jgraph/master/gif/22.gif)
 ![](https://raw.githubusercontent.com/mychoices/Jgraph/master/gif/020.gif)
-![](https://raw.githubusercontent.com/mychoices/Jgraph/master/gif/021.gif)
 
 2. [Gradle](https://github.com/mychoices/Jgraph/blob/master/README.md#gradle)
 3. [Demo](https://github.com/mychoices/Jgraph/blob/master/README.md#demo)
