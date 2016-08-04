@@ -9,8 +9,8 @@ import android.widget.ArrayAdapter;
 
 public class EntActivity extends ListActivity {
 
-    String[] items = new String[]{"NChart", "ChartActivity", "PieActivity", "progress"};
-    Class[] clazz = new Class[]{MainActivity.class, ChartActivity.class, PieActivity.class, ProgActivity.class};
+    String[] items = new String[]{"NChart", "ChartActivity","progress"};
+    Class[] clazz = new Class[]{MainActivity.class, ChartActivity.class,ProgActivity.class};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
