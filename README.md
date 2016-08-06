@@ -46,7 +46,7 @@
 demo下载地址
 [![](http://firicon.fir.im/2413a7e605e2ee423e8ca8f38e180320eba0cddc)](http://fir.im/y57x)
 
-#Use Guide
+#User Guide
 ---
 ###*自定义属性*
 ```
