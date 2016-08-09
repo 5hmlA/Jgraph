@@ -10,7 +10,6 @@
 ![](https://raw.githubusercontent.com/mychoices/Jgraph/master/gif/15.gif)
 ![](https://raw.githubusercontent.com/mychoices/Jgraph/master/gif/22.gif)
 ![](https://raw.githubusercontent.com/mychoices/Jgraph/master/gif/020.gif)
-![](https://raw.githubusercontent.com/mychoices/Jgraph/master/gif/021.gif)
 
 2. [Gradle](https://github.com/mychoices/Jgraph/blob/master/README.md#gradle)
 3. [Demo](https://github.com/mychoices/Jgraph/blob/master/README.md#demo)
@@ -39,7 +38,7 @@
 		}
 	}
 	dependencies {
-	    compile 'com.github.mychoices:Jgraph:16.07.30'
+	    compile 'com.github.mychoices:Jgraph:v1.1'
 	}
 
 #DEMO
@@ -47,7 +46,7 @@
 demo下载地址
 [![](http://firicon.fir.im/2413a7e605e2ee423e8ca8f38e180320eba0cddc)](http://fir.im/y57x)
 
-#Use Guide
+#User Guide
 ---
 ###*自定义属性*
 ```
