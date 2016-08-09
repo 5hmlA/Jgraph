@@ -40,15 +40,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import static com.jonas.jgraph.inter.BaseGraph.GraphStyle.BAR;
-import static com.jonas.jgraph.inter.BaseGraph.GraphStyle.LINE;
-import static com.jonas.jgraph.inter.BaseGraph.SelectedMode.SELECETD_MSG_SHOW_TOP;
-import static com.jonas.jgraph.inter.BaseGraph.SelectedMode.SELECETD_NULL;
-import static com.jonas.jgraph.inter.BaseGraph.SelectedMode.SELECTED_ACTIVATED;
-import static com.jonas.jgraph.inter.BaseGraph.State.aniChange;
-import static com.jonas.jgraph.inter.BaseGraph.State.aniFinish;
-import static com.jonas.jgraph.inter.BaseGraph.State.aniShow;
-
 /**
  * @author yun.
  * @date 2016/7/11
@@ -180,34 +171,34 @@ public abstract class BaseGraph extends View implements GestureDetector.OnGestur
     private float upPlace;
     private OnGraphItemListener mListener;
 
+    public final static int SELECETD_NULL = -1;
+    /**
+     * 选中的 颜色变  显示所有柱子 文字
+     */
+    public final static int SELECTED_ACTIVATED = 0;
+    /**
+     * 选中的 显示 柱子 文字 其他不显示
+     */
+    public final static int SELECETD_MSG_SHOW_TOP = 1;
+
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({SELECETD_NULL, SELECTED_ACTIVATED, SELECETD_MSG_SHOW_TOP})
-    public static @interface SelectedMode {
-        int SELECETD_NULL = -1;
-        /**
-         * 选中的 颜色变  显示所有柱子 文字
-         */
-        int SELECTED_ACTIVATED = 0;
-        /**
-         * 选中的 显示 柱子 文字 其他不显示
-         */
-        int SELECETD_MSG_SHOW_TOP = 1;
-    }
+    public @interface SelectedMode {}
+
+    public final static int aniChange = 1;
+    public final static int aniShow = 2;
+    public final static int aniFinish = 3;
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({aniChange, aniShow, aniFinish})
-    protected @interface State {
-        int aniChange = 1;
-        int aniShow = 2;
-        int aniFinish = 3;
-    }
+    protected @interface State {}
+
+    public final static int BAR = 0;
+    public final static int LINE = 1;
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({BAR, LINE})
-    public @interface GraphStyle {
-        int BAR = 0;
-        int LINE = 1;
-    }
+    public @interface GraphStyle {}
 
     protected Context mContext;
     /**
@@ -853,7 +844,7 @@ public abstract class BaseGraph extends View implements GestureDetector.OnGestur
     public void feedData(@NonNull List<Jchart> jchartList){
         mSelected = -1;
         mJcharts.clear();
-        if(jchartList != null && jchartList.size()>0) {
+        if(jchartList.size()>0) {
             mJcharts.addAll(jchartList);
             mAllLastPoints = new ArrayList<>(jchartList.size());
             for(int i = 0; i<mJcharts.size(); i++) {
@@ -868,7 +859,7 @@ public abstract class BaseGraph extends View implements GestureDetector.OnGestur
             }
 
         }else {
-            if(BuildConfig.DEBUG) {
+            if(BuildConfig.DEBUG) {//in lib DEBUG always false
                 Log.e(TAG, "数据异常 ");
             }
         }
@@ -880,29 +871,29 @@ public abstract class BaseGraph extends View implements GestureDetector.OnGestur
         mHeightestChart = Collections.max(mJcharts, new Comparator<Jchart>() {
             @Override
             public int compare(Jchart lhs, Jchart rhs){
-                return (int)( lhs.getUpper()-rhs.getUpper() );
+                return (int)( lhs.getTopest()-rhs.getTopest() );
             }
         });
         mMinestChart = Collections.min(mJcharts, new Comparator<Jchart>() {
             @Override
             public int compare(Jchart lhs, Jchart rhs){
-                return (int)( lhs.getUpper()-rhs.getUpper() );
+                return (int)( lhs.getTopest()-rhs.getTopest() );
             }
         });
         if(BuildConfig.DEBUG) {
-            Log.d(TAG, "最大值："+mHeightestChart.getUpper());
+            Log.d(TAG, "最大值："+mHeightestChart.getTopest());
         }
         if(mYaxis_msg == null || mYaxis_msg.size() == 0) {
-            mYaxis_Max = MathHelper.getCeil10(mHeightestChart.getUpper());
+            mYaxis_Max = MathHelper.getCeil10(mHeightestChart.getTopest());
             //默认 y轴显示两段三个刻度
             refreshYaxisValues(3);
         }else {
-            if(mYaxis_Max<mHeightestChart.getUpper() || mYaxis_min>mMinestChart.getUpper()) {
+            if(mYaxis_Max<mHeightestChart.getTopest() || mYaxis_min>mMinestChart.getTopest()) {
                 //纵轴的 最大值 要比数据最大还大
-                mYaxis_Max = mYaxis_Max<mHeightestChart.getUpper() ? MathHelper
-                        .getCeil10(mHeightestChart.getUpper()) : mYaxis_Max;
-                if(mYaxis_min>mMinestChart.getUpper()) {
-                    mYaxis_min = MathHelper.getCast10(mMinestChart.getUpper());
+                mYaxis_Max = mYaxis_Max<mHeightestChart.getTopest() ? MathHelper
+                        .getCeil10(mHeightestChart.getTopest()) : mYaxis_Max;
+                if(mYaxis_min>mMinestChart.getTopest()) {
+                    mYaxis_min = MathHelper.getCast10(mMinestChart.getTopest());
                 }
                 //纵轴的 最小值 要比数据最小还小
                 //                mYaxis_min = mYaxis_min>mMinestChart.getLower() ? MathHelper.getCast10(mMinestChart.getLower()) : mYaxis_min;

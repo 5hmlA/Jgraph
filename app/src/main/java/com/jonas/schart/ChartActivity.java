@@ -13,13 +13,15 @@ import android.widget.FrameLayout;
 import android.widget.ListView;
 
 import com.jonas.jgraph.graph.JcoolGraph;
-import com.jonas.jgraph.graph.JcoolGraph.LineMode;
-import com.jonas.jgraph.inter.BaseGraph.SelectedMode;
 import com.jonas.jgraph.models.Jchart;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.jonas.jgraph.graph.JcoolGraph.LINE_DASH_0;
+import static com.jonas.jgraph.inter.BaseGraph.SELECETD_MSG_SHOW_TOP;
+import static com.jonas.jgraph.inter.BaseGraph.SELECETD_NULL;
 
 public class ChartActivity extends AppCompatActivity implements CompoundButton.OnCheckedChangeListener {
 
@@ -42,6 +44,9 @@ public class ChartActivity extends AppCompatActivity implements CompoundButton.O
 
             lines.add(new Jchart(new SecureRandom().nextInt(50)+15, Color.parseColor("#b8e986")));
             //            lines.add(new Jchart(10,new SecureRandom().nextInt(50) + 15,"test", Color.parseColor("#b8e986")));
+        }
+        for(Jchart line : lines) {
+            line.setStandedHeight(100);
         }
         //        lines.get(new SecureRandom().nextInt(chartNum-1)).setUpper(0);
                 lines.get(1).setUpper(0);
@@ -97,16 +102,16 @@ public class ChartActivity extends AppCompatActivity implements CompoundButton.O
                 break;
             case R.id.skep0:
                 if(isChecked) {
-                    mLineChar.setLineMode(LineMode.LINE_DASH_0);
+                    mLineChar.setLineMode(LINE_DASH_0);
                 }else {
-                    mLineChar.setLineMode(LineMode.LINE_JUMP0);
+                    mLineChar.setLineMode(JcoolGraph.LINE_JUMP0);
                 }
                 break;
             case R.id.select:
                 if(isChecked) {
-                    mLineChar.setSelectedMode(SelectedMode.SELECETD_MSG_SHOW_TOP);
+                    mLineChar.setSelectedMode(SELECETD_MSG_SHOW_TOP);
                 }else {
-                    mLineChar.setSelectedMode(SelectedMode.SELECETD_NULL);
+                    mLineChar.setSelectedMode(SELECETD_NULL);
                 }
                 break;
             case R.id.graphshader:

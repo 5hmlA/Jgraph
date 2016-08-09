@@ -104,7 +104,7 @@ public class LineChar extends BaseGraph {
     @Override
     protected void init(Context context) {
         super.init(context);
-        mGraphStyle = GraphStyle.LINE;
+        mGraphStyle = LINE;
         mLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mAbscissaPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mAbscisDashPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -248,7 +248,7 @@ public class LineChar extends BaseGraph {
 
     @Override
     public void setGraphStyle(int graphStyle) {
-        mGraphStyle = GraphStyle.LINE;
+        mGraphStyle = LINE;
     }
 
     /**
