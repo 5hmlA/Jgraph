@@ -313,6 +313,13 @@ public class JcoolGraph extends BaseGraph {
             Jchart jchart = mJcharts.get(i);
             float lasty = mAllLastPoints.get(i).y;
             RectF rectF = jchart.getRectF();
+//            if(jchart.mTopRound) {
+//                Path rectFPath = jchart.getRectFPath(rectF.bottom, lasty+( rectF.top-lasty )*mAniRatio);
+//                canvas.drawPath(rectFPath,mBarPaint);
+//            }else {
+//                RectF drectf = new RectF(rectF.left, lasty+( rectF.top-lasty )*mAniRatio, rectF.right, rectF.bottom);
+//                canvas.drawRect(drectf, mBarPaint);
+//            }
             RectF drectf = new RectF(rectF.left, lasty+( rectF.top-lasty )*mAniRatio, rectF.right, rectF.bottom);
             canvas.drawRect(drectf, mBarPaint);
         }
