@@ -45,9 +45,9 @@ public class ChartActivity extends AppCompatActivity implements CompoundButton.O
             lines.add(new Jchart(new SecureRandom().nextInt(50)+15, Color.parseColor("#b8e986")));
             //            lines.add(new Jchart(10,new SecureRandom().nextInt(50) + 15,"test", Color.parseColor("#b8e986")));
         }
-        for(Jchart line : lines) {
-            line.setStandedHeight(100);
-        }
+//        for(Jchart line : lines) {
+//            line.setStandedHeight(100);
+//        }
         //        lines.get(new SecureRandom().nextInt(chartNum-1)).setUpper(0);
                 lines.get(1).setUpper(0);
                 lines.get(new SecureRandom().nextInt(chartNum-1)).setLower(10);

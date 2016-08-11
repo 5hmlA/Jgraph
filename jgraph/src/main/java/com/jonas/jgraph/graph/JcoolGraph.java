@@ -264,9 +264,9 @@ public class JcoolGraph extends BaseGraph {
         }
         if(mState == aniChange && mAniRatio<1) {
             barAniChanging(canvas);
-            for(Jchart jchart : mJcharts) {
-                jchart.draw(canvas, mCoordinatePaint, false);
-            }
+//            for(Jchart jchart : mJcharts) {
+//                jchart.draw(canvas, mCoordinatePaint, false);
+//            }
         }else {
             mState = -1;
             if(mLastJchart.getAniratio()>=1 && !mValueAnimator.isRunning()) {
