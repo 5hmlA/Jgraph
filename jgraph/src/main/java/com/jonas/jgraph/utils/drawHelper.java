@@ -73,6 +73,7 @@ public class DrawHelper {
         return paint.ascent()+paint.descent();
 //        Paint.FontMetrics fm = paint.getFontMetrics();
 //        return (float)Math.ceil(fm.descent-fm.ascent);
+
     }
 
     /**

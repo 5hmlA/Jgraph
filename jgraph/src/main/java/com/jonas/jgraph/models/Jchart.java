@@ -57,7 +57,7 @@ public class Jchart implements Cloneable {
     //    private TimeInterpolator INTERPOLATOR = new BounceInterpolator();
     private TimeInterpolator INTERPOLATOR = new OvershootInterpolator(3);
     private float mHeightRatio = 1;
-    public boolean mTopRound = true;
+    public boolean mTopRound;
     //    private boolean mTopRound;
 
     public Jchart(float num, int color){
