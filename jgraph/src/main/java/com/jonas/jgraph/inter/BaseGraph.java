@@ -403,15 +403,12 @@ public abstract class BaseGraph extends View implements GestureDetector.OnGestur
         for(int i = 0; i<mJcharts.size(); i++) {
             Jchart jchart = mJcharts.get(i);
             jchart.setLowStart(mYaxis_min);
-            jchart.setHeightRatio(mHeightRatio);//刷新在画布中的高度比例
+            jchart.setHeightRatio(mHeightRatio);
             jchart.setWidth(mBarWidth);
             PointF start = jchart.getStart();
             jchart.setIndex(i);
-            //刷新 每个柱子矩阵左下角坐标
             start.x = mChartArea.left+mBarWidth*i+mInterval*i;
-            //            start.y = mChartArea.bottom-mAbove-jchart.getLower();
             start.y = mChartArea.bottom-mAbove;
-            //            jchart.setColor(mNormalColor);
             refreshOthersWithEveryChart(i, jchart);
         }
         mChartRithtest_x = mJcharts.get(mJcharts.size()-1).getMidPointF().x;
@@ -546,15 +543,6 @@ public abstract class BaseGraph extends View implements GestureDetector.OnGestur
             invalidate();
             return false;
         }
-
-        //        if(mJcharts != null && mJcharts.size()>0) {
-        //            //防止 图表 滑出界面看不到  往做移动 小于0
-        //            mSliding = mSliding>=0 ? 0 : mSliding<=-( mChartRithtest_x-mCharAreaWidth ) ? -( mChartRithtest_x-mCharAreaWidth ) : mSliding;
-        //            return false;
-        //        }else {
-        //            mSliding = mSliding>=0 ? 0 : mSliding;
-        //            return true;
-        //        }
     }
 
     /**
@@ -591,18 +579,6 @@ public abstract class BaseGraph extends View implements GestureDetector.OnGestur
         }else {
             return -1;
         }
-        //        for(int i = 0; i<mJcharts.size(); i++) {
-        //            Jchart excel = mJcharts.get(i);
-        //            PointF start = excel.getStart();
-        //            if(start.x>tup.x) {
-        //                return -1;
-        //            }else if(start.x-mSliding<=tup.x) {
-        //                if(start.x-mSliding+excel.getWidth()>tup.x && ( start.y>tup.y && start.y-excel.getHeight()<tup.y )) {
-        //                    return i;
-        //                }
-        //            }
-        //        }
-        //        return -1;
     }
 
     /**
@@ -757,7 +733,6 @@ public abstract class BaseGraph extends View implements GestureDetector.OnGestur
         }else {
             canvas.drawLine(mChartArea.left, mChartArea.bottom, mChartArea.right, mChartArea.bottom, mCoordinatePaint);
         }
-        //        canvas.drawRect(mChartArea, mCoordinatePaint);
     }
 
     /**
@@ -807,16 +782,10 @@ public abstract class BaseGraph extends View implements GestureDetector.OnGestur
     public void aniShowChar(float start, float end, TimeInterpolator interpolator, long duration, boolean intvalue){
         mValueAnimator.cancel();
         if(intvalue) {
-            //            mValueAnimator.setIntValues(((int) start), ((int) end));//之后变成整形的valueanimator无法切换到float
             mValueAnimator = ValueAnimator.ofInt(( (int)start ), ( (int)end ));
         }else {
-            //            mValueAnimator.setFloatValues(start, end);
             mValueAnimator = ValueAnimator.ofFloat(start, end);
         }
-        //        if(mLineStyle == LineStyle.LINE_CURVE) {
-        //            mLinePath.rewind();//倒序
-        //        }
-        //        mValueAnimator.isRunning()
         mValueAnimator.setDuration(duration);
         mValueAnimator.setInterpolator(interpolator);
         mValueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -896,7 +865,6 @@ public abstract class BaseGraph extends View implements GestureDetector.OnGestur
                     mYaxis_min = MathHelper.getCast10(mMinestChart.getTopest());
                 }
                 //纵轴的 最小值 要比数据最小还小
-                //                mYaxis_min = mYaxis_min>mMinestChart.getLower() ? MathHelper.getCast10(mMinestChart.getLower()) : mYaxis_min;
                 refreshYaxisValues(mYaxis_msg.size());
             }
         }

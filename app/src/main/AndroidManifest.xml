@@ -24,8 +24,6 @@
         </activity>
         <activity android:name=".PieActivity">
         </activity>
-        <activity android:name=".ProgActivity">
-        </activity>
     </application>
 
 </manifest>

@@ -243,11 +243,9 @@ public class JcoolGraph extends BaseGraph {
 
     @Override
     protected void onDraw(Canvas canvas){
-        //这里可以用画布做一些动画
         canvas.save();
         canvas.rotate(mAniRotateRatio);
-        canvas.translate(mSliding, 0);//大于0 往右移动 小于0往左移动
-        //        canvas.translate(50, 0);//大于0 往右移动 小于0往左移动
+        canvas.translate(mSliding, 0);
         super.onDraw(canvas);
         canvas.restore();
         //纵轴信息固定
@@ -259,7 +257,6 @@ public class JcoolGraph extends BaseGraph {
     @Override
     protected void drawSugExcel_BAR(Canvas canvas){
         for(Jchart jchart : mJcharts) {
-//            canvas.drawPath(jchart.getStandedPath(), mCoordinatePaint);
             canvas.drawRect(jchart.getStandedRectF(), mCoordinatePaint);
         }
         if(mState == aniChange && mAniRatio<1) {
@@ -335,19 +332,6 @@ public class JcoolGraph extends BaseGraph {
             drawLeftShaderArea(canvas);
         }else {
             mState = -1;
-            //            if ((mLineShowStyle == LineShowStyle.LINESHOW_FROMCORNER || mLineShowStyle == LineShowStyle.LINESHOW_FROMLINE ||
-            //                    mLineShowStyle == LineShowStyle.LINESHOW_DRAWING || mLineShowStyle == LineShowStyle.LINESHOW_SECTION) && !mValueAnimator.isRunning()) {
-            //                if (BuildConfig.DEBUG) {
-            //                    Log.d(TAG, "drawSugExcel_LINE animationfinish to the initial state");
-            //                }
-            //                //动画不在执行的时候
-            //                mAniShadeAreaPath.reset();
-            //                mAniLinePath.reset();
-            //                canvas.drawPath(mLinePath, mLinePaint);
-            //                if (mShaderAreaColors != null) {
-            //                    canvas.drawPath(mShadeAreaPath, mShaderAreaPaint);
-            //                }
-            //            } else {
             if(mLineMode == LINE_EVERYPOINT) {
                 //不跳过为0的点
                 lineWithEvetyPoint(canvas);
@@ -531,7 +515,7 @@ public class JcoolGraph extends BaseGraph {
     }
 
     /**
-     * 无到有 画出完整线条动画
+     *   画出完整线条动画
      *
      * @param canvas
      */
@@ -766,11 +750,8 @@ public class JcoolGraph extends BaseGraph {
                 //保存上一次的数据
                 mAllLastPoints.add(new PointF(allPoint.x, allPoint.y));
             }
-            //            String lastBestY = String.valueOf(mHeightestChart.getUpper());
             findTheBestChart();
-            //            if (lastBestY.length()<String.valueOf(mHeightestChart.getUpper()).length()) {
             refreshChartArea();
-            //            }
             aniShowChar(0, 1, new LinearInterpolator());
         }else {
             throw new RuntimeException("aniChangeData的数据必须和第一次传递cmddata的数据量相同");
@@ -782,7 +763,6 @@ public class JcoolGraph extends BaseGraph {
 
         if(mGraphStyle == LINE) {
             mAllPoints.add(jchart.getMidPointF());
-            //aniChangeData之后会刷新数据 mAllLastPoints的y不等于0 mAllLastPoints.get(i).y == 0
             if(mAllLastPoints.get(i).y == -1) {
                 if(mShowFromMode == SHOWFROMBUTTOM) {
                     mAllLastPoints.get(i).y = mChartArea.bottom;//0转为横轴纵坐标
@@ -853,14 +833,6 @@ public class JcoolGraph extends BaseGraph {
     @Override
     public void feedData(@NonNull List<Jchart> jchartList){
         super.feedData(jchartList);
-        //        if (mLineShowStyle != -1) {
-        //            postDelayed(new Runnable() {
-        //                @Override
-        //                public void run() {
-        //                    aniShow_growing();
-        //                }
-        //            }, 1000);
-        //        }
     }
 
     public void feedData(float... data){
@@ -939,7 +911,6 @@ public class JcoolGraph extends BaseGraph {
                     mJcharts.get(( (int)mAniRatio )).aniHeight(this, 0, new AccelerateInterpolator());
                 }
             }else {
-                //mBarShowStyle == BarShowStyle.BARSHOW_EXPAND||mBarShowStyle == BarShowStyle.BARSHOW_FROMLINE
                 floatChangeAni(animation);
             }
         }else {
@@ -1063,7 +1034,6 @@ public class JcoolGraph extends BaseGraph {
 
     @Override
     public void setSelectedMode(@SelectedMode int selectedMode){
-        //        if (mSelectedMode != SelectedMode.SELECETD_MSG_SHOW_TOP) {
         mSelectedMode = selectedMode;
         if(mWidth>0) {
             refreshChartArea();

@@ -57,7 +57,7 @@ public class Jchart implements Cloneable {
     //    private TimeInterpolator INTERPOLATOR = new BounceInterpolator();
     private TimeInterpolator INTERPOLATOR = new OvershootInterpolator(3);
     private float mHeightRatio = 1;
-    public boolean mTopRound;
+    public boolean mTopRound = true;
     //    private boolean mTopRound;
 
     public Jchart(float num, int color){
@@ -100,12 +100,6 @@ public class Jchart implements Cloneable {
         //        if (mHeight > 0) {
         if(!mActualOp || mAniratio<1 && mHeight>0) {
             mActualRec = new Path();
-            //            RectF rectF = getSecRectF(mHeight*mHeightRatio*mAniratio);
-            //            RectF rectCircle = getFirstRectF(mHeight*mHeightRatio*mAniratio);
-
-            //            RectF rectF = getSecRectF(mLower, mUpper, mAniratio);
-            //            RectF rectCircle = getFirstRectF(mLower, mUpper, mAniratio);
-
             RectF[] helpRectFs = getHelpRectFs(mLower, mUpper, mAniratio);
             RectF rectF = helpRectFs[1];
             RectF rectCircle = helpRectFs[0];
@@ -118,18 +112,17 @@ public class Jchart implements Cloneable {
         float mHeight = mUpper-mLower;
         if(!mActualOp || mAniratio<1 && mHeight>0) {
             mActualRec = new Path();
-            //            RectF rectF = getSecRectF(mHeight*mHeightRatio*mAniratio);
-            //            RectF rectCircle = getFirstRectF(mHeight*mHeightRatio*mAniratio);
-            RectF rectF = getSecRectF(mLower, mUpper, mAniratio);
-            RectF rectCircle = getFirstRectF(mLower, mUpper, mAniratio);
+            RectF[] helpRectFs = getHelpRectFs(mLower, mUpper, mAniratio);
+            RectF rectF = helpRectFs[1];
+            RectF rectCircle = helpRectFs[0];
             mActualOp = extraPath(mActualRec, mHeight*mHeightRatio*mAniratio, mActualOp, rectF, rectCircle);
         }
         return mActualRec;
     }
 
-    public RectF getSecRectF(float height){
-        return new RectF(mStart.x, mStart.y-height+mWidth/2f, mStart.x+mWidth, mStart.y);
-    }
+//    public RectF getSecRectF(float height){
+//        return new RectF(mStart.x, mStart.y-height+mWidth/2f, mStart.x+mWidth, mStart.y);
+//    }
 
     private RectF[] getHelpRectFs(float mLower, float mUpper, float mAniratio){
         RectF[] helpRectfs = new RectF[2];
@@ -143,28 +136,26 @@ public class Jchart implements Cloneable {
         return helpRectfs;
     }
 
-    public RectF getSecRectF(float mLower, float mUpper, float mAniratio){
-        mAniratio = mAniratio>0.9 ? 1 : mAniratio;
-        float bottom = mStart.y-( mLower-mLowStart )*mHeightRatio*mAniratio;
-        bottom = bottom<mStart.y ? bottom : mStart.y;
-        float top = mStart.y-( mUpper-mLowStart )*mHeightRatio*mAniratio+mWidth/2f;
-        top = top<mStart.y ? top : mStart.y;
-        return new RectF(mStart.x, top, mStart.x+mWidth, bottom);
-    }
+//    public RectF getSecRectF(float mLower, float mUpper, float mAniratio){
+//        mAniratio = mAniratio>0.9 ? 1 : mAniratio;
+//        float bottom = mStart.y-( mLower-mLowStart )*mHeightRatio*mAniratio;
+//        bottom = bottom<mStart.y ? bottom : mStart.y;
+//        float top = mStart.y-( mUpper-mLowStart )*mHeightRatio*mAniratio+mWidth/2f;
+//        top = top<mStart.y ? top : mStart.y;
+//        return new RectF(mStart.x, top, mStart.x+mWidth, bottom);
+//    }
 
-    public RectF getFirstRectF(float height){
-        return new RectF(mStart.x, mStart.y-height, mStart.x+mWidth, mStart.y-height+mWidth);//实际上 只取矩阵一半
-    }
+//    public RectF getFirstRectF(float height){
+//        return new RectF(mStart.x, mStart.y-height, mStart.x+mWidth, mStart.y-height+mWidth);//实际上 只取矩阵一半
+//    }
 
-    public RectF getFirstRectF(float mLower, float mUpper, float mAniratio){
-        mAniratio = mAniratio>0.9 ? 1 : mAniratio;
-        float top = mStart.y-( mUpper-mLowStart )*mHeightRatio*mAniratio;
-        top = top<mStart.y ? top : mStart.y;
-        float bottom = top+mWidth*mAniratio;
-        //        float bottom = mStart.y-( mUpper-mLowStart+mWidth )*mHeightRatio*mAniratio;
-        //        bottom = bottom<mStart.y ? bottom : mStart.y;
-        return new RectF(mStart.x, top, mStart.x+mWidth, bottom);
-    }
+//    public RectF getFirstRectF(float mLower, float mUpper, float mAniratio){
+//        mAniratio = mAniratio>0.9 ? 1 : mAniratio;
+//        float top = mStart.y-( mUpper-mLowStart )*mHeightRatio*mAniratio;
+//        top = top<mStart.y ? top : mStart.y;
+//        float bottom = top+mWidth*mAniratio;
+//        return new RectF(mStart.x, top, mStart.x+mWidth, bottom);
+//    }
 
     private boolean extraPath(Path mOVerRec, float mOverHeight, boolean op, RectF secRectF, RectF firstRectFC){
         if(mOverHeight>mWidth/2f) {
@@ -175,14 +166,6 @@ public class Jchart implements Cloneable {
             rec.lineTo(secRectF.right, secRectF.top);
             mOVerRec.addPath(rec);
             mOVerRec.addArc(firstRectFC, 180, 180);
-
-            //使用op
-            //            mOVerRec.addRect(secRectF, Path.Direction.CCW);
-            //                circle.addCircle(mStart.x + mWidth / 2f, mStart.y - mHeight + mWidth / 2f, mWidth / 2f, Path.Direction.CCW);
-            //                mOVerRec.op(circle, Path.Op.UNION);
-            //            Path circle = new Path();
-            //            circle.addArc(firstRectFC, 180, 180);
-            //            return mOVerRec.op(circle, Path.Op.UNION);
             return true;
         }else {
             firstRectFC.bottom -= ( mWidth-2*mOverHeight );
@@ -217,15 +200,10 @@ public class Jchart implements Cloneable {
     public Path getOverRectFPath(){
         float mOverHeight = ( mHeight-mStandedHeight )*mHeightRatio*mAniratio;
         if(!mPathover || mAniratio<1 && mOverHeight>0) {
-            //            mOVerRec = new Path();
-            //            RectF[] helpRectFs = getHelpRectFs(mLower, mUpper, mAniratio);
-            //            RectF rectF = helpRectFs[1];
-            //            RectF rectCircle = helpRectFs[0];
-
             RectF rectF = new RectF(mStart.x, mStart.y-mHeight*mHeightRatio*mAniratio+mWidth/2f, mStart.x+mWidth,
                     mStart.y-mStandedHeight*mHeightRatio*mAniratio);
-            RectF rectCircle = getFirstRectF(mHeight);
-
+            RectF[] helpRectFs = getHelpRectFs(mLower, mUpper, mAniratio);
+            RectF rectCircle = helpRectFs[0];
             mPathover = extraPath(mOVerRec, mOverHeight, false, rectF, rectCircle);
 
         }
@@ -247,11 +225,11 @@ public class Jchart implements Cloneable {
      * @return
      */
     public Path getStandedPath(){
-        //        if (mStandedHeight > 0) {
         if(!mOp || mAniratio<1 && mStandedHeight>0) {
             mStantedRec = new Path();
-            RectF rectF = getSecRectF(mStandedHeight*mHeightRatio);
-            RectF rectCircle = getFirstRectF(mStandedHeight*mHeightRatio);
+            RectF[] helpRectFs = getHelpRectFs(mLower, mUpper, mAniratio);
+            RectF rectF = helpRectFs[1];
+            RectF rectCircle = helpRectFs[0];
             mOp = extraPath(mStantedRec, mStandedHeight*mHeightRatio, mOp, rectF, rectCircle);
         }
         return mStantedRec;
@@ -397,9 +375,6 @@ public class Jchart implements Cloneable {
      */
     public Jchart setUpper(float upper){
         if(upper<mLower) {
-            //            if(BuildConfig.DEBUG) {//一直为false
-            //                Log.e(TAG, "setUpper error upper must < lower");
-            //            }
             upper = mLower;
             Log.e(TAG, "lower > upper than lower = upper = "+mUpper);
         }
