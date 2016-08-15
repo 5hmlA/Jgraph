@@ -38,7 +38,7 @@
 		}
 	}
 	dependencies {
-	    compile 'com.github.mychoices:Jgraph:v1.1'
+	    compile 'com.github.mychoices:Jgraph:v1.2'
 	}
 
 #DEMO
