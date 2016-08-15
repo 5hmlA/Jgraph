@@ -57,8 +57,8 @@ public class Jchart implements Cloneable {
     //    private TimeInterpolator INTERPOLATOR = new BounceInterpolator();
     private TimeInterpolator INTERPOLATOR = new OvershootInterpolator(3);
     private float mHeightRatio = 1;
-    public boolean mTopRound = true;
-    //    private boolean mTopRound;
+    //    public boolean mTopRound = true;
+    public boolean mTopRound;
 
     public Jchart(float num, int color){
         this(0, num, "", color);
@@ -109,53 +109,25 @@ public class Jchart implements Cloneable {
     }
 
     public Path getRectFPath(float mLower, float mUpper){
-        float mHeight = mUpper-mLower;
-        if(!mActualOp || mAniratio<1 && mHeight>0) {
-            mActualRec = new Path();
-            RectF[] helpRectFs = getHelpRectFs(mLower, mUpper, mAniratio);
-            RectF rectF = helpRectFs[1];
-            RectF rectCircle = helpRectFs[0];
-            mActualOp = extraPath(mActualRec, mHeight*mHeightRatio*mAniratio, mActualOp, rectF, rectCircle);
-        }
+        mActualRec = new Path();
+        RectF[] helpRectFs = getHelpRectFs(mLower, mUpper, mAniratio);
+        RectF rectF = helpRectFs[1];
+        RectF rectCircle = helpRectFs[0];
+        mActualOp = extraPath(mActualRec, mHeight*mHeightRatio*mAniratio, mActualOp, rectF, rectCircle);
         return mActualRec;
     }
-
-//    public RectF getSecRectF(float height){
-//        return new RectF(mStart.x, mStart.y-height+mWidth/2f, mStart.x+mWidth, mStart.y);
-//    }
 
     private RectF[] getHelpRectFs(float mLower, float mUpper, float mAniratio){
         RectF[] helpRectfs = new RectF[2];
         mAniratio = mAniratio>0.9 ? 1 : mAniratio;
         float bottom = mStart.y-( mLower-mLowStart )*mHeightRatio*mAniratio;
-        bottom = bottom<mStart.y ? bottom : mStart.y;
         float top = mStart.y-( mUpper-mLowStart )*mHeightRatio*mAniratio+mWidth/2f;
+        bottom = bottom<mStart.y ? bottom : mStart.y;
         top = top<mStart.y ? top : mStart.y;
         helpRectfs[1] = new RectF(mStart.x, top, mStart.x+mWidth, bottom);
         helpRectfs[0] = new RectF(mStart.x, top-mWidth/2f, mStart.x+mWidth, top+mWidth/2f);
         return helpRectfs;
     }
-
-//    public RectF getSecRectF(float mLower, float mUpper, float mAniratio){
-//        mAniratio = mAniratio>0.9 ? 1 : mAniratio;
-//        float bottom = mStart.y-( mLower-mLowStart )*mHeightRatio*mAniratio;
-//        bottom = bottom<mStart.y ? bottom : mStart.y;
-//        float top = mStart.y-( mUpper-mLowStart )*mHeightRatio*mAniratio+mWidth/2f;
-//        top = top<mStart.y ? top : mStart.y;
-//        return new RectF(mStart.x, top, mStart.x+mWidth, bottom);
-//    }
-
-//    public RectF getFirstRectF(float height){
-//        return new RectF(mStart.x, mStart.y-height, mStart.x+mWidth, mStart.y-height+mWidth);//实际上 只取矩阵一半
-//    }
-
-//    public RectF getFirstRectF(float mLower, float mUpper, float mAniratio){
-//        mAniratio = mAniratio>0.9 ? 1 : mAniratio;
-//        float top = mStart.y-( mUpper-mLowStart )*mHeightRatio*mAniratio;
-//        top = top<mStart.y ? top : mStart.y;
-//        float bottom = top+mWidth*mAniratio;
-//        return new RectF(mStart.x, top, mStart.x+mWidth, bottom);
-//    }
 
     private boolean extraPath(Path mOVerRec, float mOverHeight, boolean op, RectF secRectF, RectF firstRectFC){
         if(mOverHeight>mWidth/2f) {
