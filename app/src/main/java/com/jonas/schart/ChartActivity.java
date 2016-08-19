@@ -42,7 +42,7 @@ public class ChartActivity extends AppCompatActivity implements CompoundButton.O
         List<Jchart> lines = new ArrayList<>();
         for(int i = 0; i<chartNum; i++) {
 
-            lines.add(new Jchart(new SecureRandom().nextInt(50)+15, Color.parseColor("#b8e986")));
+            lines.add(new Jchart(new SecureRandom().nextInt(50)+15, Color.parseColor("#5F77F6")));
             //            lines.add(new Jchart(10,new SecureRandom().nextInt(50) + 15,"test", Color.parseColor("#b8e986")));
         }
 //        for(Jchart line : lines) {
@@ -60,10 +60,7 @@ public class ChartActivity extends AppCompatActivity implements CompoundButton.O
 
         //        mLineChar.setYaxisValues("test","测试","text");
         //        mLineChar.setSelectedMode(BaseGraph.SelectedMode.SELECETD_MSG_SHOW_TOP);
-//                mLineChar.setShaderAreaColors(Color.parseColor("#4B494B"),Color.TRANSPARENT);
-        //        mLineChar.setPaintShaderColors(Color.parseColor("#80ff3320"), Color.parseColor("#ffbf55"), Color.parseColor("#f7eb57"), Color.parseColor("#b8e986"), Color.parseColor("#73c0fd"));
         mLineChar.setNormalColor(Color.parseColor("#676567"));
-        //        mLineChar.setShowFromMode(JcoolGraph.ShowFromMode.SHOWFROMBUTTOM);
         mLineChar.feedData(lines);
         ( (FrameLayout)mLineChar.getParent() ).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -116,8 +113,8 @@ public class ChartActivity extends AppCompatActivity implements CompoundButton.O
                 break;
             case R.id.graphshader:
                 if(isChecked) {
-                    mLineChar.setPaintShaderColors(Color.parseColor("#80ff3320"), Color.parseColor("#ffbf55"),
-                            Color.parseColor("#f7eb57"), Color.parseColor("#b8e986"), Color.parseColor("#73c0fd"));
+                    mLineChar.setPaintShaderColors(Color.RED, Color.parseColor("#E79D23"),
+                            Color.parseColor("#FFF03D"), Color.parseColor("#A9E16F"), Color.parseColor("#75B9EF"));
                 }else {
                     mLineChar.setPaintShaderColors(null);
                 }
