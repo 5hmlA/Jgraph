@@ -19,8 +19,8 @@ import java.util.List;
  * @author yun.
  * @date 2015/9/2
  * @des [一句话描述]
- * @since [https://github.com/mychoices]
- * <p><a href="https://github.com/mychoices">github</a>
+ * @since [https://github.com/ZuYun]
+ * <p><a href="https://github.com/ZuYun">github</a>
  */
 public class PieGraph extends BaseGraph {
 

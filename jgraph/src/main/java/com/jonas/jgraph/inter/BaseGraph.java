@@ -29,6 +29,7 @@ import android.widget.Scroller;
 import com.jonas.jgraph.BuildConfig;
 import com.jonas.jgraph.R;
 import com.jonas.jgraph.models.Jchart;
+import com.jonas.jgraph.utils.CalloutHelper;
 import com.jonas.jgraph.utils.MathHelper;
 
 import java.lang.annotation.Retention;
@@ -44,8 +45,8 @@ import java.util.List;
  * @author yun.
  * @date 2016/7/11
  * @des [图表控件的基类  finish 图表区域，横纵轴数据]
- * @since [https://github.com/mychoices]
- * <p><a href="https://github.com/mychoices">github</a>
+ * @since [https://github.com/ZuYun]
+ * <p><a href="https://github.com/ZuYun">github</a>
  */
 public abstract class BaseGraph extends View implements GestureDetector.OnGestureListener {
     private static final String TAG = BaseGraph.class.getSimpleName();
@@ -347,7 +348,8 @@ public abstract class BaseGraph extends View implements GestureDetector.OnGestur
         }
         if(mSelectedMode == SELECETD_MSG_SHOW_TOP) {
             //选中文字的背景的高度
-            yMsgHeight = mSelectedTextPaint.getTextSize()+3f*mBgTriangleHeight;
+//            yMsgHeight = mSelectedTextPaint.getTextSize()+3f*mBgTriangleHeight;
+            yMsgHeight = CalloutHelper.getCalloutHeight();
         }else {
             yMsgHeight = bounds.height();
         }

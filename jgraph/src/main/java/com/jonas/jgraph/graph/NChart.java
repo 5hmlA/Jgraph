@@ -35,8 +35,8 @@ import java.util.List;
  * @author yun.
  * @date 2016/7/11
  * @des [一句话描述  画线的时候 必须把 画笔的style设置为 Paint.Style.STROKE]
- * @since [https://github.com/mychoices]
- * <p><a href="https://github.com/mychoices">github</a>
+ * @since [https://github.com/ZuYun]
+ * <p><a href="https://github.com/ZuYun">github</a>
  */
 public class NChart extends View implements ValueAnimator.AnimatorUpdateListener, Animator.AnimatorListener {
 

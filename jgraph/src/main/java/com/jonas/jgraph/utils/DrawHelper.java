@@ -12,8 +12,8 @@ import java.security.SecureRandom;
  * @author yun.
  * @date 2016/7/13
  * @des [一句话描述]
- * @since [https://github.com/mychoices]
- * <p><a href="https://github.com/mychoices">github</a>
+ * @since [https://github.com/ZuYun]
+ * <p><a href="https://github.com/ZuYun">github</a>
  */
 public class DrawHelper {
     /**

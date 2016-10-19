@@ -22,6 +22,7 @@ import com.jonas.jgraph.BuildConfig;
 import com.jonas.jgraph.R;
 import com.jonas.jgraph.inter.BaseGraph;
 import com.jonas.jgraph.models.Jchart;
+import com.jonas.jgraph.utils.CalloutHelper;
 import com.jonas.jgraph.utils.DrawHelper;
 import com.jonas.jgraph.utils.MathHelper;
 
@@ -34,8 +35,8 @@ import java.util.List;
  * @author yun.
  * @date 2016/6/8
  * @des [一句话描述]
- * @since [https://github.com/mychoices]
- * <p><a href="https://github.com/mychoices">github</a>
+ * @since [https://github.com/ZuYun]
+ * <p><a href="https://github.com/ZuYun">github</a>
  */
 public class JcoolGraph extends BaseGraph {
     private static final String TAG = JcoolGraph.class.getSimpleName();
@@ -261,9 +262,9 @@ public class JcoolGraph extends BaseGraph {
         }
         if(mState == aniChange && mAniRatio<1) {
             barAniChanging(canvas);
-//            for(Jchart jchart : mJcharts) {
-//                jchart.draw(canvas, mCoordinatePaint, false);
-//            }
+            //            for(Jchart jchart : mJcharts) {
+            //                jchart.draw(canvas, mCoordinatePaint, false);
+            //            }
         }else {
             mState = -1;
             if(mLastJchart.getAniratio()>=1 && !mValueAnimator.isRunning()) {
@@ -310,13 +311,13 @@ public class JcoolGraph extends BaseGraph {
             Jchart jchart = mJcharts.get(i);
             float lasty = mAllLastPoints.get(i).y;
             RectF rectF = jchart.getRectF();
-//            if(jchart.mTopRound) {
-//                Path rectFPath = jchart.getRectFPath(rectF.bottom, lasty+( rectF.top-lasty )*mAniRatio);
-//                canvas.drawPath(rectFPath,mBarPaint);
-//            }else {
-//                RectF drectf = new RectF(rectF.left, lasty+( rectF.top-lasty )*mAniRatio, rectF.right, rectF.bottom);
-//                canvas.drawRect(drectf, mBarPaint);
-//            }
+            //            if(jchart.mTopRound) {
+            //                Path rectFPath = jchart.getRectFPath(rectF.bottom, lasty+( rectF.top-lasty )*mAniRatio);
+            //                canvas.drawPath(rectFPath,mBarPaint);
+            //            }else {
+            //                RectF drectf = new RectF(rectF.left, lasty+( rectF.top-lasty )*mAniRatio, rectF.right, rectF.bottom);
+            //                canvas.drawRect(drectf, mBarPaint);
+            //            }
             RectF drectf = new RectF(rectF.left, lasty+( rectF.top-lasty )*mAniRatio, rectF.right, rectF.bottom);
             canvas.drawRect(drectf, mBarPaint);
         }
@@ -515,7 +516,7 @@ public class JcoolGraph extends BaseGraph {
     }
 
     /**
-     *   画出完整线条动画
+     * 画出完整线条动画
      *
      * @param canvas
      */
@@ -983,6 +984,17 @@ public class JcoolGraph extends BaseGraph {
      */
     public void setLineWidth(float lineWidth){
         mLineWidth = lineWidth;
+    }
+
+    /**
+     * 画选中的 顶部文字和背景
+     *
+     * @param canvas
+     * @param excel
+     */
+    protected void drawSelectedText(Canvas canvas, Jchart excel){
+        CalloutHelper.drawCalloutActual(canvas, excel, true, mLineWidth, mChartArea.right, mSelectedTextBgPaint,
+                mSelectedTextPaint, mScrollAble);
     }
 
     /**
