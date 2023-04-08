@@ -1,3 +1,7 @@
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=5hmlA/Jgraph&type=Date)](https://star-history.com/#5hmlA/Jgraph&Date)
+
 # Jgraph
 [![License](https://img.shields.io/badge/license-Apache%202-green.svg?style=flat-square)](https://www.apache.org/licenses/LICENSE-2.0)
 [![](https://img.shields.io/badge/Jgraph-download-brightgreen.svg?style=flat-square)](http://fir.im/y57x?release_id=57b1c789ca87a87b36000f2b)
