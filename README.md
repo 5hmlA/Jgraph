@@ -7,13 +7,7 @@
 [![](https://img.shields.io/badge/Jgraph-download-brightgreen.svg?style=flat-square)](http://fir.im/y57x?release_id=57b1c789ca87a87b36000f2b)
 [![](https://jitpack.io/v/mychoices/Jgraph.svg)](https://jitpack.io/#mychoices/Jgraph)
 
-![](https://raw.githubusercontent.com/mychoices/Jgraph/master/gif/2.gif)
-![](https://raw.githubusercontent.com/mychoices/Jgraph/master/gif/4.gif)
-![](https://raw.githubusercontent.com/mychoices/Jgraph/master/gif/6.gif)
-![](https://raw.githubusercontent.com/mychoices/Jgraph/master/gif/13.gif)
-![](https://raw.githubusercontent.com/mychoices/Jgraph/master/gif/15.gif)
-![](https://raw.githubusercontent.com/mychoices/Jgraph/master/gif/22.gif)
-![](https://raw.githubusercontent.com/mychoices/Jgraph/master/gif/101.gif)
+<img src="/gif/2.gif" width="320"/> <img src="/gif/4.gif" width="320"/> <img src="/gif/6.gif" width="320"/> <img src="/gif/13.gif" width="320"/> <img src="/gif/15.gif" width="320"/> <img src="/gif/22.gif" width="320"/> <img src="/gif/101.gif" width="320"/>
 
 2. [Gradle](https://github.com/mychoices/Jgraph/blob/master/README.md#gradle)
 3. [Demo](https://github.com/mychoices/Jgraph/blob/master/README.md#demo)
