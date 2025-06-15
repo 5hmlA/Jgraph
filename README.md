@@ -32,8 +32,10 @@
 5. [Versions](https://github.com/mychoices/Jgraph/blob/master/README.md#versions)
 6. [Todo](https://github.com/mychoices/Jgraph/blob/master/README.md#todo)
 7. [License](https://github.com/mychoices/Jgraph/blob/master/README.md#license)
+   
 [![Powered by DartNode](https://dartnode.com/branding/DN-Open-Source-sm.png)](https://dartnode.com "Powered by DartNode - Free VPS for Open Source")
-#Gradle
+
+# Gradle
 
 	allprojects {
 	        repositories {
@@ -45,14 +47,14 @@
 	    compile 'com.github.mychoices:Jgraph:v1.2'
 	}
 
-#DEMO
+# DEMO
 
 demo下载地址
 [![](http://firicon.fir.im/2413a7e605e2ee423e8ca8f38e180320eba0cddc)](http://fir.im/y57x?release_id=57b1c789ca87a87b36000f2b)
 
-#User Guide
+# User Guide
 ---
-###*自定义属性*
+### *自定义属性*
 ```
 <attr name="graphstyle" format="enum">
     <enum name="bar" value="0"/>
