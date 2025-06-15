@@ -32,7 +32,7 @@
 5. [Versions](https://github.com/mychoices/Jgraph/blob/master/README.md#versions)
 6. [Todo](https://github.com/mychoices/Jgraph/blob/master/README.md#todo)
 7. [License](https://github.com/mychoices/Jgraph/blob/master/README.md#license)
-
+[![Powered by DartNode](https://dartnode.com/branding/DN-Open-Source-sm.png)](https://dartnode.com "Powered by DartNode - Free VPS for Open Source")
 #Gradle
 
 	allprojects {
